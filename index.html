@@ -28,7 +28,7 @@
             min-height: 80vh;
         }
 
-        /* Banner Destacado (Más alto) */
+        /* Banner Destacado */
         .banner-destacado {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
             padding: 25px 20px; 
@@ -89,6 +89,7 @@
         .btn-primario { background-color: #10b981; } .btn-primario:hover { background-color: #059669; }
         .btn-secundario { background-color: #3b82f6; } .btn-secundario:hover { background-color: #2563eb; }
         .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
+        .btn-alerta { background-color: #ef4444; } .btn-alerta:hover { background-color: #dc2626; }
 
         /* Tablas */
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; text-align: left;}
@@ -96,7 +97,7 @@
         td { padding: 10px; border-bottom: 1px solid #2c3540; }
         tr:hover td { background-color: #2c3540; }
 
-        /* Acordeones Nativos (Details/Summary) */
+        /* Acordeones */
         details { background: #242c36; border: 1px solid #2c3540; border-radius: 8px; margin-bottom: 15px; padding: 12px; }
         summary { font-weight: bold; cursor: pointer; color: #d1d5db; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;}
         summary::-webkit-details-marker { display: none; }
@@ -104,10 +105,10 @@
         details[open] summary::after { content: '🔼'; }
         .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
 
-        /* Tarjetas de Partido/Torneo */
+        /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
         .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
 
-        /* Modales (solo para cargar resultados ahora) */
+        /* Modales */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: #1e252d; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid #44505d; max-height: 90vh; overflow-y: auto; }
 
@@ -115,11 +116,13 @@
         .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px;}
         .icon-btn:hover { transform: scale(1.1); }
 
-        /* Tabs internos (Ranking, Partidos) */
+        /* Tabs internos */
         .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
         .toggle-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; }
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
+
+        .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -130,13 +133,13 @@
         <!-- VISTA INICIO (DASHBOARD)                       -->
         <!-- ============================================== -->
         <div id="vista-inicio">
-            <!-- Cabecera Personalizada -->
+            <!-- Cabecera Personalizada con iconos solicitados -->
             <div class="header-acciones">
                 <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #3b82f6;">Jugador 1</span></h2>
                 <div style="display: flex; gap: 10px;">
                     <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos">👥</button>
                     <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil">👤</button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('menu')" title="Menú">☰</button>
+                    <button class="icon-btn" onclick="cambiarVistaPrincipal('menu')" title="Opciones">☰</button>
                 </div>
             </div>
 
@@ -209,9 +212,7 @@
                             <th style="width: 15%; text-align: center;">PJ</th>
                         </tr>
                     </thead>
-                    <tbody id="tabla-ranking">
-                        <!-- Generado por JS -->
-                    </tbody>
+                    <tbody id="tabla-ranking"></tbody>
                 </table>
             </div>
         </div>
@@ -226,9 +227,7 @@
             
             <details>
                 <summary>📊 Mis Partidos y Resultados</summary>
-                <div class="details-content" id="lista-mis-partidos">
-                    <!-- Generado por JS -->
-                </div>
+                <div class="details-content" id="lista-mis-partidos"></div>
             </details>
 
             <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
@@ -236,36 +235,28 @@
                 <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
-            <!-- CREAR PARTIDO -->
             <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
                 <label>Fecha del partido:</label>
                 <input type="date" id="input-fecha-crear" class="input-form">
-
                 <label>Hora:</label>
                 <input type="time" id="input-hora-crear" class="input-form">
-
                 <label>Club:</label>
                 <select id="input-club-crear" class="input-form">
                     <option value="Club Central">Club Central</option>
                     <option value="Padel Pro Norte">Padel Pro Norte</option>
                 </select>
-
                 <label>Modalidad:</label>
                 <select id="input-mod-crear" class="input-form">
                     <option value="Masculino">Masculino</option>
                     <option value="Femenino">Femenino</option>
                     <option value="Mixto">Mixto</option>
                 </select>
-
                 <button class="btn btn-secundario" onclick="crearPartido()">Crear y Publicar Partido</button>
             </div>
 
-            <!-- UNIRSE A PARTIDO -->
             <div id="seccion-unirse-partido" style="display: none; background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
                 <p style="color: #9ca3af; font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
-                <div id="lista-partidos-abiertos">
-                    <!-- Generado por JS -->
-                </div>
+                <div id="lista-partidos-abiertos"></div>
             </div>
         </div>
 
@@ -276,7 +267,6 @@
                 <h3 style="margin: 0; color: white;">🎓 Academia</h3>
                 <div style="width: 70px;"></div>
             </div>
-            
             <div style="text-align: center; padding: 40px 20px; background: #242c36; border-radius: 8px; border: 1px solid #2c3540;">
                 <h3 style="color: #10b981; margin-top: 0; font-size: 1.5em;">Próximamente</h3>
                 <p style="color: #9ca3af;">Aquí podrás ver tus clases, realizar seguimiento de tu progreso y contactar con tus profesores asignados.</p>
@@ -291,11 +281,8 @@
                 <h3 style="margin: 0; color: white;">🏅 Torneos</h3>
                 <div style="width: 70px;"></div>
             </div>
-            
             <p style="color: #9ca3af; font-size: 0.9em; text-align: center;">Torneos disponibles para inscripción:</p>
-            <div id="lista-torneos" style="display: flex; flex-direction: column; gap: 10px;">
-                <!-- Generado por JS -->
-            </div>
+            <div id="lista-torneos" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <!-- VISTA AMIGOS -->
@@ -305,9 +292,18 @@
                 <h3 style="margin: 0; color: white;">👥 Amigos</h3>
                 <div style="width: 70px;"></div>
             </div>
-            <div style="text-align: center; padding: 40px 20px; background: #242c36; border-radius: 8px; border: 1px solid #2c3540;">
-                <p style="color: #9ca3af;">Gestioná tu lista de amigos para invitarlos fácilmente a tus partidos y torneos.</p>
-                <div style="font-size: 3.5em; margin-top: 15px;">🤝</div>
+            
+            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px;">
+                <label style="color: #d1d5db; font-weight: bold; font-size: 0.9em;">Buscar por DNI o Nombre:</label>
+                <div class="busqueda-container">
+                    <input type="text" id="input-buscar-amigo" class="input-form" placeholder="Ej: 12345678 o Juan Pérez" style="margin-bottom: 0;">
+                    <button class="btn btn-secundario" style="width: auto;" onclick="agregarAmigo()">Agregar</button>
+                </div>
+            </div>
+
+            <h4 style="color: #9ca3af; margin-bottom: 10px;">Tu lista de amigos:</h4>
+            <div id="lista-amigos" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Rellenado por JS -->
             </div>
         </div>
 
@@ -318,30 +314,87 @@
                 <h3 style="margin: 0; color: white;">👤 Mi Perfil</h3>
                 <div style="width: 70px;"></div>
             </div>
+            
             <div style="background: #242c36; padding: 20px; border-radius: 8px; border: 1px solid #2c3540;">
-                <label>Nombre de Jugador:</label>
-                <input type="text" id="input-cambiar-nombre" class="input-form">
-                <button class="btn btn-secundario" onclick="guardarNuevoNombre()">Guardar Cambios</button>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Nombre:</label>
+                        <input type="text" id="perfil-nombre" class="input-form">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Apellido:</label>
+                        <input type="text" id="perfil-apellido" class="input-form">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>DNI:</label>
+                        <input type="text" id="perfil-dni" class="input-form">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Edad:</label>
+                        <input type="number" id="perfil-edad" class="input-form">
+                    </div>
+                </div>
+
+                <label>Número Telefónico:</label>
+                <input type="tel" id="perfil-telefono" class="input-form" placeholder="Ej: +54 9 11 12345678">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Género:</label>
+                        <select id="perfil-genero" class="input-form">
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Preferencia de Juego:</label>
+                        <select id="perfil-preferencia" class="input-form">
+                            <option value="Drive">Drive</option>
+                            <option value="Revés">Revés</option>
+                            <option value="Indistinto">Indistinto</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-secundario" style="margin-top: 10px;" onclick="guardarPerfil()">Guardar Cambios</button>
             </div>
         </div>
 
-        <!-- VISTA MENÚ -->
+        <!-- VISTA MENÚ (Opciones) -->
         <div id="vista-menu" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
                 <h3 style="margin: 0; color: white;">☰ Opciones</h3>
                 <div style="width: 70px;"></div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;">⚙️ Configuración</button>
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;">📜 Historial de Transacciones</button>
-                <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px; margin-top: 20px;">🚪 Cerrar Sesión</button>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
+            </div>
+        </div>
+
+        <!-- VISTA NUESTROS CLUBES -->
+        <div id="vista-clubes" class="vista-interna">
+            <div class="header-vista">
+                <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">⬅ Volver</button>
+                <h3 style="margin: 0; color: white;">🎾 Nuestros Clubes</h3>
+                <div style="width: 70px;"></div>
+            </div>
+            <p style="color: #9ca3af; font-size: 0.9em; text-align: center;">Clubes adheridos al sistema de turnero:</p>
+            <div id="lista-clubes">
+                <!-- Rellenado por JS -->
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL: CARGAR RESULTADO (Único modal flotante que queda) -->
+    <!-- MODAL: CARGAR RESULTADO -->
     <div id="modal-resultado" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-top: 0; color: #10b981;">Cargar Resultado</h3>
@@ -375,28 +428,68 @@
         </div>
     </div>
 
+    <!-- MODAL: DENUNCIAR -->
+    <div id="modal-denunciar" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top: 0; color: #ef4444;">⚠️ Denunciar Jugador</h3>
+            <p style="color: #9ca3af; font-size: 0.85em;">Reporta un problema ocurrido en tu último partido jugado.</p>
+            
+            <label>Selecciona el jugador de tu último partido:</label>
+            <select id="denuncia-jugador" class="input-form">
+                <!-- Rellenado por JS -->
+            </select>
+
+            <label>Motivo de la denuncia:</label>
+            <textarea id="denuncia-motivo" class="input-form" rows="4" placeholder="Describe la situación (ej: comportamiento antideportivo, no presentación, etc)..."></textarea>
+
+            <button class="btn btn-alerta" onclick="enviarDenuncia()">Enviar Denuncia</button>
+            <button class="btn btn-cerrar" onclick="cerrarModales()">Cancelar</button>
+        </div>
+    </div>
 
     <script>
         // --- BASE DE DATOS LOCAL (MOCKS) ---
-        let usuarioActual = "Jugador 1";
+        let perfilUsuario = {
+            nombre: "Jugador",
+            apellido: "Uno",
+            edad: 28,
+            genero: "Masculino",
+            telefono: "3511234567",
+            dni: "35000000",
+            preferencia: "Drive"
+        };
+        // Calculamos nombre completo dinámico
+        let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         
         let notificacionesData = [
             { id: 1, texto: "¡Carlos Tevez te invitó a jugar un partido el 25/06!", leida: false },
             { id: 2, texto: "Tu resultado del partido en Club Central fue confirmado.", leida: true }
         ];
 
+        let amigosData = [
+            { id: 10, nombre: "Carlos Tevez", dni: "10101010" },
+            { id: 11, nombre: "Maria Sharapova", dni: "20202020" },
+            { id: 12, nombre: "Juan Perez", dni: "30303030" }
+        ];
+
+        let clubesData = [
+            { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva 123", canchas: "3 Indoor, 2 Outdoor", contacto: "3510000001" },
+            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa 456", canchas: "4 Indoor", contacto: "3510000002" },
+            { id: 3, nombre: "Elite Sur Padel", ubicacion: "Ruta Nacional 9", canchas: "6 Outdoor", contacto: "3510000003" }
+        ];
+
         let rankingData = [
-            { id: 1, nombre: "Jugador 1", puntos: 1500, pj: 10, modalidad: 'Masculino' },
+            { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' },
             { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' },
-            { id: 4, nombre: "Jugador 1", puntos: 800, pj: 5, modalidad: 'Mixto' }
+            { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
 
         let partidosData = [
-            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Padel Pro", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador 1", j2: "Pedro", j3: "Carlos Tevez", j4: "Juan" },
+            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Padel Pro", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos Tevez", j4: "Juan Perez" },
             { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" },
-            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador 1", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
-            { id: 103, fecha: "2026-06-25", hora: "21:00", club: "Club Central", modalidad: "Mixto", estado: "Partido Confirmado", j1: "Jugador 1", j2: "Maria Sharapova", j3: "Carlos Tevez", j4: "Ana" }
+            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
+            { id: 103, fecha: "2026-06-25", hora: "21:00", club: "Club Central", modalidad: "Mixto", estado: "Partido Confirmado", j1: "Jugador Uno", j2: "Maria Sharapova", j3: "Carlos Tevez", j4: "Ana" }
         ];
 
         let torneosData = [
@@ -405,26 +498,21 @@
 
         // --- INICIALIZACIÓN ---
         document.getElementById('input-fecha-crear').valueAsDate = new Date();
-        document.getElementById('lbl-nombre-usuario').innerText = usuarioActual;
-        document.getElementById('input-cambiar-nombre').value = usuarioActual;
+        cargarDatosPerfilEnFormulario();
         renderizarTodo();
 
         // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
-            // Lista de todas las vistas posibles
-            const vistas = ['inicio', 'ranking', 'partidos', 'academia', 'torneos', 'amigos', 'perfil', 'menu'];
+            const vistas = ['inicio', 'ranking', 'partidos', 'academia', 'torneos', 'amigos', 'perfil', 'menu', 'clubes'];
             
-            // Ocultar todas
             vistas.forEach(v => {
                 const el = document.getElementById(`vista-${v}`);
                 if(el) el.style.display = 'none';
             });
 
-            // Mostrar la seleccionada
             document.getElementById(`vista-${vista}`).style.display = 'block';
-            window.scrollTo(0, 0); // Subir al inicio de la página
+            window.scrollTo(0, 0); 
 
-            // Cargar datos si es necesario al abrir la vista
             if (vista === 'inicio') {
                 renderizarNotificaciones();
                 renderizarBanner();
@@ -435,23 +523,39 @@
                 renderizarPartidosAbiertos();
             } else if (vista === 'torneos') {
                 renderizarTorneos();
+            } else if (vista === 'amigos') {
+                renderizarAmigos();
+            } else if (vista === 'clubes') {
+                renderizarClubes();
             }
         }
 
-        function cambiarUsuario() {
-            // Atajo rápido para depuración (abre la vista perfil)
-            cambiarVistaPrincipal('perfil');
+        // --- GESTIÓN DE PERFIL ---
+        function cargarDatosPerfilEnFormulario() {
+            document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
+            document.getElementById('perfil-nombre').value = perfilUsuario.nombre;
+            document.getElementById('perfil-apellido').value = perfilUsuario.apellido;
+            document.getElementById('perfil-edad').value = perfilUsuario.edad;
+            document.getElementById('perfil-genero').value = perfilUsuario.genero;
+            document.getElementById('perfil-telefono').value = perfilUsuario.telefono;
+            document.getElementById('perfil-dni').value = perfilUsuario.dni;
+            document.getElementById('perfil-preferencia').value = perfilUsuario.preferencia;
         }
 
-        function guardarNuevoNombre() {
-            let nuevo = document.getElementById('input-cambiar-nombre').value;
-            if(nuevo && nuevo.trim() !== "") {
-                usuarioActual = nuevo.trim();
-                document.getElementById('lbl-nombre-usuario').innerText = usuarioActual;
-                alert("Perfil actualizado a: " + usuarioActual);
-                renderizarTodo();
-                cambiarVistaPrincipal('inicio');
-            }
+        function guardarPerfil() {
+            perfilUsuario.nombre = document.getElementById('perfil-nombre').value.trim() || "Jugador";
+            perfilUsuario.apellido = document.getElementById('perfil-apellido').value.trim() || "Uno";
+            perfilUsuario.edad = document.getElementById('perfil-edad').value;
+            perfilUsuario.genero = document.getElementById('perfil-genero').value;
+            perfilUsuario.telefono = document.getElementById('perfil-telefono').value;
+            perfilUsuario.dni = document.getElementById('perfil-dni').value;
+            perfilUsuario.preferencia = document.getElementById('perfil-preferencia').value;
+
+            // Actualizamos en las bases donde usamos el nombre antiguo
+            document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
+            alert("¡Perfil guardado correctamente!");
+            cambiarVistaPrincipal('inicio');
+            renderizarTodo();
         }
 
         let catRankingActual = 'Masculino';
@@ -470,8 +574,7 @@
             document.getElementById('subtab-unirse').classList.toggle('activo', accion === 'unirse');
         }
 
-
-        // --- RENDERIZADO ---
+        // --- RENDERIZADO GENERAL ---
         function renderizarTodo() {
             renderizarNotificaciones();
             renderizarBanner();
@@ -479,6 +582,8 @@
             renderizarMisPartidos();
             renderizarPartidosAbiertos();
             renderizarTorneos();
+            renderizarAmigos();
+            renderizarClubes();
         }
 
         function renderizarNotificaciones() {
@@ -487,13 +592,8 @@
             container.innerHTML = '';
             
             let noLeidas = notificacionesData.filter(n => !n.leida).length;
-            
-            if(noLeidas > 0) {
-                badge.innerText = noLeidas;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
-            }
+            if(noLeidas > 0) { badge.innerText = noLeidas; badge.style.display = 'inline-block'; } 
+            else { badge.style.display = 'none'; }
 
             if(notificacionesData.length === 0) {
                 container.innerHTML = '<p style="color:#9ca3af; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
@@ -502,7 +602,6 @@
                     let mark = n.leida ? '' : '<span style="color:#ef4444; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
                     container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid #2c3540; font-size:0.9em; color:${n.leida ? '#9ca3af' : '#d1d5db'};">${mark}${n.texto}</div>`;
                 });
-                
                 if (noLeidas > 0) {
                     container.innerHTML += `<button style="width:100%; background:none; border:none; color:#3b82f6; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>`;
                 }
@@ -516,8 +615,9 @@
 
         function renderizarBanner() {
             const banner = document.getElementById('banner-proximo-partido');
+            let user = getNombreCompleto();
             
-            let misPartidos = partidosData.filter(p => p.j1 === usuarioActual || p.j2 === usuarioActual || p.j3 === usuarioActual || p.j4 === usuarioActual);
+            let misPartidos = partidosData.filter(p => p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user);
 
             let fechaHoy = new Date();
             let hoyFormateado = `${fechaHoy.getFullYear()}-${(fechaHoy.getMonth() + 1).toString().padStart(2, '0')}-${fechaHoy.getDate().toString().padStart(2, '0')}`;
@@ -529,7 +629,7 @@
                 let prox = partidosFuturos[0];
                 
                 let miEquipoJ1, miEquipoJ2, rivalJ1, rivalJ2;
-                if (prox.j1 === usuarioActual || prox.j2 === usuarioActual) {
+                if (prox.j1 === user || prox.j2 === user) {
                     miEquipoJ1 = prox.j1; miEquipoJ2 = prox.j2;
                     rivalJ1 = prox.j3; rivalJ2 = prox.j4;
                 } else {
@@ -584,7 +684,7 @@
             }
 
             filtrados.forEach((j, index) => {
-                let isMe = j.nombre === usuarioActual ? 'color: #3b82f6; font-weight: bold;' : '';
+                let isMe = j.nombre === getNombreCompleto() ? 'color: #3b82f6; font-weight: bold;' : '';
                 tbody.innerHTML += `
                     <tr>
                         <td style="text-align: center; font-weight:bold;">${index + 1}</td>
@@ -599,8 +699,9 @@
         function renderizarMisPartidos() {
             const cont = document.getElementById('lista-mis-partidos');
             cont.innerHTML = '';
+            let user = getNombreCompleto();
             
-            let misPartidos = partidosData.filter(p => p.j1 === usuarioActual || p.j2 === usuarioActual || p.j3 === usuarioActual || p.j4 === usuarioActual);
+            let misPartidos = partidosData.filter(p => p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user);
             misPartidos.sort((a,b) => b.fecha.localeCompare(a.fecha));
 
             if(misPartidos.length === 0) {
@@ -631,8 +732,9 @@
         function renderizarPartidosAbiertos() {
             const cont = document.getElementById('lista-partidos-abiertos');
             cont.innerHTML = '';
+            let user = getNombreCompleto();
 
-            let abiertos = partidosData.filter(p => p.estado === 'Buscando Rival' && p.j1 !== usuarioActual && p.j2 !== usuarioActual && p.j3 !== usuarioActual && p.j4 !== usuarioActual);
+            let abiertos = partidosData.filter(p => p.estado === 'Buscando Rival' && p.j1 !== user && p.j2 !== user && p.j3 !== user && p.j4 !== user);
 
             if(abiertos.length === 0) {
                 cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No hay partidos buscando jugadores.</p>';
@@ -664,7 +766,7 @@
             }
 
             torneosData.forEach(t => {
-                let inscripto = t.inscriptos.some(i => i.includes(usuarioActual));
+                let inscripto = t.inscriptos.some(i => i.includes(getNombreCompleto()));
                 let btn = inscripto 
                     ? `<span style="color:#10b981; font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` 
                     : `<button class="btn btn-primario" style="padding: 5px; font-size: 0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse Solo</button>`;
@@ -677,6 +779,66 @@
                             <small style="color:#9ca3af;">Cupos: ${t.inscriptos.length}/${t.cupo}</small>
                             ${btn}
                         </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizarAmigos() {
+            const cont = document.getElementById('lista-amigos');
+            cont.innerHTML = '';
+            
+            if(amigosData.length === 0) {
+                cont.innerHTML = '<p style="color:#9ca3af; font-size:0.9em;">Aún no tienes amigos agregados.</p>';
+                return;
+            }
+
+            amigosData.forEach((a, idx) => {
+                cont.innerHTML += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #1e252d; border: 1px solid #44505d; padding: 10px 15px; border-radius: 8px;">
+                        <div>
+                            <strong style="color: #d1d5db;">${a.nombre}</strong><br>
+                            <small style="color: #9ca3af;">DNI: ${a.dni}</small>
+                        </div>
+                        <button style="background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer;" onclick="eliminarAmigo(${idx})">❌</button>
+                    </div>
+                `;
+            });
+        }
+
+        function agregarAmigo() {
+            let input = document.getElementById('input-buscar-amigo').value.trim();
+            if(!input) { alert("Ingresa un nombre o DNI"); return; }
+            
+            amigosData.push({ id: Date.now(), nombre: input, dni: "N/A" });
+            document.getElementById('input-buscar-amigo').value = '';
+            alert("Amigo agregado a tu lista.");
+            renderizarAmigos();
+        }
+
+        function eliminarAmigo(index) {
+            if(confirm("¿Seguro que deseas eliminar este amigo?")) {
+                amigosData.splice(index, 1);
+                renderizarAmigos();
+            }
+        }
+
+        function renderizarClubes() {
+            const cont = document.getElementById('lista-clubes');
+            cont.innerHTML = '';
+            
+            if(clubesData.length === 0) {
+                cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No hay clubes afiliados.</p>';
+                return;
+            }
+
+            clubesData.forEach(c => {
+                cont.innerHTML += `
+                    <div class="tarjeta-item">
+                        <div style="color: #3b82f6; font-weight: bold; font-size: 1.1em;">🎾 ${c.nombre}</div>
+                        <div style="color: #d1d5db; font-size: 0.9em; margin-bottom: 5px; margin-top: 5px;">📍 ${c.ubicacion}</div>
+                        <div style="color: #10b981; font-size: 0.85em; margin-bottom: 10px;">Canchas: ${c.canchas}</div>
+                        <button class="btn btn-secundario" style="padding: 5px; font-size: 0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')">💬 WhatsApp del Club</button>
                     </div>
                 `;
             });
@@ -695,7 +857,7 @@
                 id: Date.now(),
                 fecha: f, hora: h, club: c, modalidad: m,
                 estado: "Buscando Rival",
-                j1: usuarioActual, j2: "Libre", j3: "Libre", j4: "Libre"
+                j1: getNombreCompleto(), j2: "Libre", j3: "Libre", j4: "Libre"
             };
 
             partidosData.push(nuevo);
@@ -706,11 +868,12 @@
 
         function unirsePartido(id) {
             let p = partidosData.find(x => x.id === id);
+            let user = getNombreCompleto();
             if(!p) return;
 
-            if(p.j2 === 'Libre') p.j2 = usuarioActual;
-            else if(p.j3 === 'Libre') p.j3 = usuarioActual;
-            else if(p.j4 === 'Libre') p.j4 = usuarioActual;
+            if(p.j2 === 'Libre') p.j2 = user;
+            else if(p.j3 === 'Libre') p.j3 = user;
+            else if(p.j4 === 'Libre') p.j4 = user;
 
             if(p.j1 !== 'Libre' && p.j2 !== 'Libre' && p.j3 !== 'Libre' && p.j4 !== 'Libre') {
                 p.estado = 'Pendiente Resultado';
@@ -725,12 +888,12 @@
         function inscribirseTorneo(id) {
             let t = torneosData.find(x => x.id === id);
             if(!t) return;
-            t.inscriptos.push(`${usuarioActual} / (Sin pareja)`);
+            t.inscriptos.push(`${getNombreCompleto()} / (Sin pareja)`);
             alert("Inscripción exitosa al torneo: " + t.nombre);
-            renderizarTorneos(); // Refrescar la vista
+            renderizarTorneos();
         }
 
-        // --- MODALES (Para Cargar Resultado) ---
+        // --- MODALES (Cargar Resultado y Denunciar) ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
@@ -759,9 +922,10 @@
             partidoEnEdicion.estado = 'Finalizado';
             partidoEnEdicion.resultado = `${s1e1}-${s1e2}, ${s2e1}-${s2e2}`;
             
-            let myRank = rankingData.find(r => r.nombre === usuarioActual && r.modalidad === partidoEnEdicion.modalidad);
+            let user = getNombreCompleto();
+            let myRank = rankingData.find(r => r.nombre === user && r.modalidad === partidoEnEdicion.modalidad);
             if(!myRank) {
-                rankingData.push({ id: Date.now(), nombre: usuarioActual, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad });
+                rankingData.push({ id: Date.now(), nombre: user, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad });
             } else {
                 myRank.puntos += 15;
                 myRank.pj += 1;
@@ -772,8 +936,49 @@
             renderizarMisPartidos();
         }
 
+        function abrirModalDenunciar() {
+            let user = getNombreCompleto();
+            // Buscar el último partido jugado (pasado)
+            let fechaHoy = new Date();
+            let hoyFormateado = `${fechaHoy.getFullYear()}-${(fechaHoy.getMonth() + 1).toString().padStart(2, '0')}-${fechaHoy.getDate().toString().padStart(2, '0')}`;
+            
+            let misPartidosPasados = partidosData.filter(p => (p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user) && p.fecha < hoyFormateado);
+            
+            misPartidosPasados.sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+            const select = document.getElementById('denuncia-jugador');
+            select.innerHTML = '';
+
+            if (misPartidosPasados.length === 0) {
+                select.innerHTML = '<option value="" disabled selected>No tienes partidos recientes</option>';
+            } else {
+                let ult = misPartidosPasados[0];
+                let involucrados = [ult.j1, ult.j2, ult.j3, ult.j4].filter(j => j !== user && j !== 'Libre');
+                
+                select.innerHTML = '<option value="" disabled selected>Selecciona un jugador...</option>';
+                involucrados.forEach(inv => {
+                    select.innerHTML += `<option value="${inv}">${inv} (Partido del ${ult.fecha})</option>`;
+                });
+            }
+
+            document.getElementById('denuncia-motivo').value = '';
+            document.getElementById('modal-denunciar').style.display = 'flex';
+        }
+
+        function enviarDenuncia() {
+            let j = document.getElementById('denuncia-jugador').value;
+            let m = document.getElementById('denuncia-motivo').value.trim();
+
+            if(!j) { alert("Por favor selecciona un jugador."); return; }
+            if(!m) { alert("Por favor describe el motivo de la denuncia."); return; }
+
+            alert(`La denuncia sobre el jugador "${j}" ha sido enviada al área administrativa y será evaluada.`);
+            cerrarModales();
+        }
+
         function cerrarModales() {
             document.getElementById('modal-resultado').style.display = 'none';
+            document.getElementById('modal-denunciar').style.display = 'none';
             partidoEnEdicion = null;
         }
     </script>
