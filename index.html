@@ -7,7 +7,16 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #171d24; 
+            
+            /* --- FONDO CANCHA DE PÁDEL --- */
+            background-color: #081424; 
+            /* Dibujo SVG integrado de la cancha. Líneas con 12% de opacidad y pasto azul oscuro */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Crect width='100' height='200' fill='%23081424'/%3E%3Cg stroke='rgba(255,255,255,0.12)' stroke-width='1' fill='none'%3E%3Crect x='10' y='10' width='80' height='180'/%3E%3Cline x1='10' y1='100' x2='90' y2='100' stroke='rgba(255,255,255,0.2)' stroke-width='1.5'/%3E%3Cline x1='10' y1='45' x2='90' y2='45'/%3E%3Cline x1='10' y1='155' x2='90' y2='155'/%3E%3Cline x1='50' y1='45' x2='50' y2='155'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            /* ----------------------------- */
+
             color: #ffffff; 
             margin: 0; 
             padding: 20px; 
@@ -17,32 +26,37 @@
         }
         
         .contenedor-principal {
-            background-color: #1e252d; 
+            /* Efecto cristal para que se note la cancha sutilmente por detrás */
+            background-color: rgba(30, 37, 45, 0.85); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+
             width: 100%; 
             max-width: 700px;
             border-radius: 12px; 
             padding: 20px; 
             box-sizing: border-box; 
             margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
             min-height: 80vh;
         }
 
-        /* Banner Destacado */
+        /* Banner Destacado (Ahora Gris/Blanco) */
         .banner-destacado {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
+            background: linear-gradient(135deg, #4b5563, #9ca3af); 
             padding: 25px 20px; 
             border-radius: 12px; 
             margin-bottom: 30px; 
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
-            border: 1px solid #60a5fa;
+            border: 1px solid #d1d5db;
             min-height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        /* Menú de Tarjetas Grid 2x2 - ¡Ahora con color principal! */
+        /* Menú de Tarjetas Grid 2x2 (Ahora Gris/Blanco) */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -51,8 +65,8 @@
             padding-bottom: 20px;
         }
         .tarjeta-menu {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border: 1px solid #60a5fa;
+            background: linear-gradient(135deg, #4b5563, #9ca3af);
+            border: 1px solid #d1d5db;
             border-radius: 12px;
             padding: 25px 10px;
             text-align: center;
@@ -72,6 +86,11 @@
             transform: scale(1.03); 
         }
 
+        /* Filtro para volver los iconos (emojis) a un tono blanco/grisáceo */
+        .filtro-gris {
+            filter: grayscale(100%) brightness(1.3);
+        }
+
         /* Vistas internas ocultas por defecto */
         .vista-interna { display: none; }
         .header-vista { 
@@ -85,7 +104,7 @@
         .input-form { padding: 10px; border-radius: 6px; border: 1px solid #44505d; background-color: #171d24; color: white; width: 100%; box-sizing: border-box; margin-top: 5px; margin-bottom: 15px; color-scheme: dark;}
         .btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; }
         .btn-primario { background-color: #10b981; } .btn-primario:hover { background-color: #059669; }
-        .btn-secundario { background-color: #3b82f6; } .btn-secundario:hover { background-color: #2563eb; }
+        .btn-secundario { background-color: #6b7280; } .btn-secundario:hover { background-color: #4b5563; }
         .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
         .btn-alerta { background-color: #ef4444; } .btn-alerta:hover { background-color: #dc2626; }
 
@@ -103,10 +122,10 @@
         details[open] summary::after { content: '🔼'; }
         .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
 
-        /* Notificaciones (Color Especial) */
+        /* Notificaciones (Color Especial Gris) */
         #notificaciones-container {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border: 1px solid #60a5fa;
+            background: linear-gradient(135deg, #4b5563, #9ca3af);
+            border: 1px solid #d1d5db;
             color: #ffffff;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
@@ -114,7 +133,7 @@
         #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
-        .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .tarjeta-item { background: rgba(23, 29, 36, 0.8); border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; backdrop-filter: blur(5px);}
 
         /* Modales */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
@@ -125,10 +144,10 @@
         .icon-btn:hover { transform: scale(1.1); }
 
         /* Tabs internos */
-        .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
+        .toggle-container { display: flex; background-color: rgba(36, 44, 54, 0.8); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
         .toggle-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; }
         .toggle-btn:hover { color: #d1d5db; }
-        .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
+        .toggle-btn.activo { background-color: #6b7280; color: #ffffff; }
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
 
@@ -138,7 +157,7 @@
             height: 28px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #60a5fa;
+            border: 2px solid #d1d5db; /* Borde gris plata */
             flex-shrink: 0;
         }
     </style>
@@ -153,11 +172,11 @@
         <div id="vista-inicio">
             <!-- Cabecera Personalizada con iconos solicitados -->
             <div class="header-acciones">
-                <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #3b82f6;">Jugador 1</span></h2>
+                <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #9ca3af;">Jugador 1</span></h2>
                 <div style="display: flex; gap: 10px;">
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos">👥</button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil">👤</button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('menu')" title="Opciones">☰</button>
+                    <button class="icon-btn filtro-gris" onclick="cambiarVistaPrincipal('amigos')" title="Amigos">👥</button>
+                    <button class="icon-btn filtro-gris" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil">👤</button>
+                    <button class="icon-btn filtro-gris" onclick="cambiarVistaPrincipal('menu')" title="Opciones">☰</button>
                 </div>
             </div>
 
@@ -165,7 +184,7 @@
             <details id="notificaciones-container">
                 <summary>
                     <div style="display:flex; align-items:center; gap:8px;">
-                        🔔 Notificaciones
+                        <span class="filtro-gris">🔔</span> Notificaciones
                         <span id="badge-notif" style="background:#ef4444; color:white; border-radius:50%; padding:2px 8px; font-size:0.8em; display:none;">0</span>
                     </div>
                 </summary>
@@ -184,19 +203,19 @@
             <!-- Menú de Tarjetas Grid 2x2 -->
             <div class="menu-grid">
                 <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')">
-                    <span style="font-size: 2.2em;">🏆</span>
+                    <span class="filtro-gris" style="font-size: 2.2em;">🏆</span>
                     Ranking
                 </div>
                 <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')">
-                    <span style="font-size: 2.2em;">🎾</span>
+                    <span class="filtro-gris" style="font-size: 2.2em;">🎾</span>
                     Partidos
                 </div>
                 <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')">
-                    <span style="font-size: 2.2em;">🎓</span>
+                    <span class="filtro-gris" style="font-size: 2.2em;">🎓</span>
                     Academia
                 </div>
                 <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')">
-                    <span style="font-size: 2.2em;">🏅</span>
+                    <span class="filtro-gris" style="font-size: 2.2em;">🏅</span>
                     Torneos
                 </div>
             </div>
@@ -210,17 +229,17 @@
         <div id="vista-ranking" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">🏆 Ranking</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">🏆</span> Ranking</h3>
                 <div style="width: 70px;"></div>
             </div>
 
-            <div class="toggle-container" style="background-color: #171d24;">
+            <div class="toggle-container" style="background-color: rgba(23, 29, 36, 0.8);">
                 <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
                 <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
                 <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
 
-            <div style="background: #242c36; border-radius: 8px; border: 1px solid #2c3540; overflow: hidden;">
+            <div style="background: rgba(36, 44, 54, 0.8); border-radius: 8px; border: 1px solid #2c3540; overflow: hidden; backdrop-filter: blur(5px);">
                 <table>
                     <thead>
                         <tr>
@@ -239,7 +258,7 @@
         <div id="vista-partidos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">🎾 Partidos</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">🎾</span> Partidos</h3>
                 <div style="width: 70px;"></div>
             </div>
             
@@ -248,12 +267,12 @@
                 <div class="details-content" id="lista-mis-partidos"></div>
             </details>
 
-            <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
+            <div class="toggle-container" style="background-color: rgba(23, 29, 36, 0.8); margin-top: 20px;">
                 <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
                 <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
-            <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
+            <div id="seccion-crear-partido" style="background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
                 <label>Fecha del partido:</label>
                 <input type="date" id="input-fecha-crear" class="input-form">
                 <label>Hora:</label>
@@ -272,7 +291,7 @@
                 <button class="btn btn-secundario" onclick="crearPartido()">Crear y Publicar Partido</button>
             </div>
 
-            <div id="seccion-unirse-partido" style="display: none; background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
+            <div id="seccion-unirse-partido" style="display: none; background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
                 <p style="color: #9ca3af; font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
                 <div id="lista-partidos-abiertos"></div>
             </div>
@@ -282,13 +301,13 @@
         <div id="vista-academia" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">🎓 Academia</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">🎓</span> Academia</h3>
                 <div style="width: 70px;"></div>
             </div>
-            <div style="text-align: center; padding: 40px 20px; background: #242c36; border-radius: 8px; border: 1px solid #2c3540;">
+            <div style="text-align: center; padding: 40px 20px; background: rgba(36, 44, 54, 0.8); border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
                 <h3 style="color: #10b981; margin-top: 0; font-size: 1.5em;">Próximamente</h3>
                 <p style="color: #9ca3af;">Aquí podrás ver tus clases, realizar seguimiento de tu progreso y contactar con tus profesores asignados.</p>
-                <div style="font-size: 3.5em; margin-top: 15px;">🎾🧑‍🏫</div>
+                <div style="font-size: 3.5em; margin-top: 15px;" class="filtro-gris">🎾🧑‍🏫</div>
             </div>
         </div>
 
@@ -296,7 +315,7 @@
         <div id="vista-torneos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">🏅 Torneos</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">🏅</span> Torneos</h3>
                 <div style="width: 70px;"></div>
             </div>
             <p style="color: #9ca3af; font-size: 0.9em; text-align: center;">Torneos disponibles para inscripción:</p>
@@ -307,11 +326,11 @@
         <div id="vista-amigos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">👥 Amigos</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">👥</span> Amigos</h3>
                 <div style="width: 70px;"></div>
             </div>
             
-            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px;">
+            <div style="background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px; backdrop-filter: blur(5px);">
                 <label style="color: #d1d5db; font-weight: bold; font-size: 0.9em;">Buscar por DNI o Nombre:</label>
                 <div class="busqueda-container">
                     <input type="text" id="input-buscar-amigo" class="input-form" placeholder="Ej: 12345678 o Juan Pérez" style="margin-bottom: 0;">
@@ -329,15 +348,15 @@
         <div id="vista-perfil" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">👤 Mi Perfil</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">👤</span> Mi Perfil</h3>
                 <div style="width: 70px;"></div>
             </div>
             
-            <div style="background: #242c36; padding: 20px; border-radius: 8px; border: 1px solid #2c3540;">
+            <div style="background: rgba(36, 44, 54, 0.8); padding: 20px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                        <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
+                        <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid #d1d5db;">
                         <input type="url" id="perfil-foto" class="input-form" placeholder="https://link-a-tu-foto.com/foto.jpg" style="margin: 0;" oninput="actualizarPreviewFoto()">
                     </div>
                 </div>
@@ -394,14 +413,14 @@
         <div id="vista-menu" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">☰ Opciones</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">☰</span> Opciones</h3>
                 <div style="width: 70px;"></div>
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
-                <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
+                <button class="btn filtro-gris" style="background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn filtro-gris" style="background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn" style="background: rgba(239, 68, 68, 0.9); border: 1px solid #b91c1c; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
             </div>
         </div>
 
@@ -409,7 +428,7 @@
         <div id="vista-clubes" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">⬅ Volver</button>
-                <h3 style="margin: 0; color: white;">🎾 Nuestros Clubes</h3>
+                <h3 style="margin: 0; color: white;"><span class="filtro-gris">🎾</span> Nuestros Clubes</h3>
                 <div style="width: 70px;"></div>
             </div>
             <p style="color: #9ca3af; font-size: 0.9em; text-align: center;">Clubes adheridos al sistema de turnero:</p>
@@ -427,7 +446,7 @@
             <input type="hidden" id="res-id-partido">
             
             <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-                <span id="res-eq1" style="color: #3b82f6;">Eq 1</span>
+                <span id="res-eq1" style="color: #9ca3af;">Eq 1</span>
                 <span style="color: #f59e0b;">VS</span>
                 <span id="res-eq2" style="color: #ef4444;">Eq 2</span>
             </div>
@@ -457,7 +476,7 @@
     <!-- MODAL: DENUNCIAR -->
     <div id="modal-denunciar" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-top: 0; color: #ef4444;">⚠️ Denunciar Jugador</h3>
+            <h3 style="margin-top: 0; color: #ef4444;"><span class="filtro-gris">⚠️</span> Denunciar Jugador</h3>
             <p style="color: #9ca3af; font-size: 0.85em;">Reporta un problema ocurrido en tu último partido jugado.</p>
             
             <label>Selecciona el jugador de tu último partido:</label>
@@ -476,7 +495,7 @@
     <!-- NUEVO MODAL: VER PERFIL DE JUGADOR (DESDE BANNER) -->
     <div id="modal-ver-perfil" class="modal-overlay">
         <div class="modal-content" style="text-align: center; max-width: 320px;">
-            <img id="perfil-jugador-img" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #3b82f6;">
+            <img id="perfil-jugador-img" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #d1d5db;">
             <h3 id="perfil-jugador-nombre" style="margin-top: 0; color: #ffffff;">Nombre</h3>
             
             <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; text-align: left; margin-bottom: 20px;">
@@ -509,7 +528,7 @@
             telefono: "3511234567",
             dni: "35000000",
             preferencia: "Drive",
-            foto: "" // Nuevo atributo foto
+            foto: "" 
         };
         // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
@@ -674,11 +693,11 @@
             else { badge.style.display = 'none'; }
 
             if(notificacionesData.length === 0) {
-                container.innerHTML = '<p style="color:#bfdbfe; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
+                container.innerHTML = '<p style="color:#d1d5db; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
             } else {
                 notificacionesData.forEach(n => {
                     let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? '#bfdbfe' : '#ffffff'};">${mark}${n.texto}</div>`;
+                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? '#d1d5db' : '#ffffff'};">${mark}${n.texto}</div>`;
                 });
                 if (noLeidas > 0) {
                     container.innerHTML += `<button style="width:100%; background:none; border:none; color:#ffffff; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>`;
@@ -691,7 +710,6 @@
             renderizarNotificaciones();
         }
 
-        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen y alineación perfecta)
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
@@ -727,14 +745,14 @@
                 }
 
                 banner.innerHTML = `
-                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Tu próximo partido</div>
-                    <div style="font-size: 1.25em; font-weight: bold; color: white;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📍 Jugás en <strong>${prox.club}</strong></div>
+                    <div style="font-size: 0.8em; color: #d1d5db; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Tu próximo partido</div>
+                    <div style="font-size: 1.25em; font-weight: bold; color: white;"><span class="filtro-gris">📅</span> ${prox.fecha} - <span class="filtro-gris">⌚</span> ${prox.hora}</div>
+                    <div style="color: #e5e7eb; font-size: 0.95em; margin-top: 5px;"><span class="filtro-gris">📍</span> Jugás en <strong>${prox.club}</strong></div>
                     
                     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center;">
                         
                         <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
-                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Tu equipo</strong>
+                            <strong style="color: #d1d5db; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Tu equipo</strong>
                             <div style="display: inline-flex; flex-direction: column; align-items: flex-start;">
                                 ${generarFilaJugador(miEquipoJ1)}
                                 ${generarFilaJugador(miEquipoJ2)}
@@ -756,21 +774,20 @@
             } else if (partidosPasados.length > 0) {
                 let ult = partidosPasados[0];
                 banner.innerHTML = `
-                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Sin partidos programados</div>
+                    <div style="font-size: 0.8em; color: #d1d5db; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Sin partidos programados</div>
                     <div style="font-size: 1.2em; font-weight: bold; color: white;">Último club visitado: ${ult.club}</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📅 Jugaste allí el ${ult.fecha}</div>
+                    <div style="color: #e5e7eb; font-size: 0.95em; margin-top: 5px;">📅 Jugaste allí el ${ult.fecha}</div>
                     <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white;" onclick="cambiarVistaPrincipal('partidos')">Programar un nuevo partido</button>
                 `;
             } else {
                 banner.innerHTML = `
                     <div style="font-size: 1.2em; color: white; font-weight: bold;">¡Bienvenido al circuito!</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">Aún no tienes partidos en tu historial. ¡Anímate a crear o unirte a uno!</div>
+                    <div style="color: #e5e7eb; font-size: 0.95em; margin-top: 5px;">Aún no tienes partidos en tu historial. ¡Anímate a crear o unirte a uno!</div>
                     <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white;" onclick="cambiarVistaPrincipal('partidos')">Ver partidos disponibles</button>
                 `;
             }
         }
 
-        // --- LÓGICA PARA VER EL PERFIL DE OTRO JUGADOR DESDE EL BANNER ---
         function abrirPerfilRanking(nombre) {
             let jugData = rankingData.find(r => r.nombre === nombre);
             
@@ -808,7 +825,7 @@
             }
 
             filtrados.forEach((j, index) => {
-                let isMe = j.nombre === getNombreCompleto() ? 'color: #3b82f6; font-weight: bold;' : '';
+                let isMe = j.nombre === getNombreCompleto() ? 'color: #9ca3af; font-weight: bold;' : '';
                 tbody.innerHTML += `
                     <tr>
                         <td style="text-align: center; font-weight:bold;">${index + 1}</td>
@@ -838,15 +855,15 @@
                 if(p.estado === 'Pendiente Resultado') {
                     btnAccion = `<button class="btn btn-primario" style="padding: 5px; margin-top: 10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>`;
                 } else if(p.estado === 'Finalizado') {
-                    btnAccion = `<span style="color: #10b981; font-size: 0.85em; display:block; margin-top: 10px;">✅ Finalizado: ${p.resultado}</span>`;
+                    btnAccion = `<span style="color: #10b981; font-size: 0.85em; display:block; margin-top: 10px;"><span class="filtro-gris">✅</span> Finalizado: ${p.resultado}</span>`;
                 }
 
                 cont.innerHTML += `
                     <div class="tarjeta-item">
                         <div style="display:flex; justify-content: space-between;">
-                            <strong style="color: #3b82f6;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
+                            <strong style="color: #9ca3af;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
                         </div>
-                        <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                        <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;"><span class="filtro-gris">📅</span> ${p.fecha} | <span class="filtro-gris">⌚</span> ${p.hora} | <span class="filtro-gris">📍</span> ${p.club}</div>
                         ${btnAccion}
                     </div>
                 `;
@@ -872,7 +889,7 @@
                 cont.innerHTML += `
                     <div class="tarjeta-item">
                         <div style="color: #d1d5db; margin-bottom: 5px;"><strong>${p.j1}</strong> busca jugadores (${p.modalidad})</div>
-                        <div style="font-size: 0.85em; color: #9ca3af;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                        <div style="font-size: 0.85em; color: #9ca3af;"><span class="filtro-gris">📅</span> ${p.fecha} | <span class="filtro-gris">⌚</span> ${p.hora} | <span class="filtro-gris">📍</span> ${p.club}</div>
                         <div style="color: #10b981; font-size: 0.85em; margin-top: 5px;">Lugares: ${cupos} libres</div>
                         <button class="btn btn-secundario" style="padding: 5px; margin-top: 10px;" onclick="unirsePartido(${p.id})">Unirme a este partido</button>
                     </div>
@@ -892,13 +909,13 @@
             torneosData.forEach(t => {
                 let inscripto = t.inscriptos.some(i => i.includes(getNombreCompleto()));
                 let btn = inscripto 
-                    ? `<span style="color:#10b981; font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` 
+                    ? `<span style="color:#10b981; font-size:0.85em; font-weight:bold;"><span class="filtro-gris">✅</span> Inscripto</span>` 
                     : `<button class="btn btn-primario" style="padding: 5px; font-size: 0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse Solo</button>`;
 
                 cont.innerHTML += `
                     <div class="tarjeta-item">
-                        <div style="color: #f59e0b; font-weight: bold; font-size: 1.1em;">🏆 ${t.nombre}</div>
-                        <div style="color: #d1d5db; font-size: 0.85em; margin-bottom: 8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
+                        <div style="color: #f59e0b; font-weight: bold; font-size: 1.1em;"><span class="filtro-gris">🏆</span> ${t.nombre}</div>
+                        <div style="color: #d1d5db; font-size: 0.85em; margin-bottom: 8px;"><span class="filtro-gris">📅</span> ${t.fecha} | <span class="filtro-gris">📍</span> ${t.club}</div>
                         <div style="display:flex; justify-content:space-between; align-items:center; border-top: 1px dashed #44505d; padding-top: 10px; margin-top: 5px;">
                             <small style="color:#9ca3af;">Cupos: ${t.inscriptos.length}/${t.cupo}</small>
                             ${btn}
@@ -919,12 +936,12 @@
 
             amigosData.forEach((a, idx) => {
                 cont.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: #1e252d; border: 1px solid #44505d; padding: 10px 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; padding: 10px 15px; border-radius: 8px; backdrop-filter: blur(5px);">
                         <div>
                             <strong style="color: #d1d5db;">${a.nombre}</strong><br>
                             <small style="color: #9ca3af;">DNI: ${a.dni}</small>
                         </div>
-                        <button style="background: none; border: none; color: #ef4444; font-size: 1.2em; cursor: pointer;" onclick="eliminarAmigo(${idx})">❌</button>
+                        <button class="filtro-gris" style="background: none; border: none; font-size: 1.2em; cursor: pointer;" onclick="eliminarAmigo(${idx})">❌</button>
                     </div>
                 `;
             });
@@ -959,10 +976,10 @@
             clubesData.forEach(c => {
                 cont.innerHTML += `
                     <div class="tarjeta-item">
-                        <div style="color: #3b82f6; font-weight: bold; font-size: 1.1em;">🎾 ${c.nombre}</div>
-                        <div style="color: #d1d5db; font-size: 0.9em; margin-bottom: 5px; margin-top: 5px;">📍 ${c.ubicacion}</div>
+                        <div style="color: #9ca3af; font-weight: bold; font-size: 1.1em;"><span class="filtro-gris">🎾</span> ${c.nombre}</div>
+                        <div style="color: #d1d5db; font-size: 0.9em; margin-bottom: 5px; margin-top: 5px;"><span class="filtro-gris">📍</span> ${c.ubicacion}</div>
                         <div style="color: #10b981; font-size: 0.85em; margin-bottom: 10px;">Canchas: ${c.canchas}</div>
-                        <button class="btn btn-secundario" style="padding: 5px; font-size: 0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')">💬 WhatsApp del Club</button>
+                        <button class="btn btn-secundario" style="padding: 5px; font-size: 0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')"><span class="filtro-gris">💬</span> WhatsApp del Club</button>
                     </div>
                 `;
             });
@@ -1017,7 +1034,7 @@
             renderizarTorneos();
         }
 
-        // --- MODALES (Cargar Resultado y Denunciar) ---
+        // --- MODALES ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
