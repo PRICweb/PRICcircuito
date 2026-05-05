@@ -42,7 +42,7 @@
             justify-content: center;
         }
 
-        /* Menú de Tarjetas Grid 2x2 */
+        /* Menú de Tarjetas Grid 2x2 - ¡Ahora con color principal! */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -51,27 +51,25 @@
             padding-bottom: 20px;
         }
         .tarjeta-menu {
-            background: #242c36;
-            border: 1px solid #44505d;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
             border-radius: 12px;
             padding: 25px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: bold;
-            color: #d1d5db;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
             font-size: 1.1em;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .tarjeta-menu:hover { 
-            background: #3b82f6; 
-            color: white; 
+            filter: brightness(1.15);
             transform: scale(1.03); 
-            border-color: #60a5fa;
         }
 
         /* Vistas internas ocultas por defecto */
@@ -104,6 +102,16 @@
         summary::after { content: '🔽'; font-size: 0.8em; }
         details[open] summary::after { content: '🔼'; }
         .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
+
+        /* Notificaciones (Color Especial) */
+        #notificaciones-container {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        #notificaciones-container summary { color: #ffffff; }
+        #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
         .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
@@ -326,7 +334,6 @@
             </div>
             
             <div style="background: #242c36; padding: 20px; border-radius: 8px; border: 1px solid #2c3540;">
-                <!-- Añadido nuevo campo Foto de Perfil -->
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
@@ -551,11 +558,9 @@
 
         // --- FUNCIONES AUXILIARES PARA AVATARES ---
         function obtenerAvatarUrl(nombre) {
-            // Si es el usuario logueado y tiene foto personalizada, usamos esa
             if (nombre === getNombreCompleto() && perfilUsuario.foto) {
                 return perfilUsuario.foto;
             }
-            // De lo contrario, usamos una inicial generada dinámicamente
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=random&color=fff`;
         }
 
@@ -625,7 +630,6 @@
             perfilUsuario.preferencia = document.getElementById('perfil-preferencia').value;
             perfilUsuario.foto = document.getElementById('perfil-foto').value.trim();
 
-            // Actualizamos en las bases donde usamos el nombre antiguo
             document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
             alert("¡Perfil guardado correctamente!");
             cambiarVistaPrincipal('inicio');
@@ -670,14 +674,14 @@
             else { badge.style.display = 'none'; }
 
             if(notificacionesData.length === 0) {
-                container.innerHTML = '<p style="color:#9ca3af; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
+                container.innerHTML = '<p style="color:#bfdbfe; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
             } else {
                 notificacionesData.forEach(n => {
-                    let mark = n.leida ? '' : '<span style="color:#ef4444; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid #2c3540; font-size:0.9em; color:${n.leida ? '#9ca3af' : '#d1d5db'};">${mark}${n.texto}</div>`;
+                    let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
+                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? '#bfdbfe' : '#ffffff'};">${mark}${n.texto}</div>`;
                 });
                 if (noLeidas > 0) {
-                    container.innerHTML += `<button style="width:100%; background:none; border:none; color:#3b82f6; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>`;
+                    container.innerHTML += `<button style="width:100%; background:none; border:none; color:#ffffff; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>`;
                 }
             }
         }
@@ -687,7 +691,7 @@
             renderizarNotificaciones();
         }
 
-        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen, separación y Onclick)
+        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen y alineación perfecta)
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
@@ -729,9 +733,9 @@
                     
                     <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center;">
                         
-                        <div style="flex:1; text-align: left; padding-left: 10px;">
-                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; display: block; margin-bottom: 10px;">Tu equipo</strong>
-                            <div style="display: flex; flex-direction: column;">
+                        <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
+                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Tu equipo</strong>
+                            <div style="display: inline-flex; flex-direction: column; align-items: flex-start;">
                                 ${generarFilaJugador(miEquipoJ1)}
                                 ${generarFilaJugador(miEquipoJ2)}
                             </div>
@@ -739,9 +743,9 @@
 
                         <div style="font-weight:bold; color:#f59e0b; font-size: 1.2em; padding: 0 10px;">VS</div>
                         
-                        <div style="flex:1; text-align: left; padding-left: 10px;">
-                            <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase; display: block; margin-bottom: 10px;">Rival</strong>
-                            <div style="display: flex; flex-direction: column;">
+                        <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
+                            <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Rival</strong>
+                            <div style="display: inline-flex; flex-direction: column; align-items: flex-start;">
                                 ${generarFilaJugador(rivalJ1)}
                                 ${generarFilaJugador(rivalJ2)}
                             </div>
@@ -774,16 +778,14 @@
             document.getElementById('perfil-jugador-nombre').innerText = nombre;
 
             if (jugData) {
-                // Calcular posición real ordenando su categoría
                 let filtrados = rankingData.filter(r => r.modalidad === jugData.modalidad).sort((a, b) => b.puntos - a.puntos);
                 let posicion = filtrados.findIndex(r => r.nombre === nombre) + 1;
 
                 document.getElementById('perfil-jugador-pos').innerText = `#${posicion} (${jugData.modalidad})`;
                 document.getElementById('perfil-jugador-pts').innerText = jugData.puntos;
                 document.getElementById('perfil-jugador-pj').innerText = jugData.pj;
-                catRankingActual = jugData.modalidad; // Para que si toca "Ir al ranking", vaya a la solapa correcta
+                catRankingActual = jugData.modalidad; 
             } else {
-                // Si el jugador no está registrado o es 'Libre' (aunque Libre se filtra antes de llamar la funcion)
                 document.getElementById('perfil-jugador-pos').innerText = "No clasificado";
                 document.getElementById('perfil-jugador-pos').style.color = "#9ca3af";
                 document.getElementById('perfil-jugador-pts').innerText = "0";
@@ -1060,7 +1062,6 @@
 
         function abrirModalDenunciar() {
             let user = getNombreCompleto();
-            // Buscar el último partido jugado (pasado)
             let fechaHoy = new Date();
             let hoyFormateado = `${fechaHoy.getFullYear()}-${(fechaHoy.getMonth() + 1).toString().padStart(2, '0')}-${fechaHoy.getDate().toString().padStart(2, '0')}`;
             
