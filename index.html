@@ -37,6 +37,7 @@
             width: 100%; 
             border: 1px solid #2c3540;
             box-sizing: border-box;
+            gap: 4px;
         }
         .toggle-btn { 
             flex: 1; 
@@ -52,6 +53,16 @@
         }
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
+
+        /* Banner Destacado */
+        .banner-destacado {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: 1px solid #60a5fa;
+        }
 
         /* Formularios y Botones */
         .input-form {
@@ -131,7 +142,7 @@
             border: 1px solid #44505d; max-height: 90vh; overflow-y: auto;
         }
 
-        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;}
         .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; }
         .icon-btn:hover { transform: scale(1.1); }
     </style>
@@ -140,20 +151,25 @@
 
     <div class="contenedor-principal">
         
-        <!-- Cabecera -->
+        <!-- Cabecera Personalizada -->
         <div class="header-acciones">
-            <h2 style="margin: 0; color: #3b82f6;">🏆 Circuito Competitivo</h2>
+            <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #3b82f6;">Jugador 1</span></h2>
             <div>
                 <button class="icon-btn" onclick="abrirModalTorneos()" title="Torneos Disponibles">🏅</button>
                 <button class="icon-btn" onclick="cambiarUsuario()" title="Cambiar Perfil">👤</button>
             </div>
         </div>
-        <p style="color: #9ca3af; font-size: 0.85em; margin-top: -10px;">Jugando como: <strong id="lbl-usuario-actual" style="color: white;">Jugador 1</strong></p>
 
-        <!-- Navegación Principal -->
+        <!-- Banner Horizontal Dinámico -->
+        <div id="banner-proximo-partido" class="banner-destacado">
+            <!-- Rellenado por JS -->
+        </div>
+
+        <!-- Navegación Principal de 3 opciones -->
         <div class="toggle-container">
             <button id="tab-ranking" class="toggle-btn activo" onclick="cambiarVistaPrincipal('ranking')">Ranking</button>
             <button id="tab-partidos" class="toggle-btn" onclick="cambiarVistaPrincipal('partidos')">Partidos</button>
+            <button id="tab-academia" class="toggle-btn" onclick="cambiarVistaPrincipal('academia')">Academia</button>
         </div>
 
         <!-- VISTA RANKING -->
@@ -227,8 +243,15 @@
                     <!-- Generado por JS -->
                 </div>
             </div>
-
         </div>
+
+        <!-- VISTA ACADEMIA -->
+        <div id="vista-academia" style="display: none; text-align: center; padding: 30px; background: #242c36; border-radius: 8px; border: 1px solid #2c3540;">
+            <h3 style="color: #10b981; margin-top: 0; font-size: 1.5em;">🎓 Academia</h3>
+            <p style="color: #9ca3af;">Aquí podrás ver tus clases, realizar seguimiento de tu progreso y contactar con tus profesores asignados próximamente.</p>
+            <div style="font-size: 3em; margin-top: 15px;">🎾</div>
+        </div>
+
     </div>
 
     <!-- MODAL: TORNEOS PUBLICOS -->
@@ -289,8 +312,11 @@
         ];
 
         let partidosData = [
+            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Padel Pro", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador 1", j2: "Pedro", j3: "Carlos Tevez", j4: "Juan" },
             { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" },
-            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador 1", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" }
+            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador 1", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
+            // Simulamos un partido futuro
+            { id: 103, fecha: "2026-06-25", hora: "21:00", club: "Club Central", modalidad: "Mixto", estado: "Partido Confirmado", j1: "Jugador 1", j2: "Maria Sharapova", j3: "Carlos Tevez", j4: "Ana" }
         ];
 
         let torneosData = [
@@ -299,14 +325,19 @@
 
         // --- INICIALIZACIÓN ---
         document.getElementById('input-fecha-crear').valueAsDate = new Date();
+        document.getElementById('lbl-nombre-usuario').innerText = usuarioActual;
         renderizarTodo();
 
         // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
             document.getElementById('vista-ranking').style.display = vista === 'ranking' ? 'block' : 'none';
             document.getElementById('vista-partidos').style.display = vista === 'partidos' ? 'block' : 'none';
+            document.getElementById('vista-academia').style.display = vista === 'academia' ? 'block' : 'none';
+
             document.getElementById('tab-ranking').classList.toggle('activo', vista === 'ranking');
             document.getElementById('tab-partidos').classList.toggle('activo', vista === 'partidos');
+            document.getElementById('tab-academia').classList.toggle('activo', vista === 'academia');
+            
             renderizarTodo();
         }
 
@@ -330,16 +361,53 @@
             let nuevo = prompt("Ingresa tu nombre de jugador (Ej: Jugador 1, Carlos Tevez, etc):", usuarioActual);
             if(nuevo && nuevo.trim() !== "") {
                 usuarioActual = nuevo.trim();
-                document.getElementById('lbl-usuario-actual').innerText = usuarioActual;
+                document.getElementById('lbl-nombre-usuario').innerText = usuarioActual;
                 renderizarTodo();
             }
         }
 
         // --- RENDERIZADO ---
         function renderizarTodo() {
+            renderizarBanner();
             renderizarRanking();
             renderizarMisPartidos();
             renderizarPartidosAbiertos();
+        }
+
+        function renderizarBanner() {
+            const banner = document.getElementById('banner-proximo-partido');
+            
+            // Filtramos los partidos donde participa el usuario actual
+            let misPartidos = partidosData.filter(p => p.j1 === usuarioActual || p.j2 === usuarioActual || p.j3 === usuarioActual || p.j4 === usuarioActual);
+
+            // Obtenemos fecha de hoy en formato YYYY-MM-DD
+            let fechaHoy = new Date();
+            let hoyFormateado = `${fechaHoy.getFullYear()}-${(fechaHoy.getMonth() + 1).toString().padStart(2, '0')}-${fechaHoy.getDate().toString().padStart(2, '0')}`;
+
+            // Partidos futuros (fecha de hoy o posterior) y pasados
+            let partidosFuturos = misPartidos.filter(p => p.fecha >= hoyFormateado).sort((a,b) => a.fecha.localeCompare(b.fecha));
+            let partidosPasados = misPartidos.filter(p => p.fecha < hoyFormateado).sort((a,b) => b.fecha.localeCompare(a.fecha)); // descendente para tener el último primero
+
+            if (partidosFuturos.length > 0) {
+                let prox = partidosFuturos[0];
+                banner.innerHTML = `
+                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Tu próximo partido</div>
+                    <div style="font-size: 1.25em; font-weight: bold; color: white;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
+                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📍 Jugás en <strong>${prox.club}</strong></div>
+                `;
+            } else if (partidosPasados.length > 0) {
+                let ult = partidosPasados[0];
+                banner.innerHTML = `
+                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Sin partidos programados</div>
+                    <div style="font-size: 1.1em; font-weight: bold; color: white;">Último club visitado: ${ult.club}</div>
+                    <div style="color: #eff6ff; font-size: 0.9em; margin-top: 5px;">📅 Jugaste allí el ${ult.fecha}</div>
+                `;
+            } else {
+                banner.innerHTML = `
+                    <div style="font-size: 1.1em; color: white; font-weight: bold;">¡Bienvenido al circuito!</div>
+                    <div style="color: #eff6ff; font-size: 0.9em; margin-top: 5px;">Aún no tienes partidos en tu historial. ¡Anímate a jugar!</div>
+                `;
+            }
         }
 
         function renderizarRanking() {
@@ -372,6 +440,9 @@
             cont.innerHTML = '';
             
             let misPartidos = partidosData.filter(p => p.j1 === usuarioActual || p.j2 === usuarioActual || p.j3 === usuarioActual || p.j4 === usuarioActual);
+            
+            // Ordenar para mostrar los más recientes arriba
+            misPartidos.sort((a,b) => b.fecha.localeCompare(a.fecha));
 
             if(misPartidos.length === 0) {
                 cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No tienes partidos registrados.</p>';
