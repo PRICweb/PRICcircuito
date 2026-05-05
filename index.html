@@ -7,16 +7,7 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            
-            /* --- FONDO CANCHA DE PÁDEL --- */
-            background-color: #081424; 
-            /* Dibujo SVG integrado de la cancha. Líneas con 12% de opacidad y pasto azul oscuro */
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Crect width='100' height='200' fill='%23081424'/%3E%3Cg stroke='rgba(255,255,255,0.12)' stroke-width='1' fill='none'%3E%3Crect x='10' y='10' width='80' height='180'/%3E%3Cline x1='10' y1='100' x2='90' y2='100' stroke='rgba(255,255,255,0.2)' stroke-width='1.5'/%3E%3Cline x1='10' y1='45' x2='90' y2='45'/%3E%3Cline x1='10' y1='155' x2='90' y2='155'/%3E%3Cline x1='50' y1='45' x2='50' y2='155'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            /* ----------------------------- */
-
+            background-color: #171d24; 
             color: #ffffff; 
             margin: 0; 
             padding: 20px; 
@@ -26,19 +17,14 @@
         }
         
         .contenedor-principal {
-            /* Efecto cristal para que se note la cancha sutilmente por detrás */
-            background-color: rgba(30, 37, 45, 0.85); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-
+            background-color: #1e252d; 
             width: 100%; 
             max-width: 700px;
             border-radius: 12px; 
             padding: 20px; 
             box-sizing: border-box; 
             margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             min-height: 80vh;
         }
 
@@ -56,7 +42,7 @@
             justify-content: center;
         }
 
-        /* Menú de Tarjetas Grid 2x2 */
+        /* Menú de Tarjetas Grid 2x2 - ¡Ahora con color principal! */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -117,7 +103,7 @@
         details[open] summary::after { content: '🔼'; }
         .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
 
-        /* Notificaciones */
+        /* Notificaciones (Color Especial) */
         #notificaciones-container {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             border: 1px solid #60a5fa;
@@ -128,7 +114,7 @@
         #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
-        .tarjeta-item { background: rgba(23, 29, 36, 0.8); border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; backdrop-filter: blur(5px);}
+        .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
 
         /* Modales */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
@@ -139,7 +125,7 @@
         .icon-btn:hover { transform: scale(1.1); }
 
         /* Tabs internos */
-        .toggle-container { display: flex; background-color: rgba(36, 44, 54, 0.8); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
+        .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
         .toggle-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; }
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
@@ -228,13 +214,13 @@
                 <div style="width: 70px;"></div>
             </div>
 
-            <div class="toggle-container" style="background-color: rgba(23, 29, 36, 0.8);">
+            <div class="toggle-container" style="background-color: #171d24;">
                 <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
                 <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
                 <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
 
-            <div style="background: rgba(36, 44, 54, 0.8); border-radius: 8px; border: 1px solid #2c3540; overflow: hidden; backdrop-filter: blur(5px);">
+            <div style="background: #242c36; border-radius: 8px; border: 1px solid #2c3540; overflow: hidden;">
                 <table>
                     <thead>
                         <tr>
@@ -262,12 +248,12 @@
                 <div class="details-content" id="lista-mis-partidos"></div>
             </details>
 
-            <div class="toggle-container" style="background-color: rgba(23, 29, 36, 0.8); margin-top: 20px;">
+            <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
                 <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
                 <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
-            <div id="seccion-crear-partido" style="background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
+            <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
                 <label>Fecha del partido:</label>
                 <input type="date" id="input-fecha-crear" class="input-form">
                 <label>Hora:</label>
@@ -286,7 +272,7 @@
                 <button class="btn btn-secundario" onclick="crearPartido()">Crear y Publicar Partido</button>
             </div>
 
-            <div id="seccion-unirse-partido" style="display: none; background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
+            <div id="seccion-unirse-partido" style="display: none; background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
                 <p style="color: #9ca3af; font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
                 <div id="lista-partidos-abiertos"></div>
             </div>
@@ -299,7 +285,7 @@
                 <h3 style="margin: 0; color: white;">🎓 Academia</h3>
                 <div style="width: 70px;"></div>
             </div>
-            <div style="text-align: center; padding: 40px 20px; background: rgba(36, 44, 54, 0.8); border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
+            <div style="text-align: center; padding: 40px 20px; background: #242c36; border-radius: 8px; border: 1px solid #2c3540;">
                 <h3 style="color: #10b981; margin-top: 0; font-size: 1.5em;">Próximamente</h3>
                 <p style="color: #9ca3af;">Aquí podrás ver tus clases, realizar seguimiento de tu progreso y contactar con tus profesores asignados.</p>
                 <div style="font-size: 3.5em; margin-top: 15px;">🎾🧑‍🏫</div>
@@ -325,7 +311,7 @@
                 <div style="width: 70px;"></div>
             </div>
             
-            <div style="background: rgba(36, 44, 54, 0.8); padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px; backdrop-filter: blur(5px);">
+            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px;">
                 <label style="color: #d1d5db; font-weight: bold; font-size: 0.9em;">Buscar por DNI o Nombre:</label>
                 <div class="busqueda-container">
                     <input type="text" id="input-buscar-amigo" class="input-form" placeholder="Ej: 12345678 o Juan Pérez" style="margin-bottom: 0;">
@@ -347,7 +333,7 @@
                 <div style="width: 70px;"></div>
             </div>
             
-            <div style="background: rgba(36, 44, 54, 0.8); padding: 20px; border-radius: 8px; border: 1px solid #2c3540; backdrop-filter: blur(5px);">
+            <div style="background: #242c36; padding: 20px; border-radius: 8px; border: 1px solid #2c3540;">
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
@@ -413,9 +399,9 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="btn" style="background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                <button class="btn" style="background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
-                <button class="btn" style="background: rgba(239, 68, 68, 0.9); border: 1px solid #b91c1c; text-align: left; padding: 15px; backdrop-filter: blur(5px);" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
             </div>
         </div>
 
@@ -523,7 +509,7 @@
             telefono: "3511234567",
             dni: "35000000",
             preferencia: "Drive",
-            foto: "" 
+            foto: "" // Nuevo atributo foto
         };
         // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
@@ -705,6 +691,7 @@
             renderizarNotificaciones();
         }
 
+        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen y alineación perfecta)
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
@@ -783,6 +770,7 @@
             }
         }
 
+        // --- LÓGICA PARA VER EL PERFIL DE OTRO JUGADOR DESDE EL BANNER ---
         function abrirPerfilRanking(nombre) {
             let jugData = rankingData.find(r => r.nombre === nombre);
             
@@ -931,7 +919,7 @@
 
             amigosData.forEach((a, idx) => {
                 cont.innerHTML += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(36, 44, 54, 0.8); border: 1px solid #44505d; padding: 10px 15px; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: #1e252d; border: 1px solid #44505d; padding: 10px 15px; border-radius: 8px;">
                         <div>
                             <strong style="color: #d1d5db;">${a.nombre}</strong><br>
                             <small style="color: #9ca3af;">DNI: ${a.dni}</small>
@@ -1029,7 +1017,7 @@
             renderizarTorneos();
         }
 
-        // --- MODALES ---
+        // --- MODALES (Cargar Resultado y Denunciar) ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
