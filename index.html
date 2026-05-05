@@ -42,7 +42,7 @@
             justify-content: center;
         }
 
-        /* Menú de Tarjetas Grid 2x2 - ¡Ahora con color principal! */
+        /* Menú de Tarjetas Grid 2x2 */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -78,7 +78,8 @@
             display: flex; align-items: center; justify-content: space-between; 
             border-bottom: 1px solid #44505d; padding-bottom: 15px; margin-bottom: 20px;
         }
-        .btn-volver { background: none; border: none; color: #9ca3af; font-size: 1.5em; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 0 10px 0 0;}
+        /* Ajuste: Solo la flecha con padding para área táctil fácil */
+        .btn-volver { background: none; border: none; color: #9ca3af; font-size: 1.5em; font-weight: bold; cursor: pointer; display: flex; align-items: center; padding: 0 15px 0 0;}
         .btn-volver:hover { color: #ffffff; }
 
         /* Formularios y Botones */
@@ -103,7 +104,7 @@
         details[open] summary::after { content: '🔼'; }
         .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
 
-        /* Notificaciones (Color Especial) */
+        /* Notificaciones */
         #notificaciones-container {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             border: 1px solid #60a5fa;
@@ -124,9 +125,9 @@
         .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px;}
         .icon-btn:hover { transform: scale(1.1); }
 
-        /* Tabs internos (Corregidos para toque en móviles) */
+        /* Tabs internos (Corregidos para toque firme en móviles) */
         .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
-        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 10; }
+        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 50; pointer-events: auto; }
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
 
@@ -151,7 +152,7 @@
         <!-- VISTA INICIO (DASHBOARD)                       -->
         <!-- ============================================== -->
         <div id="vista-inicio">
-            <!-- Cabecera Personalizada con iconos solicitados -->
+            <!-- Cabecera Personalizada -->
             <div class="header-acciones">
                 <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #3b82f6;">Jugador 1</span></h2>
                 <div style="display: flex; gap: 10px;">
@@ -243,10 +244,11 @@
                 <div style="width: 30px;"></div>
             </div>
             
-            <details>
-                <summary>📊 Mis Partidos y Resultados</summary>
-                <div class="details-content" id="lista-mis-partidos"></div>
-            </details>
+            <!-- Arriba: Contenedor para cargar resultados (Pendientes) -->
+            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px;">
+                <h4 style="margin-top: 0; color: #d1d5db; border-bottom: 1px dashed #44505d; padding-bottom: 10px;">⏳ Pendientes de Resultado</h4>
+                <div id="lista-mis-partidos"></div>
+            </div>
 
             <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
                 <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
@@ -256,13 +258,17 @@
             <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
                 <label>Fecha del partido:</label>
                 <input type="date" id="input-fecha-crear" class="input-form">
-                <label>Hora:</label>
-                <input type="time" id="input-hora-crear" class="input-form">
+                
                 <label>Club:</label>
-                <select id="input-club-crear" class="input-form">
-                    <option value="Club Central">Club Central</option>
-                    <option value="Padel Pro Norte">Padel Pro Norte</option>
+                <select id="input-club-crear" class="input-form" onchange="actualizarHorariosDisponibles()">
+                    <!-- Se rellena por JS -->
                 </select>
+
+                <label>Hora:</label>
+                <select id="input-hora-crear" class="input-form">
+                    <!-- Se rellena dinámicamente cada 30 min -->
+                </select>
+
                 <label>Modalidad:</label>
                 <select id="input-mod-crear" class="input-form">
                     <option value="Masculino">Masculino</option>
@@ -276,6 +282,13 @@
                 <p style="color: #9ca3af; font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
                 <div id="lista-partidos-abiertos"></div>
             </div>
+
+            <!-- Abajo: Contenedor exclusivo de Historial -->
+            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-top: 20px;">
+                <h4 style="margin-top: 0; color: #d1d5db; border-bottom: 1px dashed #44505d; padding-bottom: 10px;">📜 Historial de Partidos</h4>
+                <div id="lista-historial-partidos"></div>
+            </div>
+
         </div>
 
         <!-- VISTA ACADEMIA -->
@@ -509,7 +522,7 @@
             telefono: "3511234567",
             dni: "35000000",
             preferencia: "Drive",
-            foto: "" // Nuevo atributo foto
+            foto: "" 
         };
         // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
@@ -525,10 +538,11 @@
             { id: 12, nombre: "Juan Perez", dni: "30303030" }
         ];
 
+        // Añadida la apertura y cierre en los mocks de los clubes para calcular los turnos libres de 30min
         let clubesData = [
-            { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva 123", canchas: "3 Indoor, 2 Outdoor", contacto: "3510000001" },
-            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa 456", canchas: "4 Indoor", contacto: "3510000002" },
-            { id: 3, nombre: "Elite Sur Padel", ubicacion: "Ruta Nacional 9", canchas: "6 Outdoor", contacto: "3510000003" }
+            { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva 123", canchas: "3 Indoor, 2 Outdoor", contacto: "3510000001", apertura: "08:00", cierre: "23:00" },
+            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa 456", canchas: "4 Indoor", contacto: "3510000002", apertura: "09:00", cierre: "00:00" },
+            { id: 3, nombre: "Elite Sur Padel", ubicacion: "Ruta Nacional 9", canchas: "6 Outdoor", contacto: "3510000003", apertura: "10:00", cierre: "22:30" }
         ];
 
         let rankingData = [
@@ -553,15 +567,58 @@
 
         // --- INICIALIZACIÓN ---
         document.getElementById('input-fecha-crear').valueAsDate = new Date();
+        inicializarFormularioCrear();
         cargarDatosPerfilEnFormulario();
         renderizarTodo();
 
-        // --- FUNCIONES AUXILIARES PARA AVATARES ---
+        // --- FUNCIONES AUXILIARES DE TIEMPO Y AVATARES ---
         function obtenerAvatarUrl(nombre) {
             if (nombre === getNombreCompleto() && perfilUsuario.foto) {
                 return perfilUsuario.foto;
             }
             return `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=random&color=fff`;
+        }
+
+        function aMinutos(horaStr) {
+            let partes = horaStr.split(':');
+            return parseInt(partes[0]) * 60 + parseInt(partes[1]);
+        }
+
+        function minutosAHora(minutos) {
+            let h = Math.floor(minutos / 60) % 24;
+            let m = minutos % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        // Configura el select de Clubes y Horas basado en los horarios de apertura de cada club
+        function inicializarFormularioCrear() {
+            const selectClub = document.getElementById('input-club-crear');
+            selectClub.innerHTML = '';
+            clubesData.forEach(c => {
+                selectClub.innerHTML += `<option value="${c.nombre}">${c.nombre}</option>`;
+            });
+            actualizarHorariosDisponibles();
+        }
+
+        function actualizarHorariosDisponibles() {
+            const selectClub = document.getElementById('input-club-crear');
+            const selectHora = document.getElementById('input-hora-crear');
+            const nombreClub = selectClub.value;
+            
+            const club = clubesData.find(c => c.nombre === nombreClub);
+            selectHora.innerHTML = '';
+
+            if (club) {
+                let inicio = aMinutos(club.apertura);
+                let fin = aMinutos(club.cierre);
+                
+                if (fin <= inicio) fin += 1440; // Para cierres de medianoche en adelante
+
+                for (let m = inicio; m <= fin; m += 30) {
+                    let horaStr = minutosAHora(m);
+                    selectHora.innerHTML += `<option value="${horaStr}">${horaStr} hs</option>`;
+                }
+            }
         }
 
         // --- SISTEMA DE NAVEGACIÓN ---
@@ -674,11 +731,11 @@
             else { badge.style.display = 'none'; }
 
             if(notificacionesData.length === 0) {
-                container.innerHTML = '<p style="color:#9ca3af; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
+                container.innerHTML = '<p style="color:#bfdbfe; font-size:0.9em; text-align:center;">No tienes notificaciones por ahora.</p>';
             } else {
                 notificacionesData.forEach(n => {
-                    let mark = n.leida ? '' : '<span style="color:#ef4444; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? '#9ca3af' : '#d1d5db'};">${mark}${n.texto}</div>`;
+                    let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
+                    container.innerHTML += `<div style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? '#bfdbfe' : '#ffffff'};">${mark}${n.texto}</div>`;
                 });
                 if (noLeidas > 0) {
                     container.innerHTML += `<button style="width:100%; background:none; border:none; color:#ffffff; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>`;
@@ -691,7 +748,6 @@
             renderizarNotificaciones();
         }
 
-        // Función que genera el HTML de cada jugador en la ficha del partido
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
@@ -809,11 +865,11 @@
             filtrados.forEach((j, index) => {
                 let isMe = j.nombre === getNombreCompleto() ? 'color: #3b82f6; font-weight: bold;' : '';
                 tbody.innerHTML += `
-                    <tr>
+                    <tr style="cursor: pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
                         <td style="text-align: center; font-weight:bold;">
                             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 24px; height: 24px; border-width: 1px;">
-                                <span>${index + 1}</span>
+                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 28px; height: 28px;">
+                                <span style="font-size: 1.1em; font-weight: bold; margin-left: 5px;">${index + 1}</span>
                             </div>
                         </td>
                         <td style="${isMe}">${j.nombre}</td>
@@ -825,36 +881,51 @@
         }
 
         function renderizarMisPartidos() {
-            const cont = document.getElementById('lista-mis-partidos');
-            cont.innerHTML = '';
+            const contPendientes = document.getElementById('lista-mis-partidos');
+            const contHistorial = document.getElementById('lista-historial-partidos');
+            
+            contPendientes.innerHTML = '';
+            contHistorial.innerHTML = '';
+
             let user = getNombreCompleto();
             
             let misPartidos = partidosData.filter(p => p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user);
             misPartidos.sort((a,b) => b.fecha.localeCompare(a.fecha));
 
-            if(misPartidos.length === 0) {
-                cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No tienes partidos registrados.</p>';
-                return;
+            let pendientes = misPartidos.filter(p => p.estado === 'Pendiente Resultado');
+            let finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
+
+            if(pendientes.length === 0) {
+                contPendientes.innerHTML = '<p style="color:#9ca3af; text-align:center; font-size:0.9em;">No tienes partidos pendientes de resultado.</p>';
+            } else {
+                pendientes.forEach(p => {
+                    contPendientes.innerHTML += `
+                        <div class="tarjeta-item" style="background: #1e252d;">
+                            <div style="display:flex; justify-content: space-between;">
+                                <strong style="color: #3b82f6;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
+                            </div>
+                            <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                            <button class="btn btn-primario" style="padding: 5px; margin-top: 10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>
+                        </div>
+                    `;
+                });
             }
 
-            misPartidos.forEach(p => {
-                let btnAccion = '';
-                if(p.estado === 'Pendiente Resultado') {
-                    btnAccion = `<button class="btn btn-primario" style="padding: 5px; margin-top: 10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>`;
-                } else if(p.estado === 'Finalizado') {
-                    btnAccion = `<span style="color: #10b981; font-size: 0.85em; display:block; margin-top: 10px;">✅ Finalizado: ${p.resultado}</span>`;
-                }
-
-                cont.innerHTML += `
-                    <div class="tarjeta-item">
-                        <div style="display:flex; justify-content: space-between;">
-                            <strong style="color: #3b82f6;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
+            if(finalizados.length === 0) {
+                contHistorial.innerHTML = '<p style="color:#9ca3af; text-align:center; font-size:0.9em;">Aún no hay partidos en tu historial.</p>';
+            } else {
+                finalizados.forEach(p => {
+                    contHistorial.innerHTML += `
+                        <div class="tarjeta-item" style="background: #1e252d;">
+                            <div style="display:flex; justify-content: space-between;">
+                                <strong style="color: #9ca3af;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
+                            </div>
+                            <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                            <span style="color: #10b981; font-size: 0.85em; display:block; margin-top: 10px;">✅ Finalizado: ${p.resultado}</span>
                         </div>
-                        <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                        ${btnAccion}
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
         function renderizarPartidosAbiertos() {
@@ -1021,7 +1092,7 @@
             renderizarTorneos();
         }
 
-        // --- MODALES ---
+        // --- MODALES (Cargar Resultado y Denunciar) ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
