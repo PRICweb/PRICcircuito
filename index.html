@@ -123,6 +123,16 @@
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
+
+        /* Estilo para los avatares */
+        .avatar-circulo {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #60a5fa;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -316,6 +326,15 @@
             </div>
             
             <div style="background: #242c36; padding: 20px; border-radius: 8px; border: 1px solid #2c3540;">
+                <!-- Añadido nuevo campo Foto de Perfil -->
+                <div style="margin-bottom: 15px;">
+                    <label>Foto de Perfil (URL de la imagen):</label>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                        <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
+                        <input type="url" id="perfil-foto" class="input-form" placeholder="https://link-a-tu-foto.com/foto.jpg" style="margin: 0;" oninput="actualizarPreviewFoto()">
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
                         <label>Nombre:</label>
@@ -447,6 +466,32 @@
         </div>
     </div>
 
+    <!-- NUEVO MODAL: VER PERFIL DE JUGADOR (DESDE BANNER) -->
+    <div id="modal-ver-perfil" class="modal-overlay">
+        <div class="modal-content" style="text-align: center; max-width: 320px;">
+            <img id="perfil-jugador-img" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid #3b82f6;">
+            <h3 id="perfil-jugador-nombre" style="margin-top: 0; color: #ffffff;">Nombre</h3>
+            
+            <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; text-align: left; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #44505d; padding-bottom: 8px; margin-bottom: 8px;">
+                    <span style="color: #9ca3af;">Posición Ranking:</span>
+                    <strong id="perfil-jugador-pos" style="color: #10b981;"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #44505d; padding-bottom: 8px; margin-bottom: 8px;">
+                    <span style="color: #9ca3af;">Total Puntos:</span>
+                    <strong id="perfil-jugador-pts" style="color: #f59e0b;"></strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #9ca3af;">Partidos Jugados:</span>
+                    <strong id="perfil-jugador-pj" style="color: white;"></strong>
+                </div>
+            </div>
+            
+            <button class="btn btn-secundario" onclick="cambiarVistaPrincipal('ranking'); cerrarModales();">Ir al Ranking Completo</button>
+            <button class="btn btn-cerrar" onclick="cerrarModales()">Cerrar</button>
+        </div>
+    </div>
+
     <script>
         // --- BASE DE DATOS LOCAL (MOCKS) ---
         let perfilUsuario = {
@@ -456,7 +501,8 @@
             genero: "Masculino",
             telefono: "3511234567",
             dni: "35000000",
-            preferencia: "Drive"
+            preferencia: "Drive",
+            foto: "" // Nuevo atributo foto
         };
         // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
@@ -482,7 +528,9 @@
             { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' },
             { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' },
-            { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
+            { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' },
+            { id: 5, nombre: "Pedro", puntos: 1000, pj: 6, modalidad: 'Masculino'},
+            { id: 6, nombre: "Juan", puntos: 950, pj: 7, modalidad: 'Masculino'}
         ];
 
         let partidosData = [
@@ -500,6 +548,16 @@
         document.getElementById('input-fecha-crear').valueAsDate = new Date();
         cargarDatosPerfilEnFormulario();
         renderizarTodo();
+
+        // --- FUNCIONES AUXILIARES PARA AVATARES ---
+        function obtenerAvatarUrl(nombre) {
+            // Si es el usuario logueado y tiene foto personalizada, usamos esa
+            if (nombre === getNombreCompleto() && perfilUsuario.foto) {
+                return perfilUsuario.foto;
+            }
+            // De lo contrario, usamos una inicial generada dinámicamente
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=random&color=fff`;
+        }
 
         // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
@@ -527,6 +585,8 @@
                 renderizarAmigos();
             } else if (vista === 'clubes') {
                 renderizarClubes();
+            } else if (vista === 'perfil') {
+                cargarDatosPerfilEnFormulario();
             }
         }
 
@@ -540,6 +600,19 @@
             document.getElementById('perfil-telefono').value = perfilUsuario.telefono;
             document.getElementById('perfil-dni').value = perfilUsuario.dni;
             document.getElementById('perfil-preferencia').value = perfilUsuario.preferencia;
+            document.getElementById('perfil-foto').value = perfilUsuario.foto || "";
+            actualizarPreviewFoto();
+        }
+
+        function actualizarPreviewFoto() {
+            const url = document.getElementById('perfil-foto').value.trim();
+            const imgEl = document.getElementById('preview-foto-perfil');
+            if(url) {
+                imgEl.src = url;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
         }
 
         function guardarPerfil() {
@@ -550,6 +623,7 @@
             perfilUsuario.telefono = document.getElementById('perfil-telefono').value;
             perfilUsuario.dni = document.getElementById('perfil-dni').value;
             perfilUsuario.preferencia = document.getElementById('perfil-preferencia').value;
+            perfilUsuario.foto = document.getElementById('perfil-foto').value.trim();
 
             // Actualizamos en las bases donde usamos el nombre antiguo
             document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
@@ -613,6 +687,17 @@
             renderizarNotificaciones();
         }
 
+        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen, separación y Onclick)
+        function generarFilaJugador(nombre) {
+            if (!nombre || nombre === 'Libre') return '';
+            return `
+                <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 12px; cursor: pointer; transition: transform 0.2s;" onclick="abrirPerfilRanking('${nombre}')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}">
+                    <span style="font-size: 1.05em; color: white; font-weight: bold;">${nombre}</span>
+                </div>
+            `;
+        }
+
         function renderizarBanner() {
             const banner = document.getElementById('banner-proximo-partido');
             let user = getNombreCompleto();
@@ -642,16 +727,26 @@
                     <div style="font-size: 1.25em; font-weight: bold; color: white;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
                     <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📍 Jugás en <strong>${prox.club}</strong></div>
                     
-                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; text-align: center; align-items: center;">
-                        <div style="flex:1;">
-                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase;">Tu equipo</strong><br>
-                            <span style="font-size: 1.05em; color: white; font-weight: bold;">${miEquipoJ1}<br>${miEquipoJ2}</span>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center;">
+                        
+                        <div style="flex:1; text-align: left; padding-left: 10px;">
+                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; display: block; margin-bottom: 10px;">Tu equipo</strong>
+                            <div style="display: flex; flex-direction: column;">
+                                ${generarFilaJugador(miEquipoJ1)}
+                                ${generarFilaJugador(miEquipoJ2)}
+                            </div>
                         </div>
+
                         <div style="font-weight:bold; color:#f59e0b; font-size: 1.2em; padding: 0 10px;">VS</div>
-                        <div style="flex:1;">
-                            <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase;">Rival</strong><br>
-                            <span style="font-size: 1.05em; color: white; font-weight: bold;">${rivalJ1}<br>${rivalJ2}</span>
+                        
+                        <div style="flex:1; text-align: left; padding-left: 10px;">
+                            <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase; display: block; margin-bottom: 10px;">Rival</strong>
+                            <div style="display: flex; flex-direction: column;">
+                                ${generarFilaJugador(rivalJ1)}
+                                ${generarFilaJugador(rivalJ2)}
+                            </div>
                         </div>
+
                     </div>
                 `;
             } else if (partidosPasados.length > 0) {
@@ -669,6 +764,33 @@
                     <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white;" onclick="cambiarVistaPrincipal('partidos')">Ver partidos disponibles</button>
                 `;
             }
+        }
+
+        // --- LÓGICA PARA VER EL PERFIL DE OTRO JUGADOR DESDE EL BANNER ---
+        function abrirPerfilRanking(nombre) {
+            let jugData = rankingData.find(r => r.nombre === nombre);
+            
+            document.getElementById('perfil-jugador-img').src = obtenerAvatarUrl(nombre);
+            document.getElementById('perfil-jugador-nombre').innerText = nombre;
+
+            if (jugData) {
+                // Calcular posición real ordenando su categoría
+                let filtrados = rankingData.filter(r => r.modalidad === jugData.modalidad).sort((a, b) => b.puntos - a.puntos);
+                let posicion = filtrados.findIndex(r => r.nombre === nombre) + 1;
+
+                document.getElementById('perfil-jugador-pos').innerText = `#${posicion} (${jugData.modalidad})`;
+                document.getElementById('perfil-jugador-pts').innerText = jugData.puntos;
+                document.getElementById('perfil-jugador-pj').innerText = jugData.pj;
+                catRankingActual = jugData.modalidad; // Para que si toca "Ir al ranking", vaya a la solapa correcta
+            } else {
+                // Si el jugador no está registrado o es 'Libre' (aunque Libre se filtra antes de llamar la funcion)
+                document.getElementById('perfil-jugador-pos').innerText = "No clasificado";
+                document.getElementById('perfil-jugador-pos').style.color = "#9ca3af";
+                document.getElementById('perfil-jugador-pts').innerText = "0";
+                document.getElementById('perfil-jugador-pj').innerText = "0";
+            }
+
+            document.getElementById('modal-ver-perfil').style.display = 'flex';
         }
 
         function renderizarRanking() {
@@ -979,6 +1101,7 @@
         function cerrarModales() {
             document.getElementById('modal-resultado').style.display = 'none';
             document.getElementById('modal-denunciar').style.display = 'none';
+            document.getElementById('modal-ver-perfil').style.display = 'none';
             partidoEnEdicion = null;
         }
     </script>
