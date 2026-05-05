@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuito Competitivo</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #171d24; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .contenedor-principal {
+            background-color: #1e252d; 
+            width: 100%; 
+            max-width: 700px;
+            border-radius: 12px; 
+            padding: 20px; 
+            box-sizing: border-box; 
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Tabs Generales */
+        .toggle-container { 
+            display: flex; 
+            background-color: #242c36; 
+            border-radius: 8px; 
+            padding: 4px; 
+            margin-bottom: 20px; 
+            width: 100%; 
+            border: 1px solid #2c3540;
+            box-sizing: border-box;
+        }
+        .toggle-btn { 
+            flex: 1; 
+            background: none; 
+            border: none; 
+            padding: 10px; 
+            font-size: 0.95em; 
+            font-weight: bold; 
+            color: #9ca3af; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            transition: 0.2s; 
+        }
+        .toggle-btn:hover { color: #d1d5db; }
+        .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
+
+        /* Formularios y Botones */
+        .input-form {
+            padding: 10px; 
+            border-radius: 6px; 
+            border: 1px solid #44505d; 
+            background-color: #171d24; 
+            color: white; 
+            width: 100%; 
+            box-sizing: border-box;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            color-scheme: dark;
+        }
+        .btn { 
+            padding: 10px 15px; 
+            border-radius: 6px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            color: white; 
+            width: 100%; 
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+        .btn-primario { background-color: #10b981; }
+        .btn-primario:hover { background-color: #059669; }
+        .btn-secundario { background-color: #3b82f6; }
+        .btn-secundario:hover { background-color: #2563eb; }
+        .btn-alerta { background-color: #ef4444; }
+        .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
+
+        /* Tablas */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; text-align: left;}
+        th { padding: 10px; border-bottom: 2px solid #44505d; color: #9ca3af; }
+        td { padding: 10px; border-bottom: 1px solid #2c3540; }
+        tr:hover td { background-color: #2c3540; }
+
+        /* Acordeones Nativos (Details/Summary) */
+        details {
+            background: #242c36;
+            border: 1px solid #2c3540;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            color: #d1d5db;
+            outline: none;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: '🔽'; font-size: 0.8em; }
+        details[open] summary::after { content: '🔼'; }
+        .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
+
+        /* Tarjetas de Partido */
+        .tarjeta-partido {
+            background: #171d24;
+            border: 1px solid #44505d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: #1e252d; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px;
+            border: 1px solid #44505d; max-height: 90vh; overflow-y: auto;
+        }
+
+        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; }
+        .icon-btn:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        
+        <!-- Cabecera -->
+        <div class="header-acciones">
+            <h2 style="margin: 0; color: #3b82f6;">🏆 Circuito Competitivo</h2>
+            <div>
+                <button class="icon-btn" onclick="abrirModalTorneos()" title="Torneos Disponibles">🏅</button>
+                <button class="icon-btn" onclick="cambiarUsuario()" title="Cambiar Perfil">👤</button>
+            </div>
+        </div>
+        <p style="color: #9ca3af; font-size: 0.85em; margin-top: -10px;">Jugando como: <strong id="lbl-usuario-actual" style="color: white;">Jugador 1</strong></p>
+
+        <!-- Navegación Principal -->
+        <div class="toggle-container">
+            <button id="tab-ranking" class="toggle-btn activo" onclick="cambiarVistaPrincipal('ranking')">Ranking</button>
+            <button id="tab-partidos" class="toggle-btn" onclick="cambiarVistaPrincipal('partidos')">Partidos</button>
+        </div>
+
+        <!-- VISTA RANKING -->
+        <div id="vista-ranking">
+            <div class="toggle-container" style="background-color: #171d24;">
+                <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
+                <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
+                <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
+            </div>
+
+            <div style="background: #242c36; border-radius: 8px; border: 1px solid #2c3540; overflow: hidden;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%; text-align: center;">Pos</th>
+                            <th style="width: 50%;">Jugador</th>
+                            <th style="width: 20%; text-align: center;">Pts</th>
+                            <th style="width: 15%; text-align: center;">PJ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-ranking">
+                        <!-- Generado por JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- VISTA PARTIDOS -->
+        <div id="vista-partidos" style="display: none;">
+            
+            <details>
+                <summary>📊 Mis Partidos y Resultados</summary>
+                <div class="details-content" id="lista-mis-partidos">
+                    <!-- Generado por JS -->
+                </div>
+            </details>
+
+            <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
+                <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
+                <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
+            </div>
+
+            <!-- CREAR PARTIDO -->
+            <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
+                <label>Fecha del partido:</label>
+                <input type="date" id="input-fecha-crear" class="input-form">
+
+                <label>Hora:</label>
+                <input type="time" id="input-hora-crear" class="input-form">
+
+                <label>Club:</label>
+                <select id="input-club-crear" class="input-form">
+                    <option value="Club Central">Club Central</option>
+                    <option value="Padel Pro Norte">Padel Pro Norte</option>
+                </select>
+
+                <label>Modalidad:</label>
+                <select id="input-mod-crear" class="input-form">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Mixto">Mixto</option>
+                </select>
+
+                <button class="btn btn-secundario" onclick="crearPartido()">Crear y Publicar Partido</button>
+            </div>
+
+            <!-- UNIRSE A PARTIDO -->
+            <div id="seccion-unirse-partido" style="display: none; background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
+                <p style="color: #9ca3af; font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
+                <div id="lista-partidos-abiertos">
+                    <!-- Generado por JS -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: TORNEOS PUBLICOS -->
+    <div id="modal-torneos" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top: 0; color: #f59e0b;">🏅 Torneos Disponibles</h3>
+            <div id="lista-torneos" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Generado por JS -->
+            </div>
+            <button class="btn btn-cerrar" onclick="cerrarModales()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL: CARGAR RESULTADO -->
+    <div id="modal-resultado" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top: 0; color: #10b981;">Cargar Resultado</h3>
+            <input type="hidden" id="res-id-partido">
+            
+            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
+                <span id="res-eq1" style="color: #3b82f6;">Eq 1</span>
+                <span style="color: #f59e0b;">VS</span>
+                <span id="res-eq2" style="color: #ef4444;">Eq 2</span>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                <div style="text-align: center;">
+                    <label style="font-size: 0.8em; color: #9ca3af;">Set 1</label>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <input type="number" id="s1-e1" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0"> -
+                        <input type="number" id="s1-e2" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0">
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <label style="font-size: 0.8em; color: #9ca3af;">Set 2</label>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <input type="number" id="s2-e1" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0"> -
+                        <input type="number" id="s2-e2" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primario" onclick="guardarResultado()">Confirmar Resultado</button>
+            <button class="btn btn-cerrar" onclick="cerrarModales()">Cancelar</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- BASE DE DATOS LOCAL (MOCKS) ---
+        let usuarioActual = "Jugador 1";
+        
+        let rankingData = [
+            { id: 1, nombre: "Jugador 1", puntos: 1500, pj: 10, modalidad: 'Masculino' },
+            { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
+            { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' },
+            { id: 4, nombre: "Jugador 1", puntos: 800, pj: 5, modalidad: 'Mixto' }
+        ];
+
+        let partidosData = [
+            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" },
+            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador 1", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" }
+        ];
+
+        let torneosData = [
+            { id: 201, nombre: "Torneo de Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }
+        ];
+
+        // --- INICIALIZACIÓN ---
+        document.getElementById('input-fecha-crear').valueAsDate = new Date();
+        renderizarTodo();
+
+        // --- SISTEMA DE NAVEGACIÓN ---
+        function cambiarVistaPrincipal(vista) {
+            document.getElementById('vista-ranking').style.display = vista === 'ranking' ? 'block' : 'none';
+            document.getElementById('vista-partidos').style.display = vista === 'partidos' ? 'block' : 'none';
+            document.getElementById('tab-ranking').classList.toggle('activo', vista === 'ranking');
+            document.getElementById('tab-partidos').classList.toggle('activo', vista === 'partidos');
+            renderizarTodo();
+        }
+
+        let catRankingActual = 'Masculino';
+        function cambiarCategoriaRanking(cat) {
+            catRankingActual = cat;
+            document.getElementById('subtab-masculino').classList.toggle('activo', cat === 'Masculino');
+            document.getElementById('subtab-femenino').classList.toggle('activo', cat === 'Femenino');
+            document.getElementById('subtab-mixto').classList.toggle('activo', cat === 'Mixto');
+            renderizarRanking();
+        }
+
+        function cambiarAccionPartido(accion) {
+            document.getElementById('seccion-crear-partido').style.display = accion === 'crear' ? 'block' : 'none';
+            document.getElementById('seccion-unirse-partido').style.display = accion === 'unirse' ? 'block' : 'none';
+            document.getElementById('subtab-crear').classList.toggle('activo', accion === 'crear');
+            document.getElementById('subtab-unirse').classList.toggle('activo', accion === 'unirse');
+        }
+
+        function cambiarUsuario() {
+            let nuevo = prompt("Ingresa tu nombre de jugador (Ej: Jugador 1, Carlos Tevez, etc):", usuarioActual);
+            if(nuevo && nuevo.trim() !== "") {
+                usuarioActual = nuevo.trim();
+                document.getElementById('lbl-usuario-actual').innerText = usuarioActual;
+                renderizarTodo();
+            }
+        }
+
+        // --- RENDERIZADO ---
+        function renderizarTodo() {
+            renderizarRanking();
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+        }
+
+        function renderizarRanking() {
+            const tbody = document.getElementById('tabla-ranking');
+            tbody.innerHTML = '';
+            
+            let filtrados = rankingData.filter(r => r.modalidad === catRankingActual);
+            filtrados.sort((a, b) => b.puntos - a.puntos);
+
+            if(filtrados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #9ca3af;">Sin jugadores en esta categoría.</td></tr>`;
+                return;
+            }
+
+            filtrados.forEach((j, index) => {
+                let isMe = j.nombre === usuarioActual ? 'color: #3b82f6; font-weight: bold;' : '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="text-align: center; font-weight:bold;">${index + 1}</td>
+                        <td style="${isMe}">${j.nombre}</td>
+                        <td style="text-align: center; color: #f59e0b; font-weight: bold;">${j.puntos}</td>
+                        <td style="text-align: center;">${j.pj}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function renderizarMisPartidos() {
+            const cont = document.getElementById('lista-mis-partidos');
+            cont.innerHTML = '';
+            
+            let misPartidos = partidosData.filter(p => p.j1 === usuarioActual || p.j2 === usuarioActual || p.j3 === usuarioActual || p.j4 === usuarioActual);
+
+            if(misPartidos.length === 0) {
+                cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No tienes partidos registrados.</p>';
+                return;
+            }
+
+            misPartidos.forEach(p => {
+                let btnAccion = '';
+                if(p.estado === 'Pendiente Resultado') {
+                    btnAccion = `<button class="btn btn-primario" style="padding: 5px; margin-top: 10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>`;
+                } else if(p.estado === 'Finalizado') {
+                    btnAccion = `<span style="color: #10b981; font-size: 0.85em; display:block; margin-top: 10px;">✅ Finalizado: ${p.resultado}</span>`;
+                }
+
+                cont.innerHTML += `
+                    <div class="tarjeta-partido">
+                        <div style="display:flex; justify-content: space-between;">
+                            <strong style="color: #3b82f6;">${p.j1} / ${p.j2}</strong> <span style="color:#f59e0b;">VS</span> <strong style="color: #ef4444;">${p.j3} / ${p.j4}</strong>
+                        </div>
+                        <div style="font-size: 0.85em; color: #9ca3af; margin-top: 8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                        ${btnAccion}
+                    </div>
+                `;
+            });
+        }
+
+        function renderizarPartidosAbiertos() {
+            const cont = document.getElementById('lista-partidos-abiertos');
+            cont.innerHTML = '';
+
+            let abiertos = partidosData.filter(p => p.estado === 'Buscando Rival' && p.j1 !== usuarioActual && p.j2 !== usuarioActual && p.j3 !== usuarioActual && p.j4 !== usuarioActual);
+
+            if(abiertos.length === 0) {
+                cont.innerHTML = '<p style="color:#9ca3af; text-align:center;">No hay partidos buscando jugadores.</p>';
+                return;
+            }
+
+            abiertos.forEach(p => {
+                let cupos = 0;
+                if(p.j2 === 'Libre') cupos++; if(p.j3 === 'Libre') cupos++; if(p.j4 === 'Libre') cupos++;
+
+                cont.innerHTML += `
+                    <div class="tarjeta-partido">
+                        <div style="color: #d1d5db; margin-bottom: 5px;"><strong>${p.j1}</strong> busca jugadores (${p.modalidad})</div>
+                        <div style="font-size: 0.85em; color: #9ca3af;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
+                        <div style="color: #10b981; font-size: 0.85em; margin-top: 5px;">Lugares: ${cupos} libres</div>
+                        <button class="btn btn-secundario" style="padding: 5px; margin-top: 10px;" onclick="unirsePartido(${p.id})">Unirme a este partido</button>
+                    </div>
+                `;
+            });
+        }
+
+        // --- LÓGICA DE NEGOCIO ---
+        function crearPartido() {
+            let f = document.getElementById('input-fecha-crear').value;
+            let h = document.getElementById('input-hora-crear').value;
+            let c = document.getElementById('input-club-crear').value;
+            let m = document.getElementById('input-mod-crear').value;
+
+            if(!f || !h) { alert("Completa fecha y hora"); return; }
+
+            let nuevo = {
+                id: Date.now(),
+                fecha: f, hora: h, club: c, modalidad: m,
+                estado: "Buscando Rival",
+                j1: usuarioActual, j2: "Libre", j3: "Libre", j4: "Libre"
+            };
+
+            partidosData.push(nuevo);
+            alert("Partido creado y publicado.");
+            cambiarAccionPartido('unirse');
+            renderizarTodo();
+        }
+
+        function unirsePartido(id) {
+            let p = partidosData.find(x => x.id === id);
+            if(!p) return;
+
+            if(p.j2 === 'Libre') p.j2 = usuarioActual;
+            else if(p.j3 === 'Libre') p.j3 = usuarioActual;
+            else if(p.j4 === 'Libre') p.j4 = usuarioActual;
+
+            // Verificar si se llenó
+            if(p.j1 !== 'Libre' && p.j2 !== 'Libre' && p.j3 !== 'Libre' && p.j4 !== 'Libre') {
+                p.estado = 'Pendiente Resultado';
+                alert("¡Partido completado! Te has unido exitosamente.");
+            } else {
+                alert("Te has unido al partido. Faltan jugadores para completarlo.");
+            }
+            renderizarTodo();
+        }
+
+        // --- MODALES Y RESULTADOS ---
+        let partidoEnEdicion = null;
+
+        function abrirModalResultado(id) {
+            partidoEnEdicion = partidosData.find(x => x.id === id);
+            if(!partidoEnEdicion) return;
+
+            document.getElementById('res-eq1').innerText = `${partidoEnEdicion.j1} / ${partidoEnEdicion.j2}`;
+            document.getElementById('res-eq2').innerText = `${partidoEnEdicion.j3} / ${partidoEnEdicion.j4}`;
+            
+            document.getElementById('s1-e1').value = ''; document.getElementById('s1-e2').value = '';
+            document.getElementById('s2-e1').value = ''; document.getElementById('s2-e2').value = '';
+
+            document.getElementById('modal-resultado').style.display = 'flex';
+        }
+
+        function guardarResultado() {
+            let s1e1 = parseInt(document.getElementById('s1-e1').value);
+            let s1e2 = parseInt(document.getElementById('s1-e2').value);
+            let s2e1 = parseInt(document.getElementById('s2-e1').value);
+            let s2e2 = parseInt(document.getElementById('s2-e2').value);
+
+            if(isNaN(s1e1) || isNaN(s1e2) || isNaN(s2e1) || isNaN(s2e2)) {
+                alert("Carga los 2 sets obligatorios."); return;
+            }
+
+            partidoEnEdicion.estado = 'Finalizado';
+            partidoEnEdicion.resultado = `${s1e1}-${s1e2}, ${s2e1}-${s2e2}`;
+            
+            // Simular suma de puntos (se suma 15 al usuario actual si cargó)
+            let myRank = rankingData.find(r => r.nombre === usuarioActual && r.modalidad === partidoEnEdicion.modalidad);
+            if(!myRank) {
+                rankingData.push({ id: Date.now(), nombre: usuarioActual, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad });
+            } else {
+                myRank.puntos += 15;
+                myRank.pj += 1;
+            }
+
+            alert("Resultado guardado. +15 Puntos para el ranking.");
+            cerrarModales();
+            renderizarTodo();
+        }
+
+        function abrirModalTorneos() {
+            const cont = document.getElementById('lista-torneos');
+            cont.innerHTML = '';
+            torneosData.forEach(t => {
+                let inscripto = t.inscriptos.some(i => i.includes(usuarioActual));
+                let btn = inscripto 
+                    ? `<span style="color:#10b981; font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` 
+                    : `<button class="btn btn-primario" style="padding: 5px; font-size: 0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse Solo</button>`;
+
+                cont.innerHTML += `
+                    <div class="tarjeta-partido">
+                        <div style="color: #f59e0b; font-weight: bold;">🏆 ${t.nombre}</div>
+                        <div style="color: #d1d5db; font-size: 0.85em; margin-bottom: 8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <small style="color:#9ca3af;">Cupos: ${t.inscriptos.length}/${t.cupo}</small>
+                            ${btn}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('modal-torneos').style.display = 'flex';
+        }
+
+        function inscribirseTorneo(id) {
+            let t = torneosData.find(x => x.id === id);
+            if(!t) return;
+            t.inscriptos.push(`${usuarioActual} / (Sin pareja)`);
+            alert("Inscripción exitosa");
+            abrirModalTorneos(); // refrescar
+        }
+
+        function cerrarModales() {
+            document.getElementById('modal-resultado').style.display = 'none';
+            document.getElementById('modal-torneos').style.display = 'none';
+            partidoEnEdicion = null;
+        }
+    </script>
+</body>
+</html>
