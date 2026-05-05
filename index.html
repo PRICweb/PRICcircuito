@@ -7,7 +7,7 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #171d24; /* Color de fondo oscuro original */
+            background-color: #171d24; 
             color: #ffffff; 
             margin: 0; 
             padding: 20px; 
@@ -17,7 +17,7 @@
         }
         
         .contenedor-principal {
-            background-color: #1e252d; /* Color contenedor original */
+            background-color: #1e252d; 
             width: 100%; 
             max-width: 700px;
             border-radius: 12px; 
@@ -28,25 +28,14 @@
             min-height: 80vh;
         }
 
-        /* --- CLASE PARA APLICAR EL FONDO DE CANCHA DE PÁDEL --- */
-        .cancha-bg {
-            background-color: #081424 !important;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Crect width='100' height='200' fill='%23081424'/%3E%3Cg stroke='rgba(255,255,255,0.15)' stroke-width='1.5' fill='none'%3E%3Crect x='10' y='10' width='80' height='180'/%3E%3Cline x1='10' y1='100' x2='90' y2='100' stroke='rgba(255,255,255,0.3)' stroke-width='2'/%3E%3Cline x1='10' y1='45' x2='90' y2='45'/%3E%3Cline x1='10' y1='155' x2='90' y2='155'/%3E%3Cline x1='50' y1='45' x2='50' y2='155'/%3E%3C/g%3E%3C/svg%3E") !important;
-            background-size: cover !important;
-            background-position: center !important;
-            border: 1px solid #3b82f6 !important;
-            color: #ffffff !important;
-        }
-        .cancha-bg:hover {
-            filter: brightness(1.15);
-        }
-
         /* Banner Destacado */
         .banner-destacado {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
             padding: 25px 20px; 
             border-radius: 12px; 
             margin-bottom: 30px; 
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            border: 1px solid #60a5fa;
             min-height: 150px;
             display: flex;
             flex-direction: column;
@@ -62,12 +51,15 @@
             padding-bottom: 20px;
         }
         .tarjeta-menu {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
             border-radius: 12px;
             padding: 25px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: bold;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -76,6 +68,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .tarjeta-menu:hover { 
+            filter: brightness(1.15);
             transform: scale(1.03); 
         }
 
@@ -85,6 +78,7 @@
             display: flex; align-items: center; justify-content: space-between; 
             border-bottom: 1px solid #44505d; padding-bottom: 15px; margin-bottom: 20px;
         }
+        /* Ajuste: Solo la flecha con padding para área táctil fácil */
         .btn-volver { background: none; border: none; color: #9ca3af; font-size: 1.5em; font-weight: bold; cursor: pointer; display: flex; align-items: center; padding: 0 15px 0 0;}
         .btn-volver:hover { color: #ffffff; }
 
@@ -112,9 +106,13 @@
 
         /* Notificaciones */
         #notificaciones-container {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
+            color: #ffffff;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
         }
+        #notificaciones-container summary { color: #ffffff; }
+        #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
         .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
@@ -127,37 +125,9 @@
         .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px;}
         .icon-btn:hover { transform: scale(1.1); }
 
-        /* Tabs internos (CORRECCIÓN DEFINITIVA DE BOTONES) */
-        .toggle-container { 
-            display: flex; 
-            background-color: #242c36; 
-            border-radius: 8px; 
-            padding: 4px; 
-            margin-bottom: 20px; 
-            width: 100%; 
-            border: 1px solid #2c3540; 
-            box-sizing: border-box; 
-            gap: 4px; 
-            position: relative; 
-            z-index: 100; /* Asegura que no haya capas invisibles arriba */
-        }
-        .toggle-btn { 
-            flex: 1; 
-            background-color: transparent; 
-            border: none; 
-            padding: 10px; 
-            font-size: 0.95em; 
-            font-weight: bold; 
-            color: #9ca3af; 
-            cursor: pointer; 
-            border-radius: 6px; 
-            transition: 0.2s; 
-            position: relative; 
-            z-index: 101; 
-            pointer-events: auto;
-            transform: translateZ(0); /* Parche para que el táctil no falle en iOS */
-            -webkit-appearance: none;
-        }
+        /* Tabs internos (Corregidos para toque firme en móviles) */
+        .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
+        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 50; pointer-events: auto; }
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
 
@@ -169,7 +139,7 @@
             height: 28px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #3b82f6;
+            border: 2px solid #60a5fa;
             flex-shrink: 0;
         }
     </style>
@@ -193,7 +163,7 @@
             </div>
 
             <!-- Acordeón de Notificaciones -->
-            <details id="notificaciones-container" class="cancha-bg">
+            <details id="notificaciones-container">
                 <summary>
                     <div style="display:flex; align-items:center; gap:8px;">
                         🔔 Notificaciones
@@ -206,7 +176,7 @@
             </details>
 
             <!-- Banner Horizontal Dinámico -->
-            <div id="banner-proximo-partido" class="banner-destacado cancha-bg">
+            <div id="banner-proximo-partido" class="banner-destacado">
                 <!-- Rellenado por JS -->
             </div>
 
@@ -214,19 +184,19 @@
             
             <!-- Menú de Tarjetas Grid 2x2 -->
             <div class="menu-grid">
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('ranking')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')">
                     <span style="font-size: 2.2em;">🏆</span>
                     Ranking
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('partidos')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')">
                     <span style="font-size: 2.2em;">🎾</span>
                     Partidos
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('academia')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')">
                     <span style="font-size: 2.2em;">🎓</span>
                     Academia
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('torneos')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')">
                     <span style="font-size: 2.2em;">🏅</span>
                     Torneos
                 </div>
@@ -246,9 +216,9 @@
             </div>
 
             <div class="toggle-container" style="background-color: #171d24;">
-                <button type="button" id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
-                <button type="button" id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
-                <button type="button" id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
+                <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
+                <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
+                <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
 
             <div style="background: #242c36; border-radius: 8px; border: 1px solid #2c3540; overflow: hidden;">
@@ -274,14 +244,15 @@
                 <div style="width: 30px;"></div>
             </div>
             
+            <!-- Arriba: Contenedor para cargar resultados (Pendientes) -->
             <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-bottom: 20px;">
                 <h4 style="margin-top: 0; color: #d1d5db; border-bottom: 1px dashed #44505d; padding-bottom: 10px;">⏳ Pendientes de Resultado</h4>
                 <div id="lista-mis-partidos"></div>
             </div>
 
             <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
-                <button type="button" id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
-                <button type="button" id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
+                <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
+                <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
             <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
@@ -312,6 +283,7 @@
                 <div id="lista-partidos-abiertos"></div>
             </div>
 
+            <!-- Abajo: Contenedor exclusivo de Historial -->
             <div style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540; margin-top: 20px;">
                 <h4 style="margin-top: 0; color: #d1d5db; border-bottom: 1px dashed #44505d; padding-bottom: 10px;">📜 Historial de Partidos</h4>
                 <div id="lista-historial-partidos"></div>
@@ -440,8 +412,8 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
                 <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
             </div>
         </div>
@@ -552,6 +524,7 @@
             preferencia: "Drive",
             foto: "" 
         };
+        // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         
         let notificacionesData = [
@@ -617,6 +590,7 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
+        // Configura el select de Clubes y Horas basado en los horarios de apertura de cada club
         function inicializarFormularioCrear() {
             const selectClub = document.getElementById('input-club-crear');
             selectClub.innerHTML = '';
@@ -638,7 +612,7 @@
                 let inicio = aMinutos(club.apertura);
                 let fin = aMinutos(club.cierre);
                 
-                if (fin <= inicio) fin += 1440; 
+                if (fin <= inicio) fin += 1440; // Para cierres de medianoche en adelante
 
                 for (let m = inicio; m <= fin; m += 30) {
                     let horaStr = minutosAHora(m);
@@ -719,32 +693,20 @@
             renderizarTodo();
         }
 
-        // LÓGICA DE BOTONES DEL RANKING (PARCHE PARA COMPATIBILIDAD JS)
         let catRankingActual = 'Masculino';
         function cambiarCategoriaRanking(cat) {
             catRankingActual = cat;
-            
-            // Removemos en lugar de .toggle() por compatibilidad y aseguramos un comportamiento sólido
-            document.getElementById('subtab-masculino').classList.remove('activo');
-            document.getElementById('subtab-femenino').classList.remove('activo');
-            document.getElementById('subtab-mixto').classList.remove('activo');
-            
-            if(cat === 'Masculino') document.getElementById('subtab-masculino').classList.add('activo');
-            if(cat === 'Femenino') document.getElementById('subtab-femenino').classList.add('activo');
-            if(cat === 'Mixto') document.getElementById('subtab-mixto').classList.add('activo');
-
+            document.getElementById('subtab-masculino').classList.toggle('activo', cat === 'Masculino');
+            document.getElementById('subtab-femenino').classList.toggle('activo', cat === 'Femenino');
+            document.getElementById('subtab-mixto').classList.toggle('activo', cat === 'Mixto');
             renderizarRanking();
         }
 
         function cambiarAccionPartido(accion) {
             document.getElementById('seccion-crear-partido').style.display = accion === 'crear' ? 'block' : 'none';
             document.getElementById('seccion-unirse-partido').style.display = accion === 'unirse' ? 'block' : 'none';
-            
-            document.getElementById('subtab-crear').classList.remove('activo');
-            document.getElementById('subtab-unirse').classList.remove('activo');
-            
-            if(accion === 'crear') document.getElementById('subtab-crear').classList.add('activo');
-            if(accion === 'unirse') document.getElementById('subtab-unirse').classList.add('activo');
+            document.getElementById('subtab-crear').classList.toggle('activo', accion === 'crear');
+            document.getElementById('subtab-unirse').classList.toggle('activo', accion === 'unirse');
         }
 
         // --- RENDERIZADO GENERAL ---
@@ -906,8 +868,8 @@
                     <tr style="cursor: pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
                         <td style="text-align: center; font-weight:bold;">
                             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 24px; height: 24px; border-width: 1px;">
-                                <span>${index + 1}</span>
+                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 28px; height: 28px;">
+                                <span style="font-size: 1.1em; font-weight: bold; margin-left: 5px;">${index + 1}</span>
                             </div>
                         </td>
                         <td style="${isMe}">${j.nombre}</td>
