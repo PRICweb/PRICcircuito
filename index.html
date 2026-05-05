@@ -7,7 +7,7 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #171d24; /* Color de fondo original restaurado */
+            background-color: #171d24; 
             color: #ffffff; 
             margin: 0; 
             padding: 20px; 
@@ -17,7 +17,7 @@
         }
         
         .contenedor-principal {
-            background-color: #1e252d; /* Color original restaurado */
+            background-color: #1e252d; 
             width: 100%; 
             max-width: 700px;
             border-radius: 12px; 
@@ -28,32 +28,21 @@
             min-height: 80vh;
         }
 
-        /* --- NUEVA CLASE PARA APLICAR EL FONDO DE CANCHA DE PÁDEL --- */
-        .cancha-bg {
-            background-color: #081424 !important;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Crect width='100' height='200' fill='%23081424'/%3E%3Cg stroke='rgba(255,255,255,0.15)' stroke-width='1.5' fill='none'%3E%3Crect x='10' y='10' width='80' height='180'/%3E%3Cline x1='10' y1='100' x2='90' y2='100' stroke='rgba(255,255,255,0.3)' stroke-width='2'/%3E%3Cline x1='10' y1='45' x2='90' y2='45'/%3E%3Cline x1='10' y1='155' x2='90' y2='155'/%3E%3Cline x1='50' y1='45' x2='50' y2='155'/%3E%3C/g%3E%3C/svg%3E") !important;
-            background-size: cover !important;
-            background-position: center !important;
-            border: 1px solid #3b82f6 !important;
-            color: #ffffff !important;
-        }
-        .cancha-bg:hover {
-            filter: brightness(1.15);
-        }
-
         /* Banner Destacado */
         .banner-destacado {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
             padding: 25px 20px; 
             border-radius: 12px; 
             margin-bottom: 30px; 
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            border: 1px solid #60a5fa;
             min-height: 150px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        /* Menú de Tarjetas Grid 2x2 */
+        /* Menú de Tarjetas Grid 2x2 - ¡Ahora con color principal! */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -62,12 +51,15 @@
             padding-bottom: 20px;
         }
         .tarjeta-menu {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
             border-radius: 12px;
             padding: 25px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: bold;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -76,6 +68,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .tarjeta-menu:hover { 
+            filter: brightness(1.15);
             transform: scale(1.03); 
         }
 
@@ -92,7 +85,7 @@
         .input-form { padding: 10px; border-radius: 6px; border: 1px solid #44505d; background-color: #171d24; color: white; width: 100%; box-sizing: border-box; margin-top: 5px; margin-bottom: 15px; color-scheme: dark;}
         .btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; }
         .btn-primario { background-color: #10b981; } .btn-primario:hover { background-color: #059669; }
-        .btn-secundario { background-color: #3b82f6; } .btn-secundario:hover { background-color: #2563eb; } /* Restaurado el azul en los botones */
+        .btn-secundario { background-color: #3b82f6; } .btn-secundario:hover { background-color: #2563eb; }
         .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
         .btn-alerta { background-color: #ef4444; } .btn-alerta:hover { background-color: #dc2626; }
 
@@ -108,13 +101,17 @@
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '🔽'; font-size: 0.8em; }
         details[open] summary::after { content: '🔼'; }
-        .details-content { padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 10px; }
+        .details-content { padding-top: 15px; border-top: 1px solid #44505d; margin-top: 10px; }
 
-        /* Notificaciones */
+        /* Notificaciones (Color Especial) */
         #notificaciones-container {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            border: 1px solid #60a5fa;
+            color: #ffffff;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
         }
+        #notificaciones-container summary { color: #ffffff; }
+        #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
         .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
@@ -141,7 +138,7 @@
             height: 28px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #3b82f6;
+            border: 2px solid #60a5fa;
             flex-shrink: 0;
         }
     </style>
@@ -154,7 +151,7 @@
         <!-- VISTA INICIO (DASHBOARD)                       -->
         <!-- ============================================== -->
         <div id="vista-inicio">
-            <!-- Cabecera Personalizada -->
+            <!-- Cabecera Personalizada con iconos solicitados -->
             <div class="header-acciones">
                 <h2 style="margin: 0; color: #ffffff;">👋 Hola, <span id="lbl-nombre-usuario" style="color: #3b82f6;">Jugador 1</span></h2>
                 <div style="display: flex; gap: 10px;">
@@ -164,8 +161,8 @@
                 </div>
             </div>
 
-            <!-- Acordeón de Notificaciones (AHORA CON CANCHA) -->
-            <details id="notificaciones-container" class="cancha-bg">
+            <!-- Acordeón de Notificaciones -->
+            <details id="notificaciones-container">
                 <summary>
                     <div style="display:flex; align-items:center; gap:8px;">
                         🔔 Notificaciones
@@ -177,28 +174,28 @@
                 </div>
             </details>
 
-            <!-- Banner Horizontal Dinámico (AHORA CON CANCHA) -->
-            <div id="banner-proximo-partido" class="banner-destacado cancha-bg">
+            <!-- Banner Horizontal Dinámico -->
+            <div id="banner-proximo-partido" class="banner-destacado">
                 <!-- Rellenado por JS -->
             </div>
 
             <h4 style="color: #9ca3af; margin-bottom: 10px; text-align: center;">¿Qué querés hacer?</h4>
             
-            <!-- Menú de Tarjetas Grid 2x2 (AHORA CON CANCHA) -->
+            <!-- Menú de Tarjetas Grid 2x2 -->
             <div class="menu-grid">
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('ranking')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')">
                     <span style="font-size: 2.2em;">🏆</span>
                     Ranking
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('partidos')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')">
                     <span style="font-size: 2.2em;">🎾</span>
                     Partidos
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('academia')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')">
                     <span style="font-size: 2.2em;">🎓</span>
                     Academia
                 </div>
-                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('torneos')">
+                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')">
                     <span style="font-size: 2.2em;">🏅</span>
                     Torneos
                 </div>
@@ -217,7 +214,7 @@
                 <div style="width: 70px;"></div>
             </div>
 
-            <div class="toggle-container">
+            <div class="toggle-container" style="background-color: #171d24;">
                 <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
                 <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
                 <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
@@ -251,7 +248,7 @@
                 <div class="details-content" id="lista-mis-partidos"></div>
             </details>
 
-            <div class="toggle-container" style="margin-top: 20px;">
+            <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
                 <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
                 <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
@@ -340,7 +337,7 @@
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                        <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none; border: 2px solid #3b82f6;">
+                        <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
                         <input type="url" id="perfil-foto" class="input-form" placeholder="https://link-a-tu-foto.com/foto.jpg" style="margin: 0;" oninput="actualizarPreviewFoto()">
                     </div>
                 </div>
@@ -402,10 +399,9 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <!-- Agregada la clase cancha-bg a los botones de opciones -->
-                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
-                <button class="btn" style="background: rgba(239, 68, 68, 0.9); border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
             </div>
         </div>
 
@@ -513,7 +509,7 @@
             telefono: "3511234567",
             dni: "35000000",
             preferencia: "Drive",
-            foto: "" 
+            foto: "" // Nuevo atributo foto
         };
         // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
@@ -695,6 +691,7 @@
             renderizarNotificaciones();
         }
 
+        // Función que genera el HTML de cada jugador en la ficha del partido (Con imagen y alineación perfecta)
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
@@ -773,6 +770,7 @@
             }
         }
 
+        // --- LÓGICA PARA VER EL PERFIL DE OTRO JUGADOR DESDE EL BANNER ---
         function abrirPerfilRanking(nombre) {
             let jugData = rankingData.find(r => r.nombre === nombre);
             
@@ -1019,7 +1017,7 @@
             renderizarTorneos();
         }
 
-        // --- MODALES ---
+        // --- MODALES (Cargar Resultado y Denunciar) ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
