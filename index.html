@@ -75,7 +75,7 @@
         .btn-volver { background: none; border: none; color: var(--text-muted); font-size: 1.5em; font-weight: bold; cursor: pointer; display: flex; align-items: center; padding: 0 15px 0 0;}
         .btn-volver:hover { color: var(--text-main); }
 
-        /* Formularios, Botones y Tarjetas */
+        /* Formularios y Botones */
         .input-form { padding: 10px; border-radius: 6px; border: 1px solid var(--border-base); background-color: var(--bg-base); color: white; width: 100%; box-sizing: border-box; margin: 5px 0 15px; color-scheme: dark;}
         .btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; }
         .btn-primario { background-color: var(--success); } .btn-primario:hover { background-color: #059669; }
@@ -95,8 +95,8 @@
         details { background: var(--bg-light); border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
         summary { font-weight: bold; cursor: pointer; color: var(--text-light); outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;}
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '🔽'; font-size: 0.8em; }
-        details[open] summary::after { content: '🔼'; }
+        summary::after { content: '🔽'; font-size: 0.8em; transition: 0.2s; }
+        details[open] summary::after { transform: rotate(180deg); }
         .details-content { padding-top: 15px; border-top: 1px solid var(--border-base); margin-top: 10px; }
 
         #notificaciones-container { box-shadow: 0 4px 6px rgba(0,0,0,0.2); margin-bottom: 20px; }
@@ -106,8 +106,8 @@
         .modal-content { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border-base); max-height: 90vh; overflow-y: auto; }
 
         .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;}
-        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px;}
-        .icon-btn:hover { transform: scale(1.1); }
+        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; color: var(--text-muted); display:flex; align-items:center; justify-content:center;}
+        .icon-btn:hover { transform: scale(1.1); color: var(--text-main); }
 
         /* Tabs internos */
         .toggle-container { display: flex; background-color: var(--bg-light); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-light); box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
@@ -117,6 +117,38 @@
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid #60a5fa; flex-shrink: 0; }
+
+        /* --- NUEVO: ESTILOS PARA FECHA Y RECTÁNGULOS DE HORARIO --- */
+        .selector-fecha {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-base); padding: 10px 15px; border-radius: 8px;
+            border: 1px solid var(--border-base); margin-bottom: 15px;
+        }
+        .horarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .btn-horario {
+            background-color: var(--bg-base);
+            border: 1px solid var(--border-base);
+            color: var(--text-light);
+            padding: 10px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-horario.activo {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-horario:hover:not(.activo) {
+            border-color: var(--text-muted);
+        }
     </style>
 </head>
 <body>
@@ -183,36 +215,85 @@
                 <div style="width: 30px;"></div>
             </div>
             
-            <div style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 20px;">
-                <h4 style="margin-top: 0; color: var(--text-light); border-bottom: 1px dashed var(--border-base); padding-bottom: 10px;">⏳ Pendientes de Resultado</h4>
-                <div id="lista-mis-partidos"></div>
-            </div>
+            <details open>
+                <summary>⏳ Pendientes de Resultado</summary>
+                <div class="details-content" id="lista-mis-partidos"></div>
+            </details>
 
             <div class="toggle-container" style="background-color: var(--bg-base); margin-top: 20px;">
                 <button type="button" id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
                 <button type="button" id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
+            <!-- SECCIÓN CREAR PARTIDO (Renovada) -->
             <div id="seccion-crear-partido" style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
-                <label>Fecha del partido:</label><input type="date" id="input-fecha-crear" class="input-form">
-                <label>Club:</label><select id="input-club-crear" class="input-form" onchange="actualizarHorariosDisponibles()"></select>
-                <label>Hora:</label><select id="input-hora-crear" class="input-form"></select>
+                
+                <label>Tipo de Partido:</label>
+                <select id="input-tipo-crear" class="input-form" onchange="toggleVisibilidadPartido()">
+                    <option value="Competitivo">Competitivo (Suma Puntos)</option>
+                    <option value="Casual">Casual (Amistoso)</option>
+                </select>
+
+                <div id="div-visibilidad-crear" style="display: none;">
+                    <label>Visibilidad:</label>
+                    <select id="input-visibilidad-crear" class="input-form">
+                        <option value="Publico">Público (Aparece a todos)</option>
+                        <option value="Privado">Privado (Solo con invitación)</option>
+                    </select>
+                </div>
+
                 <label>Modalidad:</label>
                 <select id="input-mod-crear" class="input-form">
                     <option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="Mixto">Mixto</option>
                 </select>
+
+                <label>Club:</label>
+                <select id="input-club-crear" class="input-form" onchange="actualizarHorariosDisponibles()"></select>
+
+                <label>Fecha:</label>
+                <div class="selector-fecha">
+                    <button class="icon-btn" onclick="cambiarFechaCrear(-1)">⬅</button>
+                    <strong id="lbl-fecha-crear" style="font-size: 1.1em; color: var(--primary);">Hoy</strong>
+                    <button class="icon-btn" onclick="cambiarFechaCrear(1)">➡</button>
+                </div>
+
+                <label>Horarios Disponibles:</label>
+                <div id="grid-horarios" class="horarios-grid">
+                    <!-- Se rellena dinámicamente con rectángulos -->
+                </div>
+                <div id="msg-sin-horarios" style="display:none; color:var(--text-muted); text-align:center; margin-bottom:15px; font-size:0.9em;">
+                    No hay turnos disponibles para esta fecha.
+                </div>
+
                 <button class="btn btn-secundario" onclick="crearPartido()">Crear y Publicar Partido</button>
             </div>
 
+            <!-- SECCIÓN UNIRSE A PARTIDO (Con Filtros) -->
             <div id="seccion-unirse-partido" style="display: none; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
-                <p style="color: var(--text-muted); font-size: 0.9em; margin-top: 0;">Partidos buscando jugadores:</p>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex:1;">
+                        <select id="filtro-tipo-unirse" class="input-form" style="margin:0; padding:8px;" onchange="renderizarPartidosAbiertos()">
+                            <option value="Todos">Cualquier Tipo</option>
+                            <option value="Competitivo">Competitivo</option>
+                            <option value="Casual">Casual</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                        <select id="filtro-mod-unirse" class="input-form" style="margin:0; padding:8px;" onchange="renderizarPartidosAbiertos()">
+                            <option value="Todos">Cualquier Modalidad</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Mixto">Mixto</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="lista-partidos-abiertos"></div>
             </div>
 
-            <div style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light); margin-top: 20px;">
-                <h4 style="margin-top: 0; color: var(--text-light); border-bottom: 1px dashed var(--border-base); padding-bottom: 10px;">📜 Historial de Partidos</h4>
-                <div id="lista-historial-partidos"></div>
-            </div>
+            <details style="margin-top: 20px;">
+                <summary>📜 Historial de Partidos</summary>
+                <div class="details-content" id="lista-historial-partidos"></div>
+            </details>
         </div>
 
         <!-- VISTA ACADEMIA -->
@@ -393,7 +474,8 @@
         let perfilUsuario = { nombre: "Jugador", apellido: "Uno", edad: 28, genero: "Masculino", telefono: "3511234567", dni: "35000000", preferencia: "Drive", foto: "" };
         const getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-        
+        const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
+
         let notificacionesData = [{ id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, { id: 2, texto: "Tu resultado fue confirmado.", leida: true }];
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
         let clubesData = [
@@ -405,17 +487,19 @@
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
         let partidosData = [
-            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
-            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
-            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" }
+            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
+            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
+            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" }
         ];
         let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
 
         // Variables Globales
         let bannerInterval, currentSlide = 0, partidoEnEdicion = null, catRankingActual = 'Masculino';
+        let fechaSeleccionadaCrear = new Date(); // Para el selector de fecha con flechas
+        let horaSeleccionadaCrear = ''; // Guarda la hora clickeada en los rectángulos
 
         // --- INICIALIZACIÓN ---
-        document.getElementById('input-fecha-crear').valueAsDate = new Date();
+        fechaSeleccionadaCrear.setHours(0,0,0,0);
         inicializarFormularioCrear();
         cargarDatosPerfilEnFormulario();
         renderizarTodo();
@@ -437,27 +521,90 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
-        function actualizarHorariosDisponibles() {
-            const selectHora = document.getElementById('input-hora-crear');
-            const club = clubesData.find(c => c.nombre === document.getElementById('input-club-crear').value);
-            if (!club) return;
-            let inicio = parseInt(club.apertura.split(':')[0])*60 + parseInt(club.apertura.split(':')[1]);
-            let fin = parseInt(club.cierre.split(':')[0])*60 + parseInt(club.cierre.split(':')[1]);
-            if (fin <= inicio) fin += 1440; 
+        // --- NUEVA LÓGICA: SELECTOR DE FECHA, VISIBILIDAD Y HORARIOS (RECTÁNGULOS) ---
+        function toggleVisibilidadPartido() {
+            const tipo = document.getElementById('input-tipo-crear').value;
+            const divVis = document.getElementById('div-visibilidad-crear');
+            divVis.style.display = (tipo === 'Casual') ? 'block' : 'none';
+        }
+
+        function cambiarFechaCrear(delta) {
+            let hoy = new Date(); hoy.setHours(0,0,0,0);
+            let nFecha = new Date(fechaSeleccionadaCrear);
+            nFecha.setDate(nFecha.getDate() + delta);
             
-            let html = '';
-            for (let m = inicio; m <= fin; m += 30) {
-                let hStr = `${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
-                html += `<option value="${hStr}">${hStr} hs</option>`;
+            // No permitir fechas en el pasado
+            if(nFecha >= hoy) {
+                fechaSeleccionadaCrear = nFecha;
+                actualizarDisplayFecha();
+                actualizarHorariosDisponibles();
             }
-            selectHora.innerHTML = html;
+        }
+
+        function actualizarDisplayFecha() {
+            let hoy = new Date(); hoy.setHours(0,0,0,0);
+            let diffDays = Math.round((fechaSeleccionadaCrear - hoy) / (1000 * 60 * 60 * 24));
+            let lbl = document.getElementById('lbl-fecha-crear');
+            
+            if(diffDays === 0) lbl.innerText = "Hoy";
+            else if(diffDays === 1) lbl.innerText = "Mañana";
+            else lbl.innerText = `${String(fechaSeleccionadaCrear.getDate()).padStart(2,'0')}/${String(fechaSeleccionadaCrear.getMonth()+1).padStart(2,'0')}/${fechaSeleccionadaCrear.getFullYear()}`;
         }
 
         function inicializarFormularioCrear() {
             document.getElementById('input-club-crear').innerHTML = clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+            actualizarDisplayFecha();
             actualizarHorariosDisponibles();
         }
 
+        function actualizarHorariosDisponibles() {
+            const grid = document.getElementById('grid-horarios');
+            const msgVacio = document.getElementById('msg-sin-horarios');
+            const club = clubesData.find(c => c.nombre === document.getElementById('input-club-crear').value);
+            
+            grid.innerHTML = '';
+            horaSeleccionadaCrear = ''; // Resetear selección
+            
+            if (!club) return;
+            
+            let inicio = parseInt(club.apertura.split(':')[0])*60 + parseInt(club.apertura.split(':')[1]);
+            let fin = parseInt(club.cierre.split(':')[0])*60 + parseInt(club.cierre.split(':')[1]);
+            if (fin <= inicio) fin += 1440; 
+            
+            // Si es hoy, filtrar horarios que ya pasaron
+            let hoy = new Date();
+            let esHoy = (formatearAFechaString(fechaSeleccionadaCrear) === formatearAFechaString(hoy));
+            let minutosActuales = hoy.getHours() * 60 + hoy.getMinutes();
+
+            let hayTurnos = false;
+            let html = '';
+            
+            for (let m = inicio; m <= fin; m += 30) {
+                if(esHoy && m <= minutosActuales) continue; // Salta horarios pasados
+                
+                let hStr = `${String(Math.floor(m/60)%24).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+                html += `<button class="btn-horario" id="btn-h-${hStr}" onclick="seleccionarHora('${hStr}')">${hStr}</button>`;
+                hayTurnos = true;
+            }
+            
+            if(hayTurnos) {
+                grid.innerHTML = html;
+                grid.style.display = 'grid';
+                msgVacio.style.display = 'none';
+            } else {
+                grid.style.display = 'none';
+                msgVacio.style.display = 'block';
+            }
+        }
+
+        function seleccionarHora(hora) {
+            horaSeleccionadaCrear = hora;
+            // Quitar clase activo a todos y ponerla al seleccionado
+            document.querySelectorAll('.btn-horario').forEach(b => b.classList.remove('activo'));
+            document.getElementById(`btn-h-${hora}`).classList.add('activo');
+        }
+
+        // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
             document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => el.style.display = 'none');
             document.getElementById(`vista-${vista}`).style.display = 'block';
@@ -491,28 +638,21 @@
             document.getElementById(`subtab-${accion}`).classList.add('activo');
         }
 
-        // NUEVO: Redirigir a "Crear Partido" pre-seleccionando un club
         function irACrearPartidoEnClub(nombreClub) {
             cambiarVistaPrincipal('partidos');
             cambiarAccionPartido('crear');
             const selectClub = document.getElementById('input-club-crear');
-            // Verifica que el club exista en las opciones, si existe lo selecciona
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) {
                 selectClub.value = nombreClub;
                 actualizarHorariosDisponibles();
             }
         }
 
-        // --- FUNCIONES RENDERIZADO (Optimizadas con Map/Join) ---
+        // --- FUNCIONES RENDERIZADO ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
             renderizarAmigos(); renderizarClubes();
-        }
-
-        function generarFilaJugador(nombre) {
-            if (!nombre || nombre === 'Libre') return '';
-            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer;" onclick="abrirPerfilRanking('${nombre}')"><img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}"><span style="font-weight:bold;">${nombre}</span></div>`;
         }
 
         function renderizarBanner() {
@@ -607,17 +747,36 @@
 
         function renderizarPartidosAbiertos() {
             const user = getNombreCompleto();
-            const abiertos = partidosData.filter(p => p.estado === 'Buscando Rival' && ![p.j1, p.j2, p.j3, p.j4].includes(user));
+            const fTipo = document.getElementById('filtro-tipo-unirse').value;
+            const fMod = document.getElementById('filtro-mod-unirse').value;
+
+            // Filtra los buscando rival, excluye donde participas, excluye los privados y aplica filtros visuales
+            const abiertos = partidosData.filter(p => {
+                if(p.estado !== 'Buscando Rival') return false;
+                if([p.j1, p.j2, p.j3, p.j4].includes(user)) return false;
+                if(p.visibilidad === 'Privado') return false; // Los privados no se muestran
+                
+                if(fTipo !== 'Todos' && p.tipo !== fTipo) return false;
+                if(fMod !== 'Todos' && p.modalidad !== fMod) return false;
+
+                return true;
+            });
+
             document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
+                let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
+                
                 return `
                 <div class="tarjeta-item">
-                    <div style="color:var(--text-light); margin-bottom:5px;"><strong>${p.j1}</strong> busca (${p.modalidad})</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <strong style="color:var(--text-light);">${p.j1} busca (${p.modalidad})</strong>
+                        <span style="font-size: 0.8em; color:var(--primary); font-weight:bold;">${badgeTipo}</span>
+                    </div>
                     <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
                     <div style="color:var(--success); font-size:0.85em; margin-top:5px;">Lugares: ${cupos} libres</div>
                     <button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="unirsePartido(${p.id})">Unirme</button>
                 </div>`;
-            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay partidos abiertos.</p>';
+            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay partidos con estos filtros.</p>';
         }
 
         function renderizarTorneos() {
@@ -665,16 +824,26 @@
             : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
         }
 
-        // Lógicas restantes (Agregar amigo, Crear Partido, Modales)
-        function agregarAmigo() { const i = document.getElementById('input-buscar-amigo').value.trim(); if(i) { amigosData.push({ id: Date.now(), nombre: i, dni: "N/A" }); document.getElementById('input-buscar-amigo').value = ''; renderizarAmigos(); } }
-        function eliminarAmigo(idx) { if(confirm("¿Eliminar?")) { amigosData.splice(idx, 1); renderizarAmigos(); } }
-        
+        // --- ACCIONES ---
         function crearPartido() {
-            const f = document.getElementById('input-fecha-crear').value; const h = document.getElementById('input-hora-crear').value;
-            const c = document.getElementById('input-club-crear').value; const m = document.getElementById('input-mod-crear').value;
-            if(!f || !h) return alert("Completa fecha y hora");
-            partidosData.push({ id: Date.now(), fecha: f, hora: h, club: c, modalidad: m, estado: "Buscando Rival", j1: getNombreCompleto(), j2: "Libre", j3: "Libre", j4: "Libre" });
-            alert("Partido creado."); cambiarAccionPartido('unirse'); renderizarPartidosAbiertos();
+            let f = formatearAFechaString(fechaSeleccionadaCrear); 
+            let h = horaSeleccionadaCrear;
+            let c = document.getElementById('input-club-crear').value; 
+            let m = document.getElementById('input-mod-crear').value;
+            let tipo = document.getElementById('input-tipo-crear').value;
+            let vis = tipo === 'Casual' ? document.getElementById('input-visibilidad-crear').value : 'Publico';
+
+            if(!f || !h) return alert("Selecciona un horario disponible.");
+            
+            partidosData.push({ 
+                id: Date.now(), fecha: f, hora: h, club: c, modalidad: m, 
+                tipo: tipo, visibilidad: vis, estado: "Buscando Rival", 
+                j1: getNombreCompleto(), j2: "Libre", j3: "Libre", j4: "Libre" 
+            });
+            
+            alert(`Partido ${tipo} creado y publicado.`); 
+            cambiarAccionPartido('unirse'); 
+            renderizarPartidosAbiertos();
         }
 
         function unirsePartido(id) {
@@ -706,11 +875,20 @@
         }
 
         function guardarResultado() {
-            if(['s1-e1','s1-e2','s2-e1','s2-e2'].some(id => isNaN(parseInt(document.getElementById(id).value)))) return alert("Carga sets");
-            partidoEnEdicion.estado = 'Finalizado'; partidoEnEdicion.resultado = `${document.getElementById('s1-e1').value}-${document.getElementById('s1-e2').value}, ${document.getElementById('s2-e1').value}-${document.getElementById('s2-e2').value}`;
-            let user = getNombreCompleto(); let rank = rankingData.find(r => r.nombre === user && r.modalidad === partidoEnEdicion.modalidad);
-            if(!rank) rankingData.push({ id: Date.now(), nombre: user, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad }); else { rank.puntos+=15; rank.pj++; }
-            alert("Guardado. +15 Pts."); cerrarModales(); renderizarMisPartidos(); renderizarRanking();
+            if(['s1-e1','s1-e2','s2-e1','s2-e2'].some(id => isNaN(parseInt(document.getElementById(id).value)))) return alert("Carga sets obligatorios.");
+            partidoEnEdicion.estado = 'Finalizado'; 
+            partidoEnEdicion.resultado = `${document.getElementById('s1-e1').value}-${document.getElementById('s1-e2').value}, ${document.getElementById('s2-e1').value}-${document.getElementById('s2-e2').value}`;
+            
+            // SOLO SUMAR PUNTOS SI ES COMPETITIVO
+            if(partidoEnEdicion.tipo === 'Competitivo') {
+                let user = getNombreCompleto(); let rank = rankingData.find(r => r.nombre === user && r.modalidad === partidoEnEdicion.modalidad);
+                if(!rank) rankingData.push({ id: Date.now(), nombre: user, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad }); else { rank.puntos+=15; rank.pj++; }
+                alert("Guardado. +15 Pts (Partido Competitivo).");
+            } else {
+                alert("Resultado guardado. (Partido Casual, no suma puntos).");
+            }
+            
+            cerrarModales(); renderizarMisPartidos(); renderizarRanking();
         }
 
         function abrirModalDenunciar() {
@@ -721,14 +899,8 @@
         }
 
         function enviarDenuncia() { if(!document.getElementById('denuncia-jugador').value || !document.getElementById('denuncia-motivo').value) return alert("Completa los datos."); alert("Enviada."); cerrarModales(); }
-        
-        function cargarDatosPerfilEnFormulario() {
-            document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
-            ['nombre','apellido','edad','genero','telefono','dni','preferencia','foto'].forEach(k => document.getElementById(`perfil-${k}`).value = perfilUsuario[k] || '');
-            actualizarPreviewFoto();
-        }
-        function guardarPerfil() { ['nombre','apellido','edad','genero','telefono','dni','preferencia','foto'].forEach(k => perfilUsuario[k] = document.getElementById(`perfil-${k}`).value.trim()); alert("Guardado"); cambiarVistaPrincipal('inicio'); renderizarTodo(); }
-        function actualizarPreviewFoto() { const u = document.getElementById('perfil-foto').value.trim(); const i = document.getElementById('preview-foto-perfil'); i.src = u; i.style.display = u ? 'block' : 'none'; }
+        function agregarAmigo() { const i = document.getElementById('input-buscar-amigo').value.trim(); if(i) { amigosData.push({ id: Date.now(), nombre: i, dni: "N/A" }); document.getElementById('input-buscar-amigo').value = ''; renderizarAmigos(); } }
+        function eliminarAmigo(idx) { if(confirm("¿Eliminar?")) { amigosData.splice(idx, 1); renderizarAmigos(); } }
     </script>
 </body>
 </html>
