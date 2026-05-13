@@ -547,7 +547,13 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        let notificacionesData = [{ id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, { id: 2, texto: "Tu resultado fue confirmado.", leida: true }];
+        // Añadida la notificación con acción para "Unirse"
+        let notificacionesData = [
+            { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
+            { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
+            { id: 3, texto: "Carlos Tevez te ha invitado a jugar con él", leida: false, accion: "unirse" }
+        ];
+        
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
         let clubesData = [
             { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
@@ -558,10 +564,12 @@
             { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
+        
+        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
-            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre" }
+            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre", invitados: ["Jugador Uno"] }
         ];
         let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
         
@@ -700,6 +708,16 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
+        function ejecutarAccionNotificacion(accion, notifId) {
+            let notif = notificacionesData.find(n => n.id === notifId);
+            if (notif) notif.leida = true;
+            
+            if (accion === 'unirse') {
+                cambiarVistaPrincipal('partidos');
+                cambiarAccionPartido('unirse');
+            }
+        }
+
         // --- FUNCIONES RENDERIZADO ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
@@ -787,8 +805,16 @@
 
         function renderizarMisPartidos() {
             const user = getNombreCompleto();
+            const hoyStr = getHoyFormateado();
             const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user)).sort((a,b) => b.fecha.localeCompare(a.fecha));
             
+            // Simulación: Si un partido casual ya pasó de fecha, pasa a "Finalizado" automáticamente
+            misPartidos.forEach(p => {
+                if(p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
+                    p.estado = 'Finalizado'; p.resultado = 'Amistoso';
+                }
+            });
+
             // Pendientes: Solo Competitivos que necesitan resultado
             const pendientes = misPartidos.filter(p => p.estado === 'Pendiente Resultado' && p.tipo === 'Competitivo');
             
@@ -796,7 +822,7 @@
             const enCurso = misPartidos.filter(p => p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado');
             
             // Historial: Finalizados o Casuales ya pasados
-            const finalizados = misPartidos.filter(p => p.estado === 'Finalizado' || (p.estado === 'Pendiente Resultado' && p.tipo === 'Casual'));
+            const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
             const renderHtml = (arr, isPend, isHistorial) => arr.length ? arr.map(p => `
                 <div class="tarjeta-item" style="background:var(--bg-card);">
@@ -842,11 +868,15 @@
             document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
+                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
                 <div class="tarjeta-item">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                        <strong style="color:var(--text-light);">${p.j1} busca (${p.modalidad})</strong>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <div style="display:flex; align-items:center; flex-wrap:wrap;">
+                            <strong style="color:var(--text-light);">${p.j1} busca (${p.modalidad})</strong>
+                            ${tagInvitado}
+                        </div>
                         <span style="font-size: 0.8em; color:var(--primary); font-weight:bold;">${badgeTipo}</span>
                     </div>
                     <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
@@ -895,9 +925,12 @@
             document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
             document.getElementById('badge-notif').innerText = noLeidas;
 
-            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => `
-                <div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'};">${n.leida ? '' : '🔴 '}${n.texto}</div>
-            `).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
+            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
+                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
+                let actionAttr = n.accion ? `cursor:pointer;` : '';
+                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
+                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
+            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
             : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
         }
 
