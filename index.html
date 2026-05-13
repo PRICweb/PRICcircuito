@@ -28,18 +28,67 @@
             min-height: 80vh;
         }
 
-        /* Banner Destacado */
-        .banner-destacado {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6); 
-            padding: 25px 20px; 
-            border-radius: 12px; 
-            margin-bottom: 30px; 
+        /* --- CLASE PARA APLICAR EL FONDO DE CANCHA DE PÁDEL --- */
+        .cancha-bg {
+            background-color: #081424 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Crect width='100' height='200' fill='%23081424'/%3E%3Cg stroke='rgba(255,255,255,0.15)' stroke-width='1.5' fill='none'%3E%3Crect x='10' y='10' width='80' height='180'/%3E%3Cline x1='10' y1='100' x2='90' y2='100' stroke='rgba(255,255,255,0.3)' stroke-width='2'/%3E%3Cline x1='10' y1='45' x2='90' y2='45'/%3E%3Cline x1='10' y1='155' x2='90' y2='155'/%3E%3Cline x1='50' y1='45' x2='50' y2='155'/%3E%3C/g%3E%3C/svg%3E") !important;
+            background-size: cover !important;
+            background-position: center !important;
+            border: 1px solid #3b82f6 !important;
+            color: #ffffff !important;
+        }
+        .cancha-bg:hover {
+            filter: brightness(1.15);
+        }
+
+        /* --- NUEVO: Estilos del Carrusel --- */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 30px;
             box-shadow: 0 6px 15px rgba(0,0,0,0.4);
             border: 1px solid #60a5fa;
-            min-height: 150px;
+            min-height: 190px;
+            background-color: #1e3a8a;
+        }
+        .carousel-slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding: 20px 20px 30px 20px; /* Padding extra abajo para los indicadores */
+            box-sizing: border-box;
+            z-index: 1;
+            pointer-events: none; /* Evita clics en slides ocultos */
+        }
+        .carousel-slide.activo {
+            opacity: 1;
+            z-index: 2;
+            pointer-events: auto;
+        }
+        .carousel-indicators {
+            position: absolute;
+            bottom: 12px;
+            left: 0; width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 3;
+        }
+        .indicator {
+            width: 25px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .indicator.activo {
+            background-color: rgba(255, 255, 255, 0.9);
         }
 
         /* Menú de Tarjetas Grid 2x2 */
@@ -51,15 +100,12 @@
             padding-bottom: 20px;
         }
         .tarjeta-menu {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border: 1px solid #60a5fa;
             border-radius: 12px;
             padding: 25px 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: bold;
-            color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -68,7 +114,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .tarjeta-menu:hover { 
-            filter: brightness(1.15);
             transform: scale(1.03); 
         }
 
@@ -78,7 +123,6 @@
             display: flex; align-items: center; justify-content: space-between; 
             border-bottom: 1px solid #44505d; padding-bottom: 15px; margin-bottom: 20px;
         }
-        /* Ajuste: Solo la flecha con padding para área táctil fácil */
         .btn-volver { background: none; border: none; color: #9ca3af; font-size: 1.5em; font-weight: bold; cursor: pointer; display: flex; align-items: center; padding: 0 15px 0 0;}
         .btn-volver:hover { color: #ffffff; }
 
@@ -106,13 +150,9 @@
 
         /* Notificaciones */
         #notificaciones-container {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border: 1px solid #60a5fa;
-            color: #ffffff;
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
         }
-        #notificaciones-container summary { color: #ffffff; }
-        #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.2); }
 
         /* Tarjetas (Partidos, Clubes, Amigos, etc.) */
         .tarjeta-item { background: #171d24; border: 1px solid #44505d; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
@@ -125,9 +165,9 @@
         .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px;}
         .icon-btn:hover { transform: scale(1.1); }
 
-        /* Tabs internos (Corregidos para toque firme en móviles) */
-        .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px;}
-        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 50; pointer-events: auto; }
+        /* Tabs internos */
+        .toggle-container { display: flex; background-color: #242c36; border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid #2c3540; box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
+        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: #9ca3af; cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 101; pointer-events: auto; transform: translateZ(0); -webkit-appearance: none;}
         .toggle-btn:hover { color: #d1d5db; }
         .toggle-btn.activo { background-color: #3b82f6; color: #ffffff; }
 
@@ -163,7 +203,7 @@
             </div>
 
             <!-- Acordeón de Notificaciones -->
-            <details id="notificaciones-container">
+            <details id="notificaciones-container" class="cancha-bg">
                 <summary>
                     <div style="display:flex; align-items:center; gap:8px;">
                         🔔 Notificaciones
@@ -175,8 +215,8 @@
                 </div>
             </details>
 
-            <!-- Banner Horizontal Dinámico -->
-            <div id="banner-proximo-partido" class="banner-destacado">
+            <!-- Banner Horizontal Dinámico (CARRUSEL) -->
+            <div id="banner-proximo-partido" class="carousel-container">
                 <!-- Rellenado por JS -->
             </div>
 
@@ -184,19 +224,19 @@
             
             <!-- Menú de Tarjetas Grid 2x2 -->
             <div class="menu-grid">
-                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')">
+                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('ranking')">
                     <span style="font-size: 2.2em;">🏆</span>
                     Ranking
                 </div>
-                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')">
+                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('partidos')">
                     <span style="font-size: 2.2em;">🎾</span>
                     Partidos
                 </div>
-                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')">
+                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('academia')">
                     <span style="font-size: 2.2em;">🎓</span>
                     Academia
                 </div>
-                <div class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')">
+                <div class="tarjeta-menu cancha-bg" onclick="cambiarVistaPrincipal('torneos')">
                     <span style="font-size: 2.2em;">🏅</span>
                     Torneos
                 </div>
@@ -216,9 +256,9 @@
             </div>
 
             <div class="toggle-container" style="background-color: #171d24;">
-                <button id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
-                <button id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
-                <button id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
+                <button type="button" id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
+                <button type="button" id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
+                <button type="button" id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
 
             <div style="background: #242c36; border-radius: 8px; border: 1px solid #2c3540; overflow: hidden;">
@@ -251,8 +291,8 @@
             </div>
 
             <div class="toggle-container" style="background-color: #171d24; margin-top: 20px;">
-                <button id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
-                <button id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
+                <button type="button" id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
+                <button type="button" id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
             </div>
 
             <div id="seccion-crear-partido" style="background: #242c36; padding: 15px; border-radius: 8px; border: 1px solid #2c3540;">
@@ -412,8 +452,8 @@
             </div>
             
             <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                <button class="btn" style="background: #242c36; border: 1px solid #44505d; text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
+                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:pric.administracion@gmail.com'">📧 Contáctanos</button>
                 <button class="btn" style="background: #ef4444; border: 1px solid #b91c1c; text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
             </div>
         </div>
@@ -524,7 +564,6 @@
             preferencia: "Drive",
             foto: "" 
         };
-        // Calculamos nombre completo dinámico
         let getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         
         let notificacionesData = [
@@ -565,6 +604,10 @@
             { id: 201, nombre: "Torneo de Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }
         ];
 
+        // Variables globales del Carrusel
+        let bannerInterval;
+        let currentSlide = 0;
+
         // --- INICIALIZACIÓN ---
         document.getElementById('input-fecha-crear').valueAsDate = new Date();
         inicializarFormularioCrear();
@@ -590,7 +633,6 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
-        // Configura el select de Clubes y Horas basado en los horarios de apertura de cada club
         function inicializarFormularioCrear() {
             const selectClub = document.getElementById('input-club-crear');
             selectClub.innerHTML = '';
@@ -612,7 +654,7 @@
                 let inicio = aMinutos(club.apertura);
                 let fin = aMinutos(club.cierre);
                 
-                if (fin <= inicio) fin += 1440; // Para cierres de medianoche en adelante
+                if (fin <= inicio) fin += 1440; 
 
                 for (let m = inicio; m <= fin; m += 30) {
                     let horaStr = minutosAHora(m);
@@ -693,26 +735,37 @@
             renderizarTodo();
         }
 
-        let catRankingActual = 'Masculino';
+        // LÓGICA DE BOTONES DEL RANKING (PARCHE PARA COMPATIBILIDAD JS)
         function cambiarCategoriaRanking(cat) {
             catRankingActual = cat;
-            document.getElementById('subtab-masculino').classList.toggle('activo', cat === 'Masculino');
-            document.getElementById('subtab-femenino').classList.toggle('activo', cat === 'Femenino');
-            document.getElementById('subtab-mixto').classList.toggle('activo', cat === 'Mixto');
+            
+            // Removemos en lugar de .toggle() por compatibilidad y aseguramos un comportamiento sólido
+            document.getElementById('subtab-masculino').classList.remove('activo');
+            document.getElementById('subtab-femenino').classList.remove('activo');
+            document.getElementById('subtab-mixto').classList.remove('activo');
+            
+            if(cat === 'Masculino') document.getElementById('subtab-masculino').classList.add('activo');
+            if(cat === 'Femenino') document.getElementById('subtab-femenino').classList.add('activo');
+            if(cat === 'Mixto') document.getElementById('subtab-mixto').classList.add('activo');
+
             renderizarRanking();
         }
 
         function cambiarAccionPartido(accion) {
             document.getElementById('seccion-crear-partido').style.display = accion === 'crear' ? 'block' : 'none';
             document.getElementById('seccion-unirse-partido').style.display = accion === 'unirse' ? 'block' : 'none';
-            document.getElementById('subtab-crear').classList.toggle('activo', accion === 'crear');
-            document.getElementById('subtab-unirse').classList.toggle('activo', accion === 'unirse');
+            
+            document.getElementById('subtab-crear').classList.remove('activo');
+            document.getElementById('subtab-unirse').classList.remove('activo');
+            
+            if(accion === 'crear') document.getElementById('subtab-crear').classList.add('activo');
+            if(accion === 'unirse') document.getElementById('subtab-unirse').classList.add('activo');
         }
 
         // --- RENDERIZADO GENERAL ---
         function renderizarTodo() {
             renderizarNotificaciones();
-            renderizarBanner();
+            renderizarBanner(); // Inicializa el carrusel de inicio
             renderizarRanking();
             renderizarMisPartidos();
             renderizarPartidosAbiertos();
@@ -751,28 +804,27 @@
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
             return `
-                <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; margin-bottom: 12px; cursor: pointer; transition: transform 0.2s;" onclick="abrirPerfilRanking('${nombre}')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; cursor: pointer; transition: transform 0.2s;" onclick="abrirPerfilRanking('${nombre}')" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     <img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}">
                     <span style="font-size: 1.05em; color: white; font-weight: bold;">${nombre}</span>
                 </div>
             `;
         }
 
+        // NUEVO RENDERIZADO DEL BANNER (CARRUSEL)
         function renderizarBanner() {
-            const banner = document.getElementById('banner-proximo-partido');
+            const bannerContainer = document.getElementById('banner-proximo-partido');
             let user = getNombreCompleto();
-            
-            let misPartidos = partidosData.filter(p => p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user);
-
             let fechaHoy = new Date();
             let hoyFormateado = `${fechaHoy.getFullYear()}-${(fechaHoy.getMonth() + 1).toString().padStart(2, '0')}-${fechaHoy.getDate().toString().padStart(2, '0')}`;
 
+            // 1. Datos para Slide 1: Próximo Partido
+            let misPartidos = partidosData.filter(p => p.j1 === user || p.j2 === user || p.j3 === user || p.j4 === user);
             let partidosFuturos = misPartidos.filter(p => p.fecha >= hoyFormateado).sort((a,b) => a.fecha.localeCompare(b.fecha));
-            let partidosPasados = misPartidos.filter(p => p.fecha < hoyFormateado).sort((a,b) => b.fecha.localeCompare(a.fecha));
+            let slidePartido = '';
 
             if (partidosFuturos.length > 0) {
                 let prox = partidosFuturos[0];
-                
                 let miEquipoJ1, miEquipoJ2, rivalJ1, rivalJ2;
                 if (prox.j1 === user || prox.j2 === user) {
                     miEquipoJ1 = prox.j1; miEquipoJ2 = prox.j2;
@@ -781,49 +833,138 @@
                     miEquipoJ1 = prox.j3; miEquipoJ2 = prox.j4;
                     rivalJ1 = prox.j1; rivalJ2 = prox.j2;
                 }
-
-                banner.innerHTML = `
-                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Tu próximo partido</div>
-                    <div style="font-size: 1.25em; font-weight: bold; color: white;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📍 Jugás en <strong>${prox.club}</strong></div>
-                    
-                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center;">
+                slidePartido = `
+                    <div class="carousel-slide activo cancha-bg" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6) !important;">
+                        <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">TU PRÓXIMO PARTIDO</div>
+                        <div style="font-size: 1.25em; font-weight: bold; color: white;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
+                        <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📍 Jugás en <strong>${prox.club}</strong></div>
                         
-                        <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
-                            <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Tu equipo</strong>
-                            <div style="display: inline-flex; flex-direction: column; align-items: flex-start;">
-                                ${generarFilaJugador(miEquipoJ1)}
-                                ${generarFilaJugador(miEquipoJ2)}
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3); display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex:1; display: flex; flex-direction: column; align-items: flex-start; padding-left: 10px;">
+                                <strong style="color: #bfdbfe; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Tu equipo</strong>
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    ${generarFilaJugador(miEquipoJ1)}
+                                    ${generarFilaJugador(miEquipoJ2)}
+                                </div>
+                            </div>
+                            <div style="font-weight:bold; color:#f59e0b; font-size: 1.2em; padding: 0 10px;">VS</div>
+                            <div style="flex:1; display: flex; flex-direction: column; align-items: flex-start; padding-left: 10px;">
+                                <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Rival</strong>
+                                <div style="display: flex; flex-direction: column; gap: 12px;">
+                                    ${generarFilaJugador(rivalJ1)}
+                                    ${generarFilaJugador(rivalJ2)}
+                                </div>
                             </div>
                         </div>
-
-                        <div style="font-weight:bold; color:#f59e0b; font-size: 1.2em; padding: 0 10px;">VS</div>
-                        
-                        <div style="flex:1; display: flex; flex-direction: column; align-items: center;">
-                            <strong style="color: #fca5a5; font-size: 0.85em; text-transform: uppercase; margin-bottom: 10px;">Rival</strong>
-                            <div style="display: inline-flex; flex-direction: column; align-items: flex-start;">
-                                ${generarFilaJugador(rivalJ1)}
-                                ${generarFilaJugador(rivalJ2)}
-                            </div>
-                        </div>
-
-                    </div>
-                `;
-            } else if (partidosPasados.length > 0) {
-                let ult = partidosPasados[0];
-                banner.innerHTML = `
-                    <div style="font-size: 0.8em; color: #bfdbfe; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">Sin partidos programados</div>
-                    <div style="font-size: 1.2em; font-weight: bold; color: white;">Último club visitado: ${ult.club}</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">📅 Jugaste allí el ${ult.fecha}</div>
-                    <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white;" onclick="cambiarVistaPrincipal('partidos')">Programar un nuevo partido</button>
-                `;
+                    </div>`;
             } else {
-                banner.innerHTML = `
-                    <div style="font-size: 1.2em; color: white; font-weight: bold;">¡Bienvenido al circuito!</div>
-                    <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px;">Aún no tienes partidos en tu historial. ¡Anímate a crear o unirte a uno!</div>
-                    <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white;" onclick="cambiarVistaPrincipal('partidos')">Ver partidos disponibles</button>
-                `;
+                slidePartido = `
+                    <div class="carousel-slide activo cancha-bg" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6) !important; align-items:center;">
+                        <div style="font-size: 1.2em; color: white; font-weight: bold;">¡Bienvenido al circuito!</div>
+                        <div style="color: #eff6ff; font-size: 0.95em; margin-top: 5px; text-align:center;">No tienes partidos programados.</div>
+                        <button class="btn btn-secundario" style="margin-top: 15px; background: rgba(255,255,255,0.2); border: 1px solid white; width:auto;" onclick="cambiarVistaPrincipal('partidos')">Ver partidos disponibles</button>
+                    </div>`;
             }
+
+            // 2. Datos para Slide 2: Próximo Torneo
+            let torneosFuturos = torneosData.filter(t => t.fecha >= hoyFormateado).sort((a,b) => a.fecha.localeCompare(b.fecha));
+            let slideTorneo = '';
+            if (torneosFuturos.length > 0) {
+                let proxT = torneosFuturos[0];
+                slideTorneo = `
+                    <div class="carousel-slide cancha-bg" style="background: linear-gradient(135deg, #b45309, #f59e0b) !important; cursor: pointer; align-items: center;" onclick="cambiarVistaPrincipal('torneos')">
+                        <div style="font-size: 0.8em; color: #fde68a; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">PRÓXIMO TORNEO</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: white; text-align:center;">🏆 ${proxT.nombre}</div>
+                        <div style="color: #fffbeb; font-size: 1em; margin-top: 10px;">📅 ${proxT.fecha}</div>
+                        <div style="color: #fffbeb; font-size: 1em; margin-top: 5px;">📍 ${proxT.club}</div>
+                        <div style="margin-top: 15px; font-size: 0.9em; font-weight: bold; color: white; background: rgba(0,0,0,0.2); padding: 8px 15px; border-radius: 6px; display: inline-block;">
+                            ¡Presiona para inscribirte!
+                        </div>
+                    </div>`;
+            } else {
+                slideTorneo = `
+                    <div class="carousel-slide cancha-bg" style="background: linear-gradient(135deg, #b45309, #f59e0b) !important; align-items:center;">
+                        <div style="font-size: 1.2em; color: white; font-weight: bold;">Sin torneos próximos</div>
+                        <div style="color: #fffbeb; font-size: 0.95em; margin-top: 5px; text-align:center;">Mantente atento a las novedades.</div>
+                    </div>`;
+            }
+
+            // 3. Datos para Slide 3: Último Club
+            let partidosPasados = misPartidos.filter(p => p.fecha < hoyFormateado).sort((a,b) => b.fecha.localeCompare(a.fecha));
+            let slideClub = '';
+            if (partidosPasados.length > 0) {
+                let ult = partidosPasados[0];
+                slideClub = `
+                    <div class="carousel-slide" style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover !important; align-items:center;">
+                        <div style="font-size: 0.8em; color: #10b981; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">TU ÚLTIMO CLUB</div>
+                        <div style="font-size: 1.5em; font-weight: bold; color: white; text-align:center;">${ult.club} te espera</div>
+                        <div style="color: #d1d5db; font-size: 1em; margin-top: 10px; text-align:center;">¡Reserva ya tu próxima cancha!</div>
+                        <button class="btn btn-primario" style="margin-top: 20px; width:auto;" onclick="cambiarVistaPrincipal('clubes')">Ver Clubes</button>
+                    </div>`;
+            } else {
+                 slideClub = `
+                    <div class="carousel-slide" style="background: linear-gradient(135deg, #065f46, #10b981) !important; align-items:center;">
+                        <div style="font-size: 1.2em; color: white; font-weight: bold;">Explora los clubes</div>
+                        <div style="color: #d1d5db; font-size: 0.95em; margin-top: 5px; text-align:center;">Encuentra el lugar ideal para jugar.</div>
+                        <button class="btn btn-primario" style="margin-top: 15px; width:auto; border:1px solid white;" onclick="cambiarVistaPrincipal('clubes')">Ver Clubes</button>
+                    </div>`;
+            }
+
+            // Inyectar slides e indicadores
+            bannerContainer.innerHTML = `
+                ${slidePartido}
+                ${slideTorneo}
+                ${slideClub}
+                <div class="carousel-indicators">
+                    <div class="indicator activo" onclick="cambiarSlide(0)"></div>
+                    <div class="indicator" onclick="cambiarSlide(1)"></div>
+                    <div class="indicator" onclick="cambiarSlide(2)"></div>
+                </div>
+            `;
+
+            iniciarCarrusel();
+        }
+
+        // Lógica de control del Carrusel
+        function cambiarSlide(index) {
+            const slides = document.querySelectorAll('#banner-proximo-partido .carousel-slide');
+            const indicators = document.querySelectorAll('#banner-proximo-partido .indicator');
+            if(!slides.length) return;
+
+            slides.forEach((s, i) => {
+                if(i === index) {
+                    s.classList.add('activo');
+                } else {
+                    s.classList.remove('activo');
+                }
+                
+                if(indicators[i]) {
+                    if(i === index) indicators[i].classList.add('activo');
+                    else indicators[i].classList.remove('activo');
+                }
+            });
+            currentSlide = index;
+            resetearCarrusel();
+        }
+
+        function iniciarCarrusel() {
+            clearInterval(bannerInterval);
+            bannerInterval = setInterval(() => {
+                const slides = document.querySelectorAll('#banner-proximo-partido .carousel-slide');
+                if(!slides.length) return;
+                let next = (currentSlide + 1) % slides.length;
+                cambiarSlide(next);
+            }, 5000); 
+        }
+
+        function resetearCarrusel() {
+            clearInterval(bannerInterval);
+            bannerInterval = setInterval(() => {
+                const slides = document.querySelectorAll('#banner-proximo-partido .carousel-slide');
+                if(!slides.length) return;
+                let next = (currentSlide + 1) % slides.length;
+                cambiarSlide(next);
+            }, 5000);
         }
 
         function abrirPerfilRanking(nombre) {
@@ -868,8 +1009,8 @@
                     <tr style="cursor: pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
                         <td style="text-align: center; font-weight:bold;">
                             <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 28px; height: 28px;">
-                                <span style="font-size: 1.1em; font-weight: bold; margin-left: 5px;">${index + 1}</span>
+                                <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}" style="width: 24px; height: 24px; border-width: 1px;">
+                                <span>${index + 1}</span>
                             </div>
                         </td>
                         <td style="${isMe}">${j.nombre}</td>
@@ -1092,7 +1233,7 @@
             renderizarTorneos();
         }
 
-        // --- MODALES (Cargar Resultado y Denunciar) ---
+        // --- MODALES ---
         let partidoEnEdicion = null;
 
         function abrirModalResultado(id) {
