@@ -37,7 +37,6 @@
             border-radius: 12px; padding: 20px; 
             box-sizing: border-box; margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            /* Aceleración por hardware segura */
             transform: translateZ(0); 
         }
 
@@ -57,7 +56,7 @@
         }
         .carousel-container {
             position: relative; overflow: hidden; 
-            border: 1px solid #60a5fa; min-height: 190px; background-color: #1e3a8a;
+            border: 1px solid #60a5fa; min-height: 190px;
         }
         .carousel-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -114,8 +113,8 @@
         .icon-btn:hover { transform: scale(1.1); color: var(--text-main); }
 
         /* Tabs internos */
-        .toggle-container { display: flex; background-color: var(--bg-light); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-light); box-sizing: border-box; gap: 4px; position: relative; z-index: 10;}
-        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 11; transform: translateZ(0); -webkit-appearance: none;}
+        .toggle-container { display: flex; background-color: var(--bg-light); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-light); box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
+        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 101; transform: translateZ(0); -webkit-appearance: none;}
         .toggle-btn:hover { color: var(--text-light); }
         .toggle-btn.activo { background-color: var(--primary); color: var(--text-main); }
 
@@ -136,6 +135,17 @@
         }
         .btn-horario.activo { background-color: var(--primary); color: white; border-color: var(--primary); }
         .btn-horario:hover:not(.activo) { border-color: var(--text-muted); }
+
+        /* --- SCROLL PERSONALIZADO PARA TODAS LAS LISTAS --- */
+        .scrollable {
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .scrollable::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
+        .scrollable::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: var(--bg-base); border-radius: 4px; }
+        .scrollable::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { background: var(--border-base); border-radius: 4px; }
+        .scrollable::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -157,7 +167,7 @@
                 <summary>
                     <div style="display:flex; align-items:center; gap:8px;">🔔 Notificaciones <span id="badge-notif" style="background:var(--danger); color:white; border-radius:50%; padding:2px 8px; font-size:0.8em; display:none;">0</span></div>
                 </summary>
-                <div class="details-content" id="lista-notificaciones"></div>
+                <div class="details-content scrollable" id="lista-notificaciones"></div>
             </details>
 
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
@@ -179,12 +189,17 @@
                 <h3 style="margin: 0;">🏆 Ranking</h3>
                 <div style="width: 30px;"></div>
             </div>
+            
+            <div style="background: var(--bg-light); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 15px;">
+                <input type="text" id="input-buscar-ranking" class="input-form" placeholder="🔍 Buscar por nombre o DNI..." style="margin: 0;" oninput="renderizarRanking()">
+            </div>
+
             <div class="toggle-container" style="background-color: var(--bg-base);">
                 <button type="button" id="subtab-masculino" class="toggle-btn activo" onclick="cambiarCategoriaRanking('Masculino')">Masculino</button>
                 <button type="button" id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
                 <button type="button" id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
-            <div style="background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border-light); overflow: hidden;">
+            <div class="scrollable" style="background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border-light);">
                 <table>
                     <thead>
                         <tr><th style="width: 25%; text-align: center;">Pos</th><th style="width: 40%;">Jugador</th><th style="width: 20%; text-align: center;">Pts</th><th style="width: 15%; text-align: center;">PJ</th></tr>
@@ -204,7 +219,7 @@
             
             <details open>
                 <summary>⏳ Pendientes</summary>
-                <div class="details-content" id="lista-mis-partidos"></div>
+                <div class="details-content scrollable" id="lista-mis-partidos"></div>
             </details>
 
             <div class="toggle-container" style="background-color: var(--bg-base); margin-top: 20px;">
@@ -214,7 +229,6 @@
 
             <!-- SECCIÓN CREAR PARTIDO -->
             <div id="seccion-crear-partido" style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
-                
                 <label>Tipo de Partido:</label>
                 <select id="input-tipo-crear" class="input-form" onchange="toggleVisibilidadPartido()">
                     <option value="Competitivo">Competitivo (Suma Puntos)</option>
@@ -272,17 +286,17 @@
                         </select>
                     </div>
                 </div>
-                <div id="lista-partidos-abiertos"></div>
+                <div id="lista-partidos-abiertos" class="scrollable"></div>
             </div>
 
             <details style="margin-top: 20px;">
                 <summary>🎾 En curso</summary>
-                <div class="details-content" id="lista-en-curso-partidos"></div>
+                <div class="details-content scrollable" id="lista-en-curso-partidos"></div>
             </details>
 
             <details style="margin-top: 15px;">
                 <summary>📜 Historial</summary>
-                <div class="details-content" id="lista-historial-partidos"></div>
+                <div class="details-content scrollable" id="lista-historial-partidos"></div>
             </details>
         </div>
 
@@ -326,7 +340,7 @@
                         <button class="btn btn-secundario" onclick="guardarClase()">Añadir a mi calendario</button>
                     </div>
                     <h4 style="color: var(--text-muted); margin-bottom: 10px;">Clases programadas:</h4>
-                    <div id="lista-mis-clases"></div>
+                    <div id="lista-mis-clases" class="scrollable"></div>
                 </div>
             </details>
 
@@ -354,10 +368,9 @@
                             </div>
                         </div>
                     </div>
-                    <div id="lista-profesores-academia"></div>
+                    <div id="lista-profesores-academia" class="scrollable"></div>
                 </div>
             </details>
-
         </div>
 
         <!-- VISTA TORNEOS -->
@@ -368,7 +381,7 @@
                 <div style="width: 30px;"></div>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9em; text-align: center;">Torneos disponibles para inscripción:</p>
-            <div id="lista-torneos" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="lista-torneos" class="scrollable" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <!-- VISTA AMIGOS -->
@@ -386,7 +399,7 @@
                 </div>
             </div>
             <h4 style="color: var(--text-muted); margin-bottom: 10px;">Tu lista de amigos:</h4>
-            <div id="lista-amigos" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="lista-amigos" class="scrollable" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <!-- VISTA PERFIL -->
@@ -451,7 +464,7 @@
                 <div style="width: 30px;"></div>
             </div>
             <p style="color: var(--text-muted); font-size: 0.9em; text-align: center;">Clubes adheridos al sistema:</p>
-            <div id="lista-clubes"></div>
+            <div id="lista-clubes" class="scrollable"></div>
         </div>
     </div>
 
@@ -535,11 +548,12 @@
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
         let clubesData = [
             { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
-            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" }
+            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" },
+            { id: 3, nombre: "Elite Sur", ubicacion: "Ruta 9", canchas: "6 Out", contacto: "351", apertura: "10:00", cierre: "22:00" }
         ];
         let rankingData = [
-            { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
-            { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
+            { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino', dni: "35000000" }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino', dni: "10101010" },
+            { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino', dni: "20202020" }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto', dni: "35000000" }
         ];
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
@@ -714,7 +728,7 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
-        // --- FUNCIONES RENDERIZADO GENERAL ---
+        // --- FUNCIONES RENDERIZADO ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
@@ -792,7 +806,16 @@
         }
 
         function renderizarRanking() {
-            const filtrados = rankingData.filter(r => r.modalidad === catRankingActual).sort((a, b) => b.puntos - a.puntos);
+            const busqueda = document.getElementById('input-buscar-ranking') ? document.getElementById('input-buscar-ranking').value.toLowerCase() : '';
+            const filtrados = rankingData.filter(r => {
+                let coincideModalidad = r.modalidad === catRankingActual;
+                let coincideBusqueda = true;
+                if (busqueda) {
+                    coincideBusqueda = r.nombre.toLowerCase().includes(busqueda) || (r.dni && r.dni.includes(busqueda));
+                }
+                return coincideModalidad && coincideBusqueda;
+            }).sort((a, b) => b.puntos - a.puntos);
+
             document.getElementById('tabla-ranking').innerHTML = filtrados.length ? filtrados.map((j, i) => `
                 <tr style="cursor:pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
                     <td style="text-align:center; font-weight:bold;"><div style="display:flex; align-items:center; justify-content:center; gap:8px;"><img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}"><span>${i + 1}</span></div></td>
@@ -860,6 +883,7 @@
             document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
+                
                 let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
@@ -911,7 +935,7 @@
                 </div>`).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay clubes.</p>';
         }
 
-        // --- FUNCIONES DE ACADEMIA ---
+        // --- FUNCIONES ACADEMIA ---
         function toggleAnticipacionClase() {
             const notificar = document.getElementById('clase-notificar').checked;
             document.getElementById('div-anticipacion-clase').style.display = notificar ? 'block' : 'none';
@@ -924,6 +948,7 @@
             const anticipacion = document.getElementById('clase-anticipacion').value;
 
             if (!hora) return alert("Por favor, selecciona una hora para tu clase.");
+
             clasesUsuario.push({ id: Date.now(), dia, hora, notificar, anticipacion });
             alert("Clase programada y añadida a tu calendario.");
             document.getElementById('clase-hora').value = '';
@@ -1037,17 +1062,6 @@
             if(p.j2 === 'Libre') p.j2 = user; else if(p.j3 === 'Libre') p.j3 = user; else if(p.j4 === 'Libre') p.j4 = user;
             if(![p.j1, p.j2, p.j3, p.j4].includes('Libre')) { p.estado = 'Partido Confirmado'; alert("¡Partido completado!"); } else { alert("Te has unido."); }
             renderizarMisPartidos(); renderizarPartidosAbiertos();
-        }
-
-        function abrirPerfilRanking(n) {
-            let j = rankingData.find(r => r.nombre === n);
-            document.getElementById('perfil-jugador-img').src = obtenerAvatarUrl(n);
-            document.getElementById('perfil-jugador-nombre').innerText = n;
-            document.getElementById('perfil-jugador-pos').innerText = j ? `#${rankingData.filter(r => r.modalidad === j.modalidad).sort((a,b)=>b.puntos-a.puntos).findIndex(r=>r.nombre===n)+1} (${j.modalidad})` : 'N/A';
-            document.getElementById('perfil-jugador-pts').innerText = j ? j.puntos : 0;
-            document.getElementById('perfil-jugador-pj').innerText = j ? j.pj : 0;
-            if(j) catRankingActual = j.modalidad;
-            document.getElementById('modal-ver-perfil').style.display = 'flex';
         }
 
         function abrirModalResultado(id) {
