@@ -5,37 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circuito Competitivo</title>
     <style>
-        /* --- APLICACIÓN DE REGLA ESTRICTA: BLANCO Y NEGRO --- */
-        html {
-            filter: grayscale(100%);
-        }
-
-        /* --- VARIABLES CSS --- */
+        /* --- VARIABLES CSS (PALETA AZUL COMPETITIVO) --- */
         :root {
-            --bg-base: #111111;
-            --bg-card: rgba(25, 25, 25, 0.85); /* Fondos translúcidos para efecto cristal */
-            --bg-light: rgba(40, 40, 40, 0.85);
-            --border-base: rgba(255, 255, 255, 0.2);
-            --border-light: rgba(255, 255, 255, 0.1);
+            --bg-base: #061122;
+            --bg-card: rgba(14, 35, 75, 0.7);
+            --bg-light: rgba(23, 56, 117, 0.6);
+            --border-base: #1e3a8a;
+            --border-light: #2563eb;
             --text-main: #ffffff;
-            --text-muted: #aaaaaa;
-            --text-light: #dddddd;
-            --primary: #cccccc;
-            --success: #bbbbbb;
-            --warning: #dddddd;
-            --danger: #888888;
+            --text-muted: #93c5fd;
+            --text-light: #dbeafe;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            
-            /* --- FONDO REALISTA (Cancha) --- */
             background-color: var(--bg-base); 
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            /* Fondo de la app emulando la cancha azul oscuro */
+            background-image: linear-gradient(rgba(6, 17, 34, 0.85), rgba(6, 17, 34, 0.95)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-
             color: var(--text-main); 
             margin: 0; padding: 20px; 
             display: flex; flex-direction: column; align-items: center;
@@ -44,14 +37,14 @@
         }
         
         .contenedor-principal {
-            background-color: transparent; /* Permite ver el fondo de la cancha */
+            background-color: transparent; 
             width: 100%; max-width: 700px; min-height: 80vh;
             border-radius: 12px; padding: 10px 0; 
             box-sizing: border-box; margin-bottom: 30px;
             transform: translateZ(0); 
         }
 
-        /* Efecto Cristal para todos los paneles internos */
+        /* --- PANELES ESTILO CRISTAL AZUL --- */
         .glass-panel {
             background: var(--bg-card);
             backdrop-filter: blur(12px);
@@ -59,54 +52,57 @@
             border: 1px solid var(--border-base);
             border-radius: 12px;
             padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         /* Banner Destacado / Carrusel */
         .carousel-container {
             position: relative; overflow: hidden; 
-            border: 1px solid var(--border-base); min-height: 200px;
+            border: 2px solid var(--primary); min-height: 200px;
             border-radius: 12px; margin-bottom: 25px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
-            background: rgba(0,0,0,0.5);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            background: rgba(10, 30, 70, 0.8);
+            backdrop-filter: blur(5px);
         }
         .carousel-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; transition: opacity 0.5s ease-in-out;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px 20px 30px; box-sizing: border-box; z-index: 1; pointer-events: none;
+            padding: 20px 20px 35px; box-sizing: border-box; z-index: 1; pointer-events: none;
             background-size: cover !important;
             background-position: center !important;
         }
         .carousel-slide.activo { opacity: 1; z-index: 2; pointer-events: auto; }
         .carousel-indicators { position: absolute; bottom: 12px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 3; }
-        .indicator { width: 25px; height: 6px; background-color: rgba(255, 255, 255, 0.3); border-radius: 4px; cursor: pointer; transition: 0.3s; }
-        .indicator.activo { background-color: rgba(255, 255, 255, 0.9); }
+        .indicator { width: 25px; height: 4px; background-color: rgba(255, 255, 255, 0.3); border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .indicator.activo { background-color: rgba(255, 255, 255, 1); box-shadow: 0 0 5px rgba(255,255,255,0.8); }
 
-        /* --- NUEVO MENÚ DE TARJETAS GRID 2x2 --- */
+        /* Menú de Tarjetas Grid 2x2 */
         .menu-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; 
             margin-top: 15px; padding-bottom: 20px; 
         }
         .tarjeta-menu { 
             border-radius: 12px; 
-            border: 1px solid var(--border-base);
-            height: 130px; /* Tarjetas más altas como en la imagen */
+            border: 2px solid var(--border-light);
+            height: 130px; 
             display: flex; flex-direction: column; justify-content: flex-end; align-items: center; 
             padding: 15px; font-size: 1.2em; font-weight: bold; 
-            color: white; text-shadow: 0px 2px 4px rgba(0,0,0,0.9);
+            color: white; text-shadow: 0px 2px 5px rgba(0,0,0,0.9);
             cursor: pointer; transition: 0.2s; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             background-size: cover !important;
             background-position: center !important;
         }
-        .tarjeta-menu:hover { transform: scale(1.03); border-color: white; }
+        .tarjeta-menu:hover { transform: scale(1.03); border-color: #60a5fa; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+        
+        .tarjeta-menu span { margin-bottom: 10px; }
 
-        /* Imágenes de fondo para cada tarjeta */
-        #card-ranking { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%), url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
-        #card-partidos { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
-        #card-academia { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
-        #card-torneos { background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
+        /* Imágenes de fondo para cada tarjeta con overlay azulado */
+        #card-ranking { background: linear-gradient(to top, rgba(6,17,34,0.9) 0%, rgba(6,17,34,0.2) 100%), url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
+        #card-partidos { background: linear-gradient(to top, rgba(6,17,34,0.9) 0%, rgba(6,17,34,0.2) 100%), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
+        #card-academia { background: linear-gradient(to top, rgba(6,17,34,0.9) 0%, rgba(6,17,34,0.2) 100%), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
+        #card-torneos { background: linear-gradient(to top, rgba(6,17,34,0.9) 0%, rgba(6,17,34,0.2) 100%), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
 
         .vista-interna { display: none; width: 100%; }
         .header-vista { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-base); padding-bottom: 15px; margin-bottom: 20px; }
@@ -114,45 +110,62 @@
         .btn-volver:hover { color: var(--text-main); }
 
         /* Formularios y Botones */
-        .input-form { padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); background-color: rgba(0,0,0,0.4); color: white; width: 100%; box-sizing: border-box; margin: 5px 0 15px; color-scheme: dark;}
-        .btn { padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border-base); font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; background-color: rgba(255,255,255,0.1); backdrop-filter: blur(5px);}
-        .btn:hover { background-color: rgba(255,255,255,0.2); }
+        .input-form { padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); background-color: rgba(0,0,0,0.3); color: white; width: 100%; box-sizing: border-box; margin: 5px 0 15px; color-scheme: dark;}
+        .btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; background-color: var(--primary);}
+        .btn:hover { background-color: #2563eb; }
+        .btn-primario { background-color: var(--success); } .btn-primario:hover { background-color: #059669; }
+        .btn-secundario { background-color: var(--primary); } .btn-secundario:hover { background-color: #2563eb; }
+        .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
+        .btn-alerta { background-color: var(--danger); } .btn-alerta:hover { background-color: #dc2626; }
         
-        .tarjeta-item { background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .tarjeta-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border-base); padding: 15px; border-radius: 8px; margin-bottom: 10px; }
 
+        /* Tablas */
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; text-align: left;}
         th, td { padding: 10px; border-bottom: 1px solid var(--border-light); }
         th { color: var(--text-muted); border-bottom: 2px solid var(--border-base); }
         tr:hover td { background-color: rgba(255,255,255,0.05); }
 
-        details { background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
+        /* Acordeones */
+        details { background: rgba(0,0,0,0.3); border: 1px solid var(--border-base); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
         summary { font-weight: bold; cursor: pointer; color: var(--text-light); outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;}
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '🔽'; font-size: 0.8em; transition: 0.2s; }
         details[open] summary::after { transform: rotate(180deg); }
         .details-content { padding-top: 15px; border-top: 1px solid var(--border-base); margin-top: 10px; }
 
-        #notificaciones-container { box-shadow: 0 4px 6px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        /* Notificaciones (Color Especial) */
+        #notificaciones-container {
+            background: rgba(14, 52, 114, 0.6);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        #notificaciones-container summary { color: #ffffff; padding: 5px; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border-base); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(15px); }
+        /* Modales */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border-light); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(15px); }
 
-        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 10px;}
-        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; color: var(--text-light); display:flex; align-items:center; justify-content:center;}
+        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 5px;}
+        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; color: var(--primary); display:flex; align-items:center; justify-content:center;}
         .icon-btn:hover { transform: scale(1.1); color: var(--text-main); }
 
+        /* Tabs internos */
         .toggle-container { display: flex; background-color: rgba(0,0,0,0.4); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-base); box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
         .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 101; transform: translateZ(0); -webkit-appearance: none;}
-        .toggle-btn:hover { color: var(--text-main); }
-        .toggle-btn.activo { background-color: rgba(255,255,255,0.2); color: var(--text-main); }
+        .toggle-btn:hover { color: var(--text-light); }
+        .toggle-btn.activo { background-color: var(--primary); color: var(--text-main); }
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
-        .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-base); flex-shrink: 0; }
+        .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); flex-shrink: 0; }
 
         .selector-fecha { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-base); margin-bottom: 15px; }
         .horarios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .btn-horario { background-color: rgba(0,0,0,0.4); border: 1px solid var(--border-base); color: var(--text-light); padding: 10px 5px; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.2s; }
-        .btn-horario.activo { background-color: rgba(255,255,255,0.2); color: white; border-color: white; }
+        .btn-horario.activo { background-color: var(--primary); color: white; border-color: white; box-shadow: 0 0 10px rgba(59,130,246,0.6);}
 
         .scrollable { max-height: 55vh; overflow-y: auto; padding-right: 5px; }
         .scrollable::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
@@ -175,11 +188,11 @@
                 </div>
             </div>
 
-            <details id="notificaciones-container" class="glass-panel" style="padding:0;">
-                <summary style="padding: 15px;">
+            <details id="notificaciones-container">
+                <summary>
                     <div style="display:flex; align-items:center; gap:8px;">🔔 Notificaciones <span id="badge-notif" style="background:var(--danger); color:white; border-radius:50%; padding:2px 8px; font-size:0.8em; display:none;">0</span></div>
                 </summary>
-                <div class="details-content scrollable" id="lista-notificaciones" style="margin:0; padding:15px; border-top: 1px solid var(--border-base);"></div>
+                <div class="details-content scrollable" id="lista-notificaciones" style="margin:0; padding:15px; border-top: 1px solid var(--border-light);"></div>
             </details>
 
             <div id="banner-proximo-partido" class="carousel-container"></div>
@@ -187,10 +200,10 @@
             <h4 style="color: var(--text-light); margin-bottom: 10px; text-align: center; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">¿Qué querés hacer?</h4>
             
             <div class="menu-grid">
-                <div id="card-ranking" class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')">Ranking</div>
-                <div id="card-partidos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')">Partidos</div>
-                <div id="card-academia" class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')">Academia</div>
-                <div id="card-torneos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')">Torneos</div>
+                <div id="card-ranking" class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')"><span style="font-size: 2.2em;">🏆</span> Ranking</div>
+                <div id="card-partidos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')"><span style="font-size: 2.2em;">🎾</span> Partidos</div>
+                <div id="card-academia" class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')"><span style="font-size: 2.2em;">🎓</span> Academia</div>
+                <div id="card-torneos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')"><span style="font-size: 2.2em;">🏅</span> Torneos</div>
             </div>
         </div>
 
@@ -268,9 +281,9 @@
 
                     <label>Fecha:</label>
                     <div class="selector-fecha">
-                        <button class="icon-btn" onclick="cambiarFechaCrear(-1)">⬅</button>
-                        <strong id="lbl-fecha-crear" style="font-size: 1.1em;">Hoy</strong>
-                        <button class="icon-btn" onclick="cambiarFechaCrear(1)">➡</button>
+                        <button class="icon-btn" style="color:white;" onclick="cambiarFechaCrear(-1)">⬅</button>
+                        <strong id="lbl-fecha-crear" style="font-size: 1.1em; color:var(--text-light);">Hoy</strong>
+                        <button class="icon-btn" style="color:white;" onclick="cambiarFechaCrear(1)">➡</button>
                     </div>
 
                     <label>Horarios Disponibles:</label>
@@ -279,7 +292,7 @@
                         No hay turnos disponibles para esta fecha.
                     </div>
 
-                    <button class="btn" onclick="crearPartido()">Crear Partido</button>
+                    <button class="btn btn-secundario" onclick="crearPartido()">Crear Partido</button>
                 </div>
 
                 <!-- SECCIÓN UNIRSE A PARTIDO -->
@@ -354,7 +367,7 @@
                                     <option value="12">12 hs antes</option><option value="8">8 hs antes</option><option value="4">4 hs antes</option><option value="2" selected>2 hs antes</option><option value="1">1 hs antes</option>
                                 </select>
                             </div>
-                            <button class="btn" onclick="guardarClase()">Añadir a mi calendario</button>
+                            <button class="btn btn-secundario" onclick="guardarClase()">Añadir a mi calendario</button>
                         </div>
                         <h4 style="color: var(--text-muted); margin-bottom: 10px;">Clases programadas:</h4>
                         <div id="lista-mis-clases" class="scrollable"></div>
@@ -416,7 +429,7 @@
                     <label style="color: var(--text-light); font-weight: bold; font-size: 0.9em;">Buscar por DNI o Nombre:</label>
                     <div class="busqueda-container">
                         <input type="text" id="input-buscar-amigo" class="input-form" placeholder="Ej: 12345678 o Juan Pérez" style="margin-bottom: 0;">
-                        <button class="btn" style="width: auto;" onclick="agregarAmigo()">Agregar</button>
+                        <button class="btn btn-secundario" style="width: auto;" onclick="agregarAmigo()">Agregar</button>
                     </div>
                 </div>
                 <h4 style="color: var(--text-muted); margin-bottom: 10px;">Tu lista de amigos:</h4>
@@ -461,7 +474,7 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn" style="margin-top: 10px;" onclick="guardarPerfil()">Guardar Cambios</button>
+                    <button class="btn btn-secundario" style="margin-top: 10px;" onclick="guardarPerfil()">Guardar Cambios</button>
                 </div>
             </div>
         </div>
@@ -475,8 +488,8 @@
                     <div style="width: 30px;"></div>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button class="btn" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
-                    <button class="btn" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
+                    <button class="btn" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                    <button class="btn" style="background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
                     <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
                 </div>
             </div>
@@ -502,7 +515,7 @@
             <h3 style="margin-top: 0; color: var(--success);">Cargar Resultado</h3>
             <input type="hidden" id="res-id-partido">
             <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-                <span id="res-eq1">Eq 1</span> <span style="color: var(--warning);">VS</span> <span id="res-eq2">Eq 2</span>
+                <span id="res-eq1" style="color: var(--primary);">Eq 1</span> <span style="color: var(--warning);">VS</span> <span id="res-eq2" style="color: var(--danger);">Eq 2</span>
             </div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
                 <div style="text-align: center;">
@@ -520,7 +533,7 @@
                     </div>
                 </div>
             </div>
-            <button class="btn" onclick="guardarResultado()">Confirmar</button>
+            <button class="btn btn-primario" onclick="guardarResultado()">Confirmar</button>
             <button class="btn btn-cerrar" onclick="cerrarModales()">Cancelar</button>
         </div>
     </div>
@@ -542,7 +555,7 @@
     <!-- MODAL PERFIL -->
     <div id="modal-ver-perfil" class="modal-overlay">
         <div class="modal-content" style="text-align: center; max-width: 320px;">
-            <img id="perfil-jugador-img" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid var(--border-base);">
+            <img id="perfil-jugador-img" src="" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 2px solid var(--primary);">
             <h3 id="perfil-jugador-nombre" style="margin-top: 0;">Nombre</h3>
             <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid var(--border-base); text-align: left; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-base); padding-bottom: 8px; margin-bottom: 8px;">
@@ -555,7 +568,7 @@
                     <span style="color: var(--text-muted);">PJ:</span><strong id="perfil-jugador-pj"></strong>
                 </div>
             </div>
-            <button class="btn" onclick="cambiarVistaPrincipal('ranking'); cerrarModales();">Ir al Ranking</button>
+            <button class="btn btn-secundario" onclick="cambiarVistaPrincipal('ranking'); cerrarModales();">Ir al Ranking</button>
             <button class="btn btn-cerrar" onclick="cerrarModales()">Cerrar</button>
         </div>
     </div>
@@ -567,6 +580,7 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
+        // Añadida la notificación con acción para "Unirse"
         let notificacionesData = [
             { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
             { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
@@ -574,26 +588,33 @@
         ];
         
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
+        
         let clubesData = [
             { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
             { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" },
             { id: 3, nombre: "Elite Sur", ubicacion: "Ruta 9", canchas: "6 Out", contacto: "351", apertura: "10:00", cierre: "22:00" }
         ];
+        
         let rankingData = [
             { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino', dni: "35000000" }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino', dni: "10101010" },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino', dni: "20202020" }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto', dni: "35000000" }
         ];
+        
+        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
             { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre", invitados: ["Jugador Uno"] }
         ];
         let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
-
-        let clasesUsuario = [{ id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }];
+        
+        let clasesUsuario = [
+            { id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }
+        ];
         let profesoresData = [
             { id: 1, nombre: "Miguel Lamperti", telefono: "3511111111", clubes: ["Club Central"], categorias: ["1ra", "2da", "3ra"], horarios: ["Mañana", "Tarde"] },
-            { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] }
+            { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] },
+            { id: 3, nombre: "Bela", telefono: "3513333333", clubes: ["Elite Sur"], categorias: ["1ra", "2da", "3ra", "4ta", "5ta"], horarios: ["Mañana", "Noche"] }
         ];
 
         // Variables Globales
@@ -602,13 +623,10 @@
         let horaSeleccionadaCrear = ''; 
 
         // --- INICIALIZACIÓN ---
-        document.addEventListener('DOMContentLoaded', () => {
-            fechaSeleccionadaCrear.setHours(0,0,0,0);
-            inicializarFormularioCrear();
-            cargarDatosPerfilEnFormulario();
-            renderizarTodo();
-            cambiarVistaPrincipal('inicio');
-        });
+        fechaSeleccionadaCrear.setHours(0,0,0,0);
+        inicializarFormularioCrear();
+        cargarDatosPerfilEnFormulario();
+        renderizarTodo();
 
         // --- HELPERS ---
         function obtenerAvatarUrl(nombre) {
@@ -627,6 +645,7 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
+        // --- MANEJO DE NOTIFICACIONES ---
         function ejecutarAccionNotificacion(accion, notifId) {
             let notif = notificacionesData.find(n => n.id === notifId);
             if (notif) notif.leida = true;
@@ -637,7 +656,27 @@
             }
         }
 
-        // --- LÓGICA DE PARTIDOS ---
+        function renderizarNotificaciones() {
+            const container = document.getElementById('lista-notificaciones');
+            const noLeidas = notificacionesData.filter(n => !n.leida).length;
+            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
+            document.getElementById('badge-notif').innerText = noLeidas;
+
+            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
+                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
+                let actionAttr = n.accion ? `cursor:pointer;` : '';
+                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
+                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
+            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
+            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
+        }
+
+        function marcarNotificacionesLeidas() {
+            notificacionesData.forEach(n => n.leida = true);
+            renderizarNotificaciones();
+        }
+
+        // --- SISTEMA DE PARTIDOS ---
         function toggleVisibilidadPartido() {
             const tipo = document.getElementById('input-tipo-crear').value;
             document.getElementById('div-visibilidad-crear').style.display = (tipo === 'Casual') ? 'block' : 'none';
@@ -735,7 +774,7 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
-        // --- FUNCIONES RENDERIZADO ---
+        // --- FUNCIONES RENDERIZADO GENERAL ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
@@ -756,8 +795,8 @@
             const proxT = torneosData.filter(t => t.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha))[0];
 
             let slidePartido = prox ? `
-                <div class="carousel-slide activo" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80');">
-                    <div style="font-size:0.8em; font-weight:bold; margin-bottom:5px;">TU PRÓXIMO PARTIDO</div>
+                <div class="carousel-slide activo" style="background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80');">
+                    <div style="font-size:0.8em; color:var(--primary); font-weight:bold; margin-bottom:5px;">TU PRÓXIMO PARTIDO</div>
                     <div style="font-size:1.25em; font-weight:bold;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
                     <div style="font-size:0.95em; margin-top:5px;">📍 Jugás en <strong>${prox.club}</strong></div>
                     <div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(255,255,255,0.3); display:flex; justify-content:space-between; align-items:center;">
@@ -768,7 +807,7 @@
                                 ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j2 : prox.j4)}
                             </div>
                         </div>
-                        <div style="font-weight:bold; font-size:1.2em;">VS</div>
+                        <div style="font-weight:bold; color:var(--warning); font-size:1.2em;">VS</div>
                         <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start; padding-left:10px;">
                             <strong style="font-size:0.85em; margin-bottom:10px;">Rival</strong>
                             <div style="display:inline-flex; flex-direction:column;">
@@ -777,21 +816,21 @@
                             </div>
                         </div>
                     </div>
-                </div>` : `<div class="carousel-slide activo" style="background: rgba(0,0,0,0.5); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">¡Bienvenido!</div><div style="margin-top:5px; text-align:center;">No tienes partidos programados.</div></div>`;
+                </div>` : `<div class="carousel-slide activo cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">¡Bienvenido!</div><div style="margin-top:5px; text-align:center;">No tienes partidos programados.</div></div>`;
 
             let slideTorneo = proxT ? `
-                <div class="carousel-slide" style="cursor:pointer; align-items:center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80');" onclick="cambiarVistaPrincipal('torneos')">
-                    <div style="font-size:0.8em; font-weight:bold; margin-bottom:5px;">PRÓXIMO TORNEO</div>
+                <div class="carousel-slide" style="cursor:pointer; align-items:center; background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80');" onclick="cambiarVistaPrincipal('torneos')">
+                    <div style="font-size:0.8em; color:var(--warning); font-weight:bold; margin-bottom:5px;">PRÓXIMO TORNEO</div>
                     <div style="font-size:1.5em; font-weight:bold; text-align:center;">🏆 ${proxT.nombre}</div>
                     <div style="margin-top:10px;">📅 ${proxT.fecha}</div><div style="margin-top:5px;">📍 ${proxT.club}</div>
-                </div>` : `<div class="carousel-slide" style="background: rgba(0,0,0,0.5); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Sin torneos próximos</div></div>`;
+                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Sin torneos próximos</div></div>`;
 
             let slideClub = ult ? `
-                <div class="carousel-slide" style="align-items:center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80');">
-                    <div style="font-size:0.8em; font-weight:bold; margin-bottom:5px;">TU ÚLTIMO CLUB</div>
+                <div class="carousel-slide" style="align-items:center; background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80');">
+                    <div style="font-size:0.8em; color:var(--success); font-weight:bold; margin-bottom:5px;">TU ÚLTIMO CLUB</div>
                     <div style="font-size:1.5em; font-weight:bold; text-align:center;">${ult.club} te espera</div>
-                    <button class="btn" style="margin-top:20px; width:auto;" onclick="irACrearPartidoEnClub('${ult.club}')">Reservar Cancha</button>
-                </div>` : `<div class="carousel-slide" style="background: rgba(0,0,0,0.5); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
+                    <button class="btn btn-primario" style="margin-top:20px; width:auto;" onclick="irACrearPartidoEnClub('${ult.club}')">Reservar Cancha</button>
+                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
 
             bannerContainer.innerHTML = `${slidePartido}${slideTorneo}${slideClub}<div class="carousel-indicators"><div class="indicator activo" onclick="cambiarSlide(0)"></div><div class="indicator" onclick="cambiarSlide(1)"></div><div class="indicator" onclick="cambiarSlide(2)"></div></div>`;
 
@@ -826,8 +865,8 @@
             document.getElementById('tabla-ranking').innerHTML = filtrados.length ? filtrados.map((j, i) => `
                 <tr style="cursor:pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
                     <td style="text-align:center; font-weight:bold;"><div style="display:flex; align-items:center; justify-content:center; gap:8px;"><img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}"><span>${i + 1}</span></div></td>
-                    <td style="${j.nombre === getNombreCompleto() ? 'font-weight:bold;' : ''}">${j.nombre}</td>
-                    <td style="text-align:center; font-weight:bold;">${j.puntos}</td>
+                    <td style="${j.nombre === getNombreCompleto() ? 'color:var(--primary); font-weight:bold;' : ''}">${j.nombre}</td>
+                    <td style="text-align:center; color:var(--warning); font-weight:bold;">${j.puntos}</td>
                     <td style="text-align:center;">${j.pj}</td>
                 </tr>`).join('') : `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Sin jugadores.</td></tr>`;
         }
@@ -848,11 +887,11 @@
             const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
             const renderHtml = (arr, isPend, isHistorial) => arr.length ? arr.map(p => `
-                <div class="tarjeta-item">
-                    <div style="display:flex; justify-content:space-between;"><strong>${p.j1} / ${p.j2}</strong> <span>VS</span> <strong>${p.j3} / ${p.j4}</strong></div>
+                <div class="tarjeta-item" style="background:var(--bg-card);">
+                    <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
                     <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                    ${isPend ? `<button class="btn" style="padding:5px; margin-top:10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>` : 
-                     (isHistorial ? `<span style="font-size:0.85em; display:block; margin-top:10px;">✅ Finalizado: ${p.resultado || 'Amistoso'}</span>` : '')}
+                    ${isPend ? `<button class="btn btn-primario" style="padding:5px; margin-top:10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>` : 
+                     (isHistorial ? `<span style="color:var(--success); font-size:0.85em; display:block; margin-top:10px;">✅ Finalizado: ${p.resultado || 'Amistoso'}</span>` : '')}
                 </div>`).join('') : `<p style="color:var(--text-muted); text-align:center; font-size:0.9em;">No hay partidos.</p>`;
 
             document.getElementById('lista-mis-partidos').innerHTML = renderHtml(pendientes, true, false);
@@ -861,11 +900,11 @@
             document.getElementById('lista-en-curso-partidos').innerHTML = enCurso.length ? enCurso.map(p => {
                 let cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let btnInvitar = cupos > 0 
-                    ? `<button class="btn" style="padding:5px; margin-top:10px;" onclick="window.open('https://wa.me/?text=¡Faltan ${cupos} jugadores para mi partido de pádel el ${p.fecha} a las ${p.hora} en ${p.club}! ¿Te sumás?', '_blank')">💬 Invitar por WhatsApp</button>` 
-                    : `<span style="font-size:0.85em; display:block; margin-top:10px;">✅ Partido Completo</span>`;
+                    ? `<button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="window.open('https://wa.me/?text=¡Faltan ${cupos} jugadores para mi partido de pádel el ${p.fecha} a las ${p.hora} en ${p.club}! ¿Te sumás?', '_blank')">💬 Invitar por WhatsApp</button>` 
+                    : `<span style="color:var(--success); font-size:0.85em; display:block; margin-top:10px;">✅ Partido Completo</span>`;
                 return `
-                <div class="tarjeta-item">
-                    <div style="display:flex; justify-content:space-between;"><strong>${p.j1} / ${p.j2}</strong> <span>VS</span> <strong>${p.j3} / ${p.j4}</strong></div>
+                <div class="tarjeta-item" style="background:var(--bg-card);">
+                    <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
                     <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
                     <div style="font-size:0.85em; color:var(--text-light); margin-top:4px;">Tipo: ${p.tipo} | Modalidad: ${p.modalidad}</div>
                     ${btnInvitar}
@@ -891,7 +930,7 @@
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
                 
-                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
+                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
                 <div class="tarjeta-item">
@@ -900,11 +939,11 @@
                             <strong style="color:var(--text-light);">${p.j1} busca (${p.modalidad})</strong>
                             ${tagInvitado}
                         </div>
-                        <span style="font-size: 0.8em; font-weight:bold;">${badgeTipo}</span>
+                        <span style="font-size: 0.8em; color:var(--primary); font-weight:bold;">${badgeTipo}</span>
                     </div>
                     <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                    <div style="font-size:0.85em; margin-top:5px;">Lugares: ${cupos} libres</div>
-                    <button class="btn" style="padding:5px; margin-top:10px;" onclick="unirsePartido(${p.id})">Unirme</button>
+                    <div style="color:var(--success); font-size:0.85em; margin-top:5px;">Lugares: ${cupos} libres</div>
+                    <button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="unirsePartido(${p.id})">Unirme</button>
                 </div>`;
             }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay partidos con estos filtros.</p>';
         }
@@ -912,10 +951,10 @@
         function renderizarTorneos() {
             document.getElementById('lista-torneos').innerHTML = torneosData.length ? torneosData.map(t => {
                 const inscripto = t.inscriptos.some(i => i.includes(getNombreCompleto()));
-                const btn = inscripto ? `<span style="font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` : `<button class="btn" style="padding:5px; font-size:0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse</button>`;
+                const btn = inscripto ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` : `<button class="btn btn-primario" style="padding:5px; font-size:0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse</button>`;
                 return `
                 <div class="tarjeta-item">
-                    <div style="font-weight:bold; font-size:1.1em;">🏆 ${t.nombre}</div>
+                    <div style="color:var(--warning); font-weight:bold; font-size:1.1em;">🏆 ${t.nombre}</div>
                     <div style="color:var(--text-light); font-size:0.85em; margin-bottom:8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-base); padding-top:10px; margin-top:5px;">
                         <small style="color:var(--text-muted);">Cupos: ${t.inscriptos.length}/${t.cupo}</small>${btn}
@@ -928,33 +967,18 @@
             document.getElementById('lista-amigos').innerHTML = amigosData.length ? amigosData.map((a, idx) => `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.4); border:1px solid var(--border-base); padding:10px 15px; border-radius:8px;">
                     <div><strong style="color:var(--text-light);">${a.nombre}</strong><br><small style="color:var(--text-muted);">DNI: ${a.dni}</small></div>
-                    <button style="background:none; border:none; font-size:1.2em; cursor:pointer;" onclick="eliminarAmigo(${idx})">❌</button>
+                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarAmigo(${idx})">❌</button>
                 </div>`).join('') : '<p style="color:var(--text-muted); font-size:0.9em;">Aún no tienes amigos.</p>';
         }
 
         function renderizarClubes() {
             document.getElementById('lista-clubes').innerHTML = clubesData.length ? clubesData.map(c => `
                 <div class="tarjeta-item">
-                    <div style="font-weight:bold; font-size:1.1em;">🎾 ${c.nombre}</div>
+                    <div style="color:var(--primary); font-weight:bold; font-size:1.1em;">🎾 ${c.nombre}</div>
                     <div style="color:var(--text-light); font-size:0.9em; margin:5px 0;">📍 ${c.ubicacion}</div>
-                    <div style="font-size:0.85em; margin-bottom:10px;">Canchas: ${c.canchas}</div>
-                    <button class="btn" style="padding:5px; font-size:0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')">💬 WhatsApp del Club</button>
+                    <div style="color:var(--success); font-size:0.85em; margin-bottom:10px;">Canchas: ${c.canchas}</div>
+                    <button class="btn btn-secundario" style="padding:5px; font-size:0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')">💬 WhatsApp del Club</button>
                 </div>`).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay clubes.</p>';
-        }
-
-        function renderizarNotificaciones() {
-            const container = document.getElementById('lista-notificaciones');
-            const noLeidas = notificacionesData.filter(n => !n.leida).length;
-            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
-            document.getElementById('badge-notif').innerText = noLeidas;
-
-            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
-                let mark = n.leida ? '' : '<span style="font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                let actionAttr = n.accion ? `cursor:pointer;` : '';
-                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
-                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
-            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
-            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
         }
 
         // --- FUNCIONES ACADEMIA ---
@@ -998,14 +1022,14 @@
             });
 
             div.innerHTML = clasesUsuario.map(c => `
-                <div class="tarjeta-item" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="tarjeta-item" style="background:var(--bg-card); display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <strong style="font-size:1.1em;">${c.dia} a las ${c.hora}hs</strong>
+                        <strong style="color:var(--primary); font-size:1.1em;">${c.dia} a las ${c.hora}hs</strong>
                         <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
                             ${c.notificar ? `🔔 Notificación: ${c.anticipacion} hs antes` : `🔕 Sin notificación`}
                         </div>
                     </div>
-                    <button style="background:none; border:none; font-size:1.2em; cursor:pointer;" onclick="eliminarClase(${c.id})">❌</button>
+                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarClase(${c.id})">❌</button>
                 </div>
             `).join('');
         }
@@ -1036,15 +1060,15 @@
             }
 
             div.innerHTML = profesFiltrados.map(p => `
-                <div class="tarjeta-item">
+                <div class="tarjeta-item" style="background:var(--bg-card);">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
-                            <strong style="font-size:1.1em;">🧑‍🏫 ${p.nombre}</strong>
+                            <strong style="color:var(--success); font-size:1.1em;">🧑‍🏫 ${p.nombre}</strong>
                             <div style="font-size:0.85em; color:var(--text-light); margin-top:5px;">Categorías: <strong>${p.categorias.join(', ')}</strong></div>
                             <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">📍 ${p.clubes.join(' | ')}</div>
                             <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">⌚ Horarios: ${p.horarios.join(', ')}</div>
                         </div>
-                        <button class="btn" style="width:auto; padding:8px 12px; font-size:0.85em;" onclick="window.open('https://wa.me/${p.telefono}', '_blank')">💬 Contactar</button>
+                        <button class="btn btn-secundario" style="width:auto; padding:8px 12px; font-size:0.85em;" onclick="window.open('https://wa.me/${p.telefono}', '_blank')">💬 Contactar</button>
                     </div>
                 </div>
             `).join('');
