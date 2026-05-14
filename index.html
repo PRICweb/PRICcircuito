@@ -27,6 +27,8 @@
             color: var(--text-main); 
             margin: 0; padding: 20px; 
             display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased; /* Suaviza las fuentes */
         }
         
         .contenedor-principal {
@@ -35,6 +37,11 @@
             border-radius: 12px; padding: 20px; 
             box-sizing: border-box; margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            
+            /* --- FIX DE CARGA: Fuerza a la GPU a renderizar inmediatamente --- */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
         }
 
         /* --- FONDO UNIFICADO CANCHA DE PÁDEL --- */
@@ -54,6 +61,7 @@
         .carousel-container {
             position: relative; overflow: hidden; 
             border: 1px solid #60a5fa; min-height: 190px;
+            transform: translateZ(0); /* Previene parpadeo del carrusel */
         }
         .carousel-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -299,13 +307,7 @@
                             <div style="flex: 1;">
                                 <label style="font-size: 0.85em; color: var(--text-muted);">Día:</label>
                                 <select id="clase-dia" class="input-form">
-                                    <option value="Lunes">Lunes</option>
-                                    <option value="Martes">Martes</option>
-                                    <option value="Miércoles">Miércoles</option>
-                                    <option value="Jueves">Jueves</option>
-                                    <option value="Viernes">Viernes</option>
-                                    <option value="Sábado">Sábado</option>
-                                    <option value="Domingo">Domingo</option>
+                                    <option value="Lunes">Lunes</option><option value="Martes">Martes</option><option value="Miércoles">Miércoles</option><option value="Jueves">Jueves</option><option value="Viernes">Viernes</option><option value="Sábado">Sábado</option><option value="Domingo">Domingo</option>
                                 </select>
                             </div>
                             <div style="flex: 1;">
@@ -322,11 +324,7 @@
                         <div id="div-anticipacion-clase" style="display: block;">
                             <label style="font-size: 0.85em; color: var(--text-muted);">Con anticipación de:</label>
                             <select id="clase-anticipacion" class="input-form">
-                                <option value="12">12 hs antes</option>
-                                <option value="8">8 hs antes</option>
-                                <option value="4">4 hs antes</option>
-                                <option value="2" selected>2 hs antes</option>
-                                <option value="1">1 hs antes</option>
+                                <option value="12">12 hs antes</option><option value="8">8 hs antes</option><option value="4">4 hs antes</option><option value="2" selected>2 hs antes</option><option value="1">1 hs antes</option>
                             </select>
                         </div>
                         <button class="btn btn-secundario" onclick="guardarClase()">Añadir a mi calendario</button>
@@ -349,24 +347,13 @@
                             <div style="flex: 1;">
                                 <label style="font-size: 0.85em; color: var(--text-muted);">Categoría:</label>
                                 <select id="filtro-profe-cat" class="input-form" onchange="renderizarProfesores()">
-                                    <option value="Todas">Todas</option>
-                                    <option value="1ra">1ra</option>
-                                    <option value="2da">2da</option>
-                                    <option value="3ra">3ra</option>
-                                    <option value="4ta">4ta</option>
-                                    <option value="5ta">5ta</option>
-                                    <option value="6ta">6ta</option>
-                                    <option value="7ma">7ma</option>
-                                    <option value="8va">8va</option>
+                                    <option value="Todas">Todas</option><option value="1ra">1ra</option><option value="2da">2da</option><option value="3ra">3ra</option><option value="4ta">4ta</option><option value="5ta">5ta</option><option value="6ta">6ta</option><option value="7ma">7ma</option><option value="8va">8va</option>
                                 </select>
                             </div>
                             <div style="flex: 1;">
                                 <label style="font-size: 0.85em; color: var(--text-muted);">Horario:</label>
                                 <select id="filtro-profe-horario" class="input-form" onchange="renderizarProfesores()">
-                                    <option value="Todos">Todos</option>
-                                    <option value="Mañana">Mañana</option>
-                                    <option value="Tarde">Tarde</option>
-                                    <option value="Noche">Noche</option>
+                                    <option value="Todos">Todos</option><option value="Mañana">Mañana</option><option value="Tarde">Tarde</option><option value="Noche">Noche</option>
                                 </select>
                             </div>
                         </div>
@@ -543,7 +530,7 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        // Añadimos la notificacion de la invitación
+        // Añadida la notificación con acción para "Unirse"
         let notificacionesData = [
             { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
             { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
@@ -563,6 +550,7 @@
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
         
+        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
@@ -585,10 +573,18 @@
         let horaSeleccionadaCrear = ''; 
 
         // --- INICIALIZACIÓN ---
-        fechaSeleccionadaCrear.setHours(0,0,0,0);
-        inicializarFormularioCrear();
-        cargarDatosPerfilEnFormulario();
-        renderizarTodo();
+        document.addEventListener('DOMContentLoaded', () => {
+            fechaSeleccionadaCrear.setHours(0,0,0,0);
+            inicializarFormularioCrear();
+            cargarDatosPerfilEnFormulario();
+            renderizarTodo();
+            cambiarVistaPrincipal('inicio');
+            
+            // Forzar repintado por bug de navegadores
+            requestAnimationFrame(() => {
+                document.body.style.transform = 'translateZ(0)';
+            });
+        });
 
         // --- HELPERS ---
         function obtenerAvatarUrl(nombre) {
@@ -775,16 +771,19 @@
 
             bannerContainer.innerHTML = `${slidePartido}${slideTorneo}${slideClub}<div class="carousel-indicators"><div class="indicator activo" onclick="cambiarSlide(0)"></div><div class="indicator" onclick="cambiarSlide(1)"></div><div class="indicator" onclick="cambiarSlide(2)"></div></div>`;
 
-            clearInterval(bannerInterval);
-            bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
+            // Forzar la activación del primer slide de inmediato
+            cambiarSlide(0);
         }
 
         function cambiarSlide(index) {
             const slides = document.querySelectorAll('#banner-proximo-partido .carousel-slide');
             const inds = document.querySelectorAll('#banner-proximo-partido .indicator');
+            if(!slides.length) return;
+
             slides.forEach((s, i) => s.classList.toggle('activo', i === index));
             inds.forEach((ind, i) => ind.classList.toggle('activo', i === index));
             currentSlide = index;
+            
             clearInterval(bannerInterval);
             bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
         }
@@ -859,7 +858,6 @@
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
                 
-                // NOTA: Se actualizó el TAG con borde redondeado y mensaje en verde como solicitaste
                 let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
