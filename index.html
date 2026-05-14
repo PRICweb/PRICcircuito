@@ -241,9 +241,7 @@
                 </div>
 
                 <label>Horarios Disponibles:</label>
-                <div id="grid-horarios" class="horarios-grid">
-                    <!-- Se rellena dinámicamente con rectángulos -->
-                </div>
+                <div id="grid-horarios" class="horarios-grid"></div>
                 <div id="msg-sin-horarios" style="display:none; color:var(--text-muted); text-align:center; margin-bottom:15px; font-size:0.9em;">
                     No hay turnos disponibles para esta fecha.
                 </div>
@@ -333,7 +331,6 @@
                         </div>
                         <button class="btn btn-secundario" onclick="guardarClase()">Añadir a mi calendario</button>
                     </div>
-                    
                     <h4 style="color: var(--text-muted); margin-bottom: 10px;">Clases programadas:</h4>
                     <div id="lista-mis-clases"></div>
                 </div>
@@ -374,7 +371,6 @@
                             </div>
                         </div>
                     </div>
-                    
                     <div id="lista-profesores-academia"></div>
                 </div>
             </details>
@@ -547,7 +543,7 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        // Añadida la notificación con acción para "Unirse"
+        // Añadimos la notificacion de la invitación
         let notificacionesData = [
             { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
             { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
@@ -555,17 +551,18 @@
         ];
         
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
+        
         let clubesData = [
             { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
             { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" },
             { id: 3, nombre: "Elite Sur", ubicacion: "Ruta 9", canchas: "6 Out", contacto: "351", apertura: "10:00", cierre: "22:00" }
         ];
+        
         let rankingData = [
             { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
         
-        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
@@ -608,6 +605,16 @@
             let h = Math.floor(minutos / 60) % 24;
             let m = minutos % 60;
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        }
+
+        function ejecutarAccionNotificacion(accion, notifId) {
+            let notif = notificacionesData.find(n => n.id === notifId);
+            if (notif) notif.leida = true;
+            
+            if (accion === 'unirse') {
+                cambiarVistaPrincipal('partidos');
+                cambiarAccionPartido('unirse');
+            }
         }
 
         // --- LÓGICA DE PARTIDOS ---
@@ -708,16 +715,6 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
-        function ejecutarAccionNotificacion(accion, notifId) {
-            let notif = notificacionesData.find(n => n.id === notifId);
-            if (notif) notif.leida = true;
-            
-            if (accion === 'unirse') {
-                cambiarVistaPrincipal('partidos');
-                cambiarAccionPartido('unirse');
-            }
-        }
-
         // --- FUNCIONES RENDERIZADO ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
@@ -808,20 +805,14 @@
             const hoyStr = getHoyFormateado();
             const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user)).sort((a,b) => b.fecha.localeCompare(a.fecha));
             
-            // Simulación: Si un partido casual ya pasó de fecha, pasa a "Finalizado" automáticamente
             misPartidos.forEach(p => {
                 if(p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
                     p.estado = 'Finalizado'; p.resultado = 'Amistoso';
                 }
             });
 
-            // Pendientes: Solo Competitivos que necesitan resultado
             const pendientes = misPartidos.filter(p => p.estado === 'Pendiente Resultado' && p.tipo === 'Competitivo');
-            
-            // En Curso: Partidos que todavía no se juegan (Buscando Rival o Confirmado)
             const enCurso = misPartidos.filter(p => p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado');
-            
-            // Historial: Finalizados o Casuales ya pasados
             const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
             const renderHtml = (arr, isPend, isHistorial) => arr.length ? arr.map(p => `
@@ -835,7 +826,6 @@
             document.getElementById('lista-mis-partidos').innerHTML = renderHtml(pendientes, true, false);
             document.getElementById('lista-historial-partidos').innerHTML = renderHtml(finalizados, false, true);
 
-            // Render En Curso con el botón de WhatsApp si faltan jugadores
             document.getElementById('lista-en-curso-partidos').innerHTML = enCurso.length ? enCurso.map(p => {
                 let cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let btnInvitar = cupos > 0 
@@ -868,7 +858,9 @@
             document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
-                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
+                
+                // NOTA: Se actualizó el TAG con borde redondeado y mensaje en verde como solicitaste
+                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
                 <div class="tarjeta-item">
