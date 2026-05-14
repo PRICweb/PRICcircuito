@@ -27,10 +27,8 @@
             color: var(--text-main); 
             margin: 0; padding: 20px; 
             display: flex; flex-direction: column; align-items: center;
-            
-            /* --- OPTIMIZACIÓN DE CARGA: Oculto al inicio para mostrar de golpe --- */
-            opacity: 0;
-            transition: opacity 0.4s ease-in-out;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
         
         .contenedor-principal {
@@ -39,7 +37,7 @@
             border-radius: 12px; padding: 20px; 
             box-sizing: border-box; margin-bottom: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            /* Fuerza a la GPU a preparar el contenedor */
+            /* Aceleración por hardware segura */
             transform: translateZ(0); 
         }
 
@@ -59,7 +57,7 @@
         }
         .carousel-container {
             position: relative; overflow: hidden; 
-            border: 1px solid #60a5fa; min-height: 190px;
+            border: 1px solid #60a5fa; min-height: 190px; background-color: #1e3a8a;
         }
         .carousel-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -116,8 +114,8 @@
         .icon-btn:hover { transform: scale(1.1); color: var(--text-main); }
 
         /* Tabs internos */
-        .toggle-container { display: flex; background-color: var(--bg-light); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-light); box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
-        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 101; transform: translateZ(0); -webkit-appearance: none;}
+        .toggle-container { display: flex; background-color: var(--bg-light); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-light); box-sizing: border-box; gap: 4px; position: relative; z-index: 10;}
+        .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 11; transform: translateZ(0); -webkit-appearance: none;}
         .toggle-btn:hover { color: var(--text-light); }
         .toggle-btn.activo { background-color: var(--primary); color: var(--text-main); }
 
@@ -528,7 +526,6 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        // Añadida la notificación con acción para "Unirse"
         let notificacionesData = [
             { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
             { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
@@ -536,33 +533,25 @@
         ];
         
         let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
-        
         let clubesData = [
             { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
-            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" },
-            { id: 3, nombre: "Elite Sur", ubicacion: "Ruta 9", canchas: "6 Out", contacto: "351", apertura: "10:00", cierre: "22:00" }
+            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" }
         ];
-        
         let rankingData = [
             { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino' }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino' },
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino' }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto' }
         ];
-        
-        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
             { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre", invitados: ["Jugador Uno"] }
         ];
         let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
-        
-        let clasesUsuario = [
-            { id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }
-        ];
+
+        let clasesUsuario = [{ id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }];
         let profesoresData = [
             { id: 1, nombre: "Miguel Lamperti", telefono: "3511111111", clubes: ["Club Central"], categorias: ["1ra", "2da", "3ra"], horarios: ["Mañana", "Tarde"] },
-            { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] },
-            { id: 3, nombre: "Bela", telefono: "3513333333", clubes: ["Elite Sur"], categorias: ["1ra", "2da", "3ra", "4ta", "5ta"], horarios: ["Mañana", "Noche"] }
+            { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] }
         ];
 
         // Variables Globales
@@ -577,12 +566,6 @@
             cargarDatosPerfilEnFormulario();
             renderizarTodo();
             cambiarVistaPrincipal('inicio');
-            
-            // Forzar repintado por bug de navegadores
-            requestAnimationFrame(() => {
-                document.body.style.opacity = '1';
-                document.body.style.transform = 'translateZ(0)';
-            });
         });
 
         // --- HELPERS ---
@@ -602,6 +585,7 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
+        // --- MANEJO DE NOTIFICACIONES ---
         function ejecutarAccionNotificacion(accion, notifId) {
             let notif = notificacionesData.find(n => n.id === notifId);
             if (notif) notif.leida = true;
@@ -612,7 +596,27 @@
             }
         }
 
-        // --- LÓGICA DE PARTIDOS ---
+        function renderizarNotificaciones() {
+            const container = document.getElementById('lista-notificaciones');
+            const noLeidas = notificacionesData.filter(n => !n.leida).length;
+            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
+            document.getElementById('badge-notif').innerText = noLeidas;
+
+            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
+                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
+                let actionAttr = n.accion ? `cursor:pointer;` : '';
+                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
+                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
+            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
+            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
+        }
+
+        function marcarNotificacionesLeidas() {
+            notificacionesData.forEach(n => n.leida = true);
+            renderizarNotificaciones();
+        }
+
+        // --- SISTEMA DE PARTIDOS ---
         function toggleVisibilidadPartido() {
             const tipo = document.getElementById('input-tipo-crear').value;
             document.getElementById('div-visibilidad-crear').style.display = (tipo === 'Casual') ? 'block' : 'none';
@@ -710,7 +714,7 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
-        // --- FUNCIONES RENDERIZADO ---
+        // --- FUNCIONES RENDERIZADO GENERAL ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
@@ -803,7 +807,6 @@
             const hoyStr = getHoyFormateado();
             const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user)).sort((a,b) => b.fecha.localeCompare(a.fecha));
             
-            // Simulación: Si un partido casual ya pasó de fecha, pasa a "Finalizado" automáticamente
             misPartidos.forEach(p => {
                 if(p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
                     p.estado = 'Finalizado'; p.resultado = 'Amistoso';
@@ -825,7 +828,6 @@
             document.getElementById('lista-mis-partidos').innerHTML = renderHtml(pendientes, true, false);
             document.getElementById('lista-historial-partidos').innerHTML = renderHtml(finalizados, false, true);
 
-            // Render En Curso con el botón de WhatsApp si faltan jugadores
             document.getElementById('lista-en-curso-partidos').innerHTML = enCurso.length ? enCurso.map(p => {
                 let cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let btnInvitar = cupos > 0 
@@ -858,8 +860,6 @@
             document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
                 const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
                 let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
-                
-                // Etiqueta de "Haz sido invitado" según la nueva solicitud
                 let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
                 
                 return `
@@ -911,22 +911,7 @@
                 </div>`).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay clubes.</p>';
         }
 
-        function renderizarNotificaciones() {
-            const container = document.getElementById('lista-notificaciones');
-            const noLeidas = notificacionesData.filter(n => !n.leida).length;
-            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
-            document.getElementById('badge-notif').innerText = noLeidas;
-
-            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
-                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                let actionAttr = n.accion ? `cursor:pointer;` : '';
-                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
-                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
-            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
-            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
-        }
-
-        // --- FUNCIONES ACADEMIA ---
+        // --- FUNCIONES DE ACADEMIA ---
         function toggleAnticipacionClase() {
             const notificar = document.getElementById('clase-notificar').checked;
             document.getElementById('div-anticipacion-clase').style.display = notificar ? 'block' : 'none';
@@ -939,7 +924,6 @@
             const anticipacion = document.getElementById('clase-anticipacion').value;
 
             if (!hora) return alert("Por favor, selecciona una hora para tu clase.");
-
             clasesUsuario.push({ id: Date.now(), dia, hora, notificar, anticipacion });
             alert("Clase programada y añadida a tu calendario.");
             document.getElementById('clase-hora').value = '';
@@ -1055,6 +1039,17 @@
             renderizarMisPartidos(); renderizarPartidosAbiertos();
         }
 
+        function abrirPerfilRanking(n) {
+            let j = rankingData.find(r => r.nombre === n);
+            document.getElementById('perfil-jugador-img').src = obtenerAvatarUrl(n);
+            document.getElementById('perfil-jugador-nombre').innerText = n;
+            document.getElementById('perfil-jugador-pos').innerText = j ? `#${rankingData.filter(r => r.modalidad === j.modalidad).sort((a,b)=>b.puntos-a.puntos).findIndex(r=>r.nombre===n)+1} (${j.modalidad})` : 'N/A';
+            document.getElementById('perfil-jugador-pts').innerText = j ? j.puntos : 0;
+            document.getElementById('perfil-jugador-pj').innerText = j ? j.pj : 0;
+            if(j) catRankingActual = j.modalidad;
+            document.getElementById('modal-ver-perfil').style.display = 'flex';
+        }
+
         function abrirModalResultado(id) {
             partidoEnEdicion = partidosData.find(x => x.id === id); if(!partidoEnEdicion) return;
             document.getElementById('res-eq1').innerText = `${partidoEnEdicion.j1} / ${partidoEnEdicion.j2}`;
@@ -1087,6 +1082,14 @@
         }
 
         function enviarDenuncia() { if(!document.getElementById('denuncia-jugador').value || !document.getElementById('denuncia-motivo').value) return alert("Completa los datos."); alert("Enviada."); cerrarModales(); }
+        
+        function cargarDatosPerfilEnFormulario() {
+            document.getElementById('lbl-nombre-usuario').innerText = getNombreCompleto();
+            ['nombre','apellido','edad','genero','telefono','dni','preferencia','foto'].forEach(k => document.getElementById(`perfil-${k}`).value = perfilUsuario[k] || '');
+            actualizarPreviewFoto();
+        }
+        function guardarPerfil() { ['nombre','apellido','edad','genero','telefono','dni','preferencia','foto'].forEach(k => perfilUsuario[k] = document.getElementById(`perfil-${k}`).value.trim()); alert("Guardado"); cambiarVistaPrincipal('inicio'); renderizarTodo(); }
+        function actualizarPreviewFoto() { const u = document.getElementById('perfil-foto').value.trim(); const i = document.getElementById('preview-foto-perfil'); i.src = u; i.style.display = u ? 'block' : 'none'; }
     </script>
 </body>
 </html>
