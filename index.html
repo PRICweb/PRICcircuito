@@ -7,8 +7,8 @@
     <style>
         /* --- VARIABLES CSS (PALETA AZUL COMPETITIVO) --- */
         :root {
-            --bg-base: #061122;
-            --bg-card: rgba(14, 35, 75, 0.7);
+            --bg-base: #061122; /* Azul muy oscuro para el fondo */
+            --bg-card: rgba(13, 35, 75, 0.85); /* Paneles translúcidos */
             --bg-light: rgba(23, 56, 117, 0.6);
             --border-base: #1e3a8a;
             --border-light: #2563eb;
@@ -24,8 +24,8 @@
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: var(--bg-base); 
-            /* Fondo de la app emulando la cancha azul oscuro */
-            background-image: linear-gradient(rgba(6, 17, 34, 0.85), rgba(6, 17, 34, 0.95)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            /* Fondo principal: Cancha azul oscuro con gradiente superpuesto */
+            background-image: linear-gradient(rgba(4, 12, 28, 0.85), rgba(4, 12, 28, 0.95)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -58,11 +58,10 @@
         /* Banner Destacado / Carrusel */
         .carousel-container {
             position: relative; overflow: hidden; 
-            border: 2px solid var(--primary); min-height: 200px;
+            border: 2px solid var(--border-light); min-height: 220px;
             border-radius: 12px; margin-bottom: 25px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.6);
             background: rgba(10, 30, 70, 0.8);
-            backdrop-filter: blur(5px);
         }
         .carousel-slide {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -71,10 +70,11 @@
             padding: 20px 20px 35px; box-sizing: border-box; z-index: 1; pointer-events: none;
             background-size: cover !important;
             background-position: center !important;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
         .carousel-slide.activo { opacity: 1; z-index: 2; pointer-events: auto; }
         .carousel-indicators { position: absolute; bottom: 12px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 3; }
-        .indicator { width: 25px; height: 4px; background-color: rgba(255, 255, 255, 0.3); border-radius: 4px; cursor: pointer; transition: 0.3s; }
+        .indicator { width: 25px; height: 4px; background-color: rgba(255, 255, 255, 0.3); border-radius: 2px; cursor: pointer; transition: 0.3s; }
         .indicator.activo { background-color: rgba(255, 255, 255, 1); box-shadow: 0 0 5px rgba(255,255,255,0.8); }
 
         /* Menú de Tarjetas Grid 2x2 */
@@ -85,18 +85,17 @@
         .tarjeta-menu { 
             border-radius: 12px; 
             border: 2px solid var(--border-light);
-            height: 130px; 
+            height: 140px; 
             display: flex; flex-direction: column; justify-content: flex-end; align-items: center; 
             padding: 15px; font-size: 1.2em; font-weight: bold; 
-            color: white; text-shadow: 0px 2px 5px rgba(0,0,0,0.9);
+            color: white; text-shadow: 0px 2px 6px rgba(0,0,0,0.9);
             cursor: pointer; transition: 0.2s; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             background-size: cover !important;
             background-position: center !important;
         }
         .tarjeta-menu:hover { transform: scale(1.03); border-color: #60a5fa; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        
-        .tarjeta-menu span { margin-bottom: 10px; }
+        .tarjeta-menu span { margin-bottom: 10px; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8)); }
 
         /* Imágenes de fondo para cada tarjeta con overlay azulado */
         #card-ranking { background: linear-gradient(to top, rgba(6,17,34,0.9) 0%, rgba(6,17,34,0.2) 100%), url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80'); }
@@ -110,7 +109,7 @@
         .btn-volver:hover { color: var(--text-main); }
 
         /* Formularios y Botones */
-        .input-form { padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); background-color: rgba(0,0,0,0.3); color: white; width: 100%; box-sizing: border-box; margin: 5px 0 15px; color-scheme: dark;}
+        .input-form { padding: 10px; border-radius: 6px; border: 1px solid var(--border-light); background-color: rgba(0,0,0,0.4); color: white; width: 100%; box-sizing: border-box; margin: 5px 0 15px; color-scheme: dark;}
         .btn { padding: 10px 15px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; width: 100%; box-sizing: border-box; transition: 0.2s; background-color: var(--primary);}
         .btn:hover { background-color: #2563eb; }
         .btn-primario { background-color: var(--success); } .btn-primario:hover { background-color: #059669; }
@@ -118,49 +117,49 @@
         .btn-cerrar { background-color: #4b5563; margin-top: 10px;}
         .btn-alerta { background-color: var(--danger); } .btn-alerta:hover { background-color: #dc2626; }
         
-        .tarjeta-item { background: rgba(0,0,0,0.3); border: 1px solid var(--border-base); padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .tarjeta-item { background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); padding: 15px; border-radius: 8px; margin-bottom: 10px; }
 
-        /* Tablas */
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; text-align: left;}
         th, td { padding: 10px; border-bottom: 1px solid var(--border-light); }
         th { color: var(--text-muted); border-bottom: 2px solid var(--border-base); }
         tr:hover td { background-color: rgba(255,255,255,0.05); }
 
-        /* Acordeones */
-        details { background: rgba(0,0,0,0.3); border: 1px solid var(--border-base); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
+        details { background: rgba(0,0,0,0.4); border: 1px solid var(--border-base); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
         summary { font-weight: bold; cursor: pointer; color: var(--text-light); outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center;}
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '🔽'; font-size: 0.8em; transition: 0.2s; }
         details[open] summary::after { transform: rotate(180deg); }
         .details-content { padding-top: 15px; border-top: 1px solid var(--border-base); margin-top: 10px; }
 
-        /* Notificaciones (Color Especial) */
+        /* Notificaciones (Color Especial Azul) */
         #notificaciones-container {
-            background: rgba(14, 52, 114, 0.6);
+            background: rgba(14, 52, 114, 0.8);
             border: 1px solid var(--border-light);
             border-radius: 10px;
             color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            margin-bottom: 25px;
         }
         #notificaciones-container summary { color: #ffffff; padding: 5px; }
+        #notificaciones-container .details-content { border-top: 1px solid rgba(255,255,255,0.1); }
 
-        /* Modales */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border-light); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(15px); }
+        .modal-content { background: var(--bg-card); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border-base); max-height: 90vh; overflow-y: auto; backdrop-filter: blur(15px); }
 
-        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 5px;}
-        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; color: var(--primary); display:flex; align-items:center; justify-content:center;}
-        .icon-btn:hover { transform: scale(1.1); color: var(--text-main); }
+        .header-acciones { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 0 10px;}
+        
+        /* Filtro para teñir de azul los emojis de la cabecera */
+        .icon-btn { background: none; border: none; font-size: 1.5em; cursor: pointer; transition: 0.2s; padding: 0 5px; display:flex; align-items:center; justify-content:center; filter: sepia(1) hue-rotate(190deg) saturate(500%) brightness(0.8);}
+        .icon-btn:hover { transform: scale(1.1); filter: sepia(1) hue-rotate(190deg) saturate(500%) brightness(1.2); }
 
         /* Tabs internos */
         .toggle-container { display: flex; background-color: rgba(0,0,0,0.4); border-radius: 8px; padding: 4px; margin-bottom: 20px; width: 100%; border: 1px solid var(--border-base); box-sizing: border-box; gap: 4px; position: relative; z-index: 100;}
         .toggle-btn { flex: 1; background-color: transparent; border: none; padding: 10px; font-size: 0.95em; font-weight: bold; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: 0.2s; position: relative; z-index: 101; transform: translateZ(0); -webkit-appearance: none;}
-        .toggle-btn:hover { color: var(--text-light); }
+        .toggle-btn:hover { color: var(--text-main); }
         .toggle-btn.activo { background-color: var(--primary); color: var(--text-main); }
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
-        .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); flex-shrink: 0; }
+        .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-light); flex-shrink: 0; }
 
         .selector-fecha { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-base); margin-bottom: 15px; }
         .horarios-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-bottom: 15px; }
@@ -189,10 +188,10 @@
             </div>
 
             <details id="notificaciones-container">
-                <summary>
-                    <div style="display:flex; align-items:center; gap:8px;">🔔 Notificaciones <span id="badge-notif" style="background:var(--danger); color:white; border-radius:50%; padding:2px 8px; font-size:0.8em; display:none;">0</span></div>
+                <summary style="padding: 10px 15px;">
+                    <div style="display:flex; align-items:center; gap:8px;">🔔 Notificaciones <span id="badge-notif" style="background:var(--text-muted); color:var(--bg-base); border-radius:12px; padding:2px 8px; font-size:0.8em; display:none; font-weight:bold;">0</span></div>
                 </summary>
-                <div class="details-content scrollable" id="lista-notificaciones" style="margin:0; padding:15px; border-top: 1px solid var(--border-light);"></div>
+                <div class="details-content scrollable" id="lista-notificaciones" style="margin:0; padding:15px; border-top: 1px solid rgba(255,255,255,0.1);"></div>
             </details>
 
             <div id="banner-proximo-partido" class="carousel-container"></div>
@@ -200,10 +199,10 @@
             <h4 style="color: var(--text-light); margin-bottom: 10px; text-align: center; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">¿Qué querés hacer?</h4>
             
             <div class="menu-grid">
-                <div id="card-ranking" class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')"><span style="font-size: 2.2em;">🏆</span> Ranking</div>
-                <div id="card-partidos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')"><span style="font-size: 2.2em;">🎾</span> Partidos</div>
-                <div id="card-academia" class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')"><span style="font-size: 2.2em;">🎓</span> Academia</div>
-                <div id="card-torneos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')"><span style="font-size: 2.2em;">🏅</span> Torneos</div>
+                <div id="card-ranking" class="tarjeta-menu" onclick="cambiarVistaPrincipal('ranking')"><span>🏆</span>Ranking</div>
+                <div id="card-partidos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('partidos')"><span>🎾</span>Partidos</div>
+                <div id="card-academia" class="tarjeta-menu" onclick="cambiarVistaPrincipal('academia')"><span>🎓</span>Academia</div>
+                <div id="card-torneos" class="tarjeta-menu" onclick="cambiarVistaPrincipal('torneos')"><span>🏅</span>Torneos</div>
             </div>
         </div>
 
@@ -281,9 +280,9 @@
 
                     <label>Fecha:</label>
                     <div class="selector-fecha">
-                        <button class="icon-btn" style="color:white;" onclick="cambiarFechaCrear(-1)">⬅</button>
+                        <button class="icon-btn" style="color:white; filter:none;" onclick="cambiarFechaCrear(-1)">⬅</button>
                         <strong id="lbl-fecha-crear" style="font-size: 1.1em; color:var(--text-light);">Hoy</strong>
-                        <button class="icon-btn" style="color:white;" onclick="cambiarFechaCrear(1)">➡</button>
+                        <button class="icon-btn" style="color:white; filter:none;" onclick="cambiarFechaCrear(1)">➡</button>
                     </div>
 
                     <label>Horarios Disponibles:</label>
@@ -515,7 +514,7 @@
             <h3 style="margin-top: 0; color: var(--success);">Cargar Resultado</h3>
             <input type="hidden" id="res-id-partido">
             <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-                <span id="res-eq1" style="color: var(--primary);">Eq 1</span> <span style="color: var(--warning);">VS</span> <span id="res-eq2" style="color: var(--danger);">Eq 2</span>
+                <span id="res-eq1" style="color: var(--text-light);">Eq 1</span> <span style="color: var(--warning);">VS</span> <span id="res-eq2" style="color: var(--text-light);">Eq 2</span>
             </div>
             <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
                 <div style="text-align: center;">
@@ -559,10 +558,10 @@
             <h3 id="perfil-jugador-nombre" style="margin-top: 0;">Nombre</h3>
             <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid var(--border-base); text-align: left; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-base); padding-bottom: 8px; margin-bottom: 8px;">
-                    <span style="color: var(--text-muted);">Ranking:</span><strong id="perfil-jugador-pos"></strong>
+                    <span style="color: var(--text-muted);">Ranking:</span><strong id="perfil-jugador-pos" style="color: var(--success);"></strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border-base); padding-bottom: 8px; margin-bottom: 8px;">
-                    <span style="color: var(--text-muted);">Puntos:</span><strong id="perfil-jugador-pts"></strong>
+                    <span style="color: var(--text-muted);">Puntos:</span><strong id="perfil-jugador-pts" style="color: var(--warning);"></strong>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                     <span style="color: var(--text-muted);">PJ:</span><strong id="perfil-jugador-pj"></strong>
@@ -580,7 +579,6 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        // Añadida la notificación con acción para "Unirse"
         let notificacionesData = [
             { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
             { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
@@ -600,17 +598,14 @@
             { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino', dni: "20202020" }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto', dni: "35000000" }
         ];
         
-        // El partido 101 ahora simula ser la invitación de Carlos a Jugador Uno
         let partidosData = [
             { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
             { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
             { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre", invitados: ["Jugador Uno"] }
         ];
         let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
-        
-        let clasesUsuario = [
-            { id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }
-        ];
+
+        let clasesUsuario = [{ id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }];
         let profesoresData = [
             { id: 1, nombre: "Miguel Lamperti", telefono: "3511111111", clubes: ["Club Central"], categorias: ["1ra", "2da", "3ra"], horarios: ["Mañana", "Tarde"] },
             { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] },
@@ -623,10 +618,13 @@
         let horaSeleccionadaCrear = ''; 
 
         // --- INICIALIZACIÓN ---
-        fechaSeleccionadaCrear.setHours(0,0,0,0);
-        inicializarFormularioCrear();
-        cargarDatosPerfilEnFormulario();
-        renderizarTodo();
+        document.addEventListener('DOMContentLoaded', () => {
+            fechaSeleccionadaCrear.setHours(0,0,0,0);
+            inicializarFormularioCrear();
+            cargarDatosPerfilEnFormulario();
+            renderizarTodo();
+            cambiarVistaPrincipal('inicio');
+        });
 
         // --- HELPERS ---
         function obtenerAvatarUrl(nombre) {
@@ -645,7 +643,6 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
         }
 
-        // --- MANEJO DE NOTIFICACIONES ---
         function ejecutarAccionNotificacion(accion, notifId) {
             let notif = notificacionesData.find(n => n.id === notifId);
             if (notif) notif.leida = true;
@@ -656,27 +653,7 @@
             }
         }
 
-        function renderizarNotificaciones() {
-            const container = document.getElementById('lista-notificaciones');
-            const noLeidas = notificacionesData.filter(n => !n.leida).length;
-            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
-            document.getElementById('badge-notif').innerText = noLeidas;
-
-            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
-                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                let actionAttr = n.accion ? `cursor:pointer;` : '';
-                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
-                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
-            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
-            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
-        }
-
-        function marcarNotificacionesLeidas() {
-            notificacionesData.forEach(n => n.leida = true);
-            renderizarNotificaciones();
-        }
-
-        // --- SISTEMA DE PARTIDOS ---
+        // --- LÓGICA DE PARTIDOS ---
         function toggleVisibilidadPartido() {
             const tipo = document.getElementById('input-tipo-crear').value;
             document.getElementById('div-visibilidad-crear').style.display = (tipo === 'Casual') ? 'block' : 'none';
@@ -774,7 +751,7 @@
             if (Array.from(selectClub.options).some(opt => opt.value === nombreClub)) { selectClub.value = nombreClub; actualizarHorariosDisponibles(); }
         }
 
-        // --- FUNCIONES RENDERIZADO GENERAL ---
+        // --- FUNCIONES RENDERIZADO ---
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
@@ -783,7 +760,7 @@
 
         function generarFilaJugador(nombre) {
             if (!nombre || nombre === 'Libre') return '';
-            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer;" onclick="abrirPerfilRanking('${nombre}')"><img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}"><span style="font-weight:bold;">${nombre}</span></div>`;
+            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer;" onclick="abrirPerfilRanking('${nombre}')"><img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}"><span style="font-weight:bold; font-size:1.1em; color:var(--text-main); text-shadow: 0 1px 3px rgba(0,0,0,0.8);">${nombre}</span></div>`;
         }
 
         function renderizarBanner() {
@@ -794,48 +771,51 @@
             const ult = misPartidos.filter(p => p.fecha < hoy).sort((a,b) => b.fecha.localeCompare(a.fecha))[0];
             const proxT = torneosData.filter(t => t.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha))[0];
 
+            // Recreación exacta del estilo neón del banner
             let slidePartido = prox ? `
-                <div class="carousel-slide activo" style="background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80');">
-                    <div style="font-size:0.8em; color:var(--primary); font-weight:bold; margin-bottom:5px;">TU PRÓXIMO PARTIDO</div>
-                    <div style="font-size:1.25em; font-weight:bold;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
-                    <div style="font-size:0.95em; margin-top:5px;">📍 Jugás en <strong>${prox.club}</strong></div>
-                    <div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(255,255,255,0.3); display:flex; justify-content:space-between; align-items:center;">
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start;">
-                            <strong style="font-size:0.85em; margin-bottom:10px;">Tu equipo</strong>
+                <div class="carousel-slide activo" style="background: linear-gradient(rgba(0,30,80,0.7), rgba(0,20,50,0.9)), url('https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?auto=format&fit=crop&w=800&q=80'); border: 2px solid rgba(59, 130, 246, 0.5); box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.5);">
+                    <div style="font-size:0.8em; color:var(--text-muted); font-weight:bold; margin-bottom:10px;">TU PRÓXIMO PARTIDO</div>
+                    <div style="font-size:1.5em; font-weight:bold; margin-bottom:5px;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
+                    <div style="font-size:1em; margin-bottom:20px; color:var(--text-light);">📍 Jugás en <strong>${prox.club}</strong></div>
+                    
+                    <div style="width: 100%; border-top: 1px dashed rgba(255,255,255,0.2); padding-top:20px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start; padding-left:20px;">
+                            <strong style="font-size:0.8em; color:var(--text-light); margin-bottom:15px; text-transform:uppercase;">Tu equipo</strong>
                             <div style="display:inline-flex; flex-direction:column;">
                                 ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j1 : prox.j3)}
                                 ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j2 : prox.j4)}
                             </div>
                         </div>
-                        <div style="font-weight:bold; color:var(--warning); font-size:1.2em;">VS</div>
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start; padding-left:10px;">
-                            <strong style="font-size:0.85em; margin-bottom:10px;">Rival</strong>
+                        <div style="font-weight:900; color:var(--warning); font-size:1.3em;">VS</div>
+                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start; padding-left:40px;">
+                            <strong style="font-size:0.8em; color:var(--danger); margin-bottom:15px; text-transform:uppercase;">Rival</strong>
                             <div style="display:inline-flex; flex-direction:column;">
                                 ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j3 : prox.j1)}
                                 ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j4 : prox.j2)}
                             </div>
                         </div>
                     </div>
-                </div>` : `<div class="carousel-slide activo cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">¡Bienvenido!</div><div style="margin-top:5px; text-align:center;">No tienes partidos programados.</div></div>`;
+                </div>` : `<div class="carousel-slide activo" style="background: rgba(0,20,50,0.8); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">¡Bienvenido!</div><div style="margin-top:5px; text-align:center;">No tienes partidos programados.</div></div>`;
 
             let slideTorneo = proxT ? `
-                <div class="carousel-slide" style="cursor:pointer; align-items:center; background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80');" onclick="cambiarVistaPrincipal('torneos')">
-                    <div style="font-size:0.8em; color:var(--warning); font-weight:bold; margin-bottom:5px;">PRÓXIMO TORNEO</div>
-                    <div style="font-size:1.5em; font-weight:bold; text-align:center;">🏆 ${proxT.nombre}</div>
-                    <div style="margin-top:10px;">📅 ${proxT.fecha}</div><div style="margin-top:5px;">📍 ${proxT.club}</div>
-                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Sin torneos próximos</div></div>`;
+                <div class="carousel-slide" style="cursor:pointer; align-items:center; background: linear-gradient(rgba(0,30,80,0.7), rgba(0,20,50,0.9)), url('https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=800&q=80'); border: 2px solid rgba(59, 130, 246, 0.5); box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.5);" onclick="cambiarVistaPrincipal('torneos')">
+                    <div style="font-size:0.85em; color:var(--text-light); font-weight:bold; margin-bottom:5px;">PRÓXIMO TORNEO</div>
+                    <div style="font-size:1.8em; font-weight:bold; text-align:center; margin-bottom:15px;">🏆 ${proxT.nombre}</div>
+                    <div style="font-size:1.1em; margin-bottom:5px;">📅 ${proxT.fecha}</div>
+                    <div style="font-size:1.1em;">📍 ${proxT.club}</div>
+                </div>` : `<div class="carousel-slide" style="background: rgba(0,20,50,0.8); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Sin torneos próximos</div></div>`;
 
             let slideClub = ult ? `
-                <div class="carousel-slide" style="align-items:center; background: linear-gradient(to top, rgba(6,17,34,0.9), rgba(6,17,34,0.3)), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80');">
-                    <div style="font-size:0.8em; color:var(--success); font-weight:bold; margin-bottom:5px;">TU ÚLTIMO CLUB</div>
-                    <div style="font-size:1.5em; font-weight:bold; text-align:center;">${ult.club} te espera</div>
-                    <button class="btn btn-primario" style="margin-top:20px; width:auto;" onclick="irACrearPartidoEnClub('${ult.club}')">Reservar Cancha</button>
-                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
+                <div class="carousel-slide" style="align-items:center; background: linear-gradient(rgba(0,30,80,0.7), rgba(0,20,50,0.9)), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&q=80'); border: 2px solid rgba(59, 130, 246, 0.5); box-shadow: inset 0 0 20px rgba(59, 130, 246, 0.5);">
+                    <div style="font-size:0.85em; color:var(--success); font-weight:bold; margin-bottom:5px;">TU ÚLTIMO CLUB</div>
+                    <div style="font-size:1.8em; font-weight:bold; text-align:center;">${ult.club} te espera</div>
+                    <button class="btn btn-secundario" style="margin-top:20px; width:auto; border: 1px solid white;" onclick="irACrearPartidoEnClub('${ult.club}')">Reservar Cancha</button>
+                </div>` : `<div class="carousel-slide" style="background: rgba(0,20,50,0.8); align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
 
             bannerContainer.innerHTML = `${slidePartido}${slideTorneo}${slideClub}<div class="carousel-indicators"><div class="indicator activo" onclick="cambiarSlide(0)"></div><div class="indicator" onclick="cambiarSlide(1)"></div><div class="indicator" onclick="cambiarSlide(2)"></div></div>`;
 
-            clearInterval(bannerInterval);
-            bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
+            // Forzar la activación del primer slide de inmediato
+            cambiarSlide(0);
         }
 
         function cambiarSlide(index) {
@@ -887,7 +867,7 @@
             const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
             const renderHtml = (arr, isPend, isHistorial) => arr.length ? arr.map(p => `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
+                <div class="tarjeta-item">
                     <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
                     <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
                     ${isPend ? `<button class="btn btn-primario" style="padding:5px; margin-top:10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>` : 
@@ -903,7 +883,7 @@
                     ? `<button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="window.open('https://wa.me/?text=¡Faltan ${cupos} jugadores para mi partido de pádel el ${p.fecha} a las ${p.hora} en ${p.club}! ¿Te sumás?', '_blank')">💬 Invitar por WhatsApp</button>` 
                     : `<span style="color:var(--success); font-size:0.85em; display:block; margin-top:10px;">✅ Partido Completo</span>`;
                 return `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
+                <div class="tarjeta-item">
                     <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
                     <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
                     <div style="font-size:0.85em; color:var(--text-light); margin-top:4px;">Tipo: ${p.tipo} | Modalidad: ${p.modalidad}</div>
@@ -1022,7 +1002,7 @@
             });
 
             div.innerHTML = clasesUsuario.map(c => `
-                <div class="tarjeta-item" style="background:var(--bg-card); display:flex; justify-content:space-between; align-items:center;">
+                <div class="tarjeta-item" style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <strong style="color:var(--primary); font-size:1.1em;">${c.dia} a las ${c.hora}hs</strong>
                         <div style="font-size:0.85em; color:var(--text-muted); margin-top:4px;">
@@ -1060,7 +1040,7 @@
             }
 
             div.innerHTML = profesFiltrados.map(p => `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
+                <div class="tarjeta-item">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
                             <strong style="color:var(--success); font-size:1.1em;">🧑‍🏫 ${p.nombre}</strong>
