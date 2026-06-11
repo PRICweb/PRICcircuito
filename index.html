@@ -1104,6 +1104,422 @@
         }
         function guardarPerfil() { ['nombre','apellido','edad','genero','telefono','dni','preferencia','foto'].forEach(k => perfilUsuario[k] = document.getElementById(`perfil-${k}`).value.trim()); alert("Guardado"); cambiarVistaPrincipal('inicio'); renderizarTodo(); }
         function actualizarPreviewFoto() { const u = document.getElementById('perfil-foto').value.trim(); const i = document.getElementById('preview-foto-perfil'); i.src = u; i.style.display = u ? 'block' : 'none'; }
+    
+
+        /* =========================================================
+           CAPA COMÚN TURNO + CIRCUITO + FIREBASE
+           Misma interfaz de funciones que el código administrador.
+           Persistencia real en Firestore.
+        ========================================================= */
+        (function(){
+            const firebaseConfig = {
+                apiKey: "AIzaSyDqWKo3ZtPChbtf38osMiKwQpCRNvsN7ak",
+                authDomain: "pric-60f50.firebaseapp.com",
+                projectId: "pric-60f50",
+                storageBucket: "pric-60f50.firebasestorage.app",
+                messagingSenderId: "475470852361",
+                appId: "1:475470852361:web:8acfa8b1e2963426ef23d8",
+                measurementId: "G-ZXLT15L9JR"
+            };
+
+            const DURACION_PARTIDO_DEFAULT = 90;
+            const FIREBASE_VERSION = "10.12.5";
+            let firebaseAPI = null;
+            let reservasCompartidasCache = [];
+            let configsClubesCache = {};
+
+            function normalizarIdFirestore(valor) {
+                return String(valor || "Club Central").trim().replace(/[\/#[\]?]/g, "_") || "Club Central";
+            }
+
+            function logFirebaseError(contexto, error) {
+                console.error(`Firebase ${contexto}:`, error);
+                alert(`No se pudo conectar con Firebase (${contexto}). Revisa las reglas de Firestore y que estés usando el proyecto correcto.`);
+            }
+
+            async function inicializarFirebase() {
+                try {
+                    const [appMod, firestoreMod, analyticsMod] = await Promise.all([
+                        import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`),
+                        import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-firestore.js`),
+                        import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-analytics.js`).catch(() => null)
+                    ]);
+
+                    const app = appMod.initializeApp(firebaseConfig);
+                    const db = firestoreMod.getFirestore(app);
+
+                    try {
+                        if (analyticsMod && typeof analyticsMod.getAnalytics === "function") analyticsMod.getAnalytics(app);
+                    } catch(e) {
+                        console.warn("Analytics no disponible en este entorno:", e);
+                    }
+
+                    firebaseAPI = { app, db, ...firestoreMod };
+                    iniciarEscuchasFirebase();
+                } catch(error) {
+                    logFirebaseError("inicialización", error);
+                }
+            }
+
+            function iniciarEscuchasFirebase() {
+                if (!firebaseAPI) return;
+
+                firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
+                    reservasCompartidasCache = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                    window.renderizarPantallas();
+                }, (error) => logFirebaseError("lectura de reservas", error));
+
+                firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
+                    configsClubesCache = {};
+                    snapshot.docs.forEach(docSnap => {
+                        const data = docSnap.data();
+                        const nombre = data.nombre || data.clubId || docSnap.id;
+                        configsClubesCache[nombre] = data;
+                        configsClubesCache[docSnap.id] = data;
+                    });
+                    window.actualizarHorariosDisponibles();
+                }, (error) => console.warn("Firebase lectura de clubes:", error));
+
+                firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
+                    const externos = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                    const localesNoFirebase = partidosData.filter(p => !p.guardadoEnFirebase);
+                    partidosData = [...localesNoFirebase, ...externos];
+                    renderizarTodo();
+                    window.actualizarHorariosDisponibles();
+                }, (error) => console.warn("Firebase lectura de partidos:", error));
+            }
+
+            async function guardarReservaEnFirebase(reserva) {
+                if (!firebaseAPI || !reserva?.id) return;
+                const clubDocId = normalizarIdFirestore(reserva.clubId || reserva.club || "Club Central");
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "reservas", String(reserva.id)),
+                    {
+                        ...reserva,
+                        clubId: reserva.clubId || reserva.club || "Club Central",
+                        actualizadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                );
+            }
+
+            async function guardarPartidoEnFirebase(partido) {
+                if (!firebaseAPI || !partido?.id) return;
+                const clubDocId = normalizarIdFirestore(partido.club || "Club Central");
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "partidos", String(partido.id)),
+                    {
+                        ...partido,
+                        guardadoEnFirebase: true,
+                        actualizadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                );
+            }
+
+            window.obtenerFechaHoy = function() {
+                const h = new Date();
+                return `${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}`;
+            };
+
+            window.formatearAFechaString = function(dateObj) {
+                return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,"0")}-${String(dateObj.getDate()).padStart(2,"0")}`;
+            };
+
+            window.aMinutos = function(horaStr) {
+                if (!horaStr || typeof horaStr !== "string") return 0;
+                const [h, m] = horaStr.split(":").map(Number);
+                return (h || 0) * 60 + (m || 0);
+            };
+
+            window.sumarMinutos = function(horaStr, minutosAnadir) {
+                if (!horaStr || typeof horaStr !== "string") return "00:00";
+                let total = window.aMinutos(horaStr) + (Number(minutosAnadir) || 0);
+                total = ((total % 1440) + 1440) % 1440;
+                return `${String(Math.floor(total / 60)).padStart(2,"0")}:${String(total % 60).padStart(2,"0")}`;
+            };
+
+            window.minutosAHora = function(minutos) {
+                const total = ((Number(minutos) || 0) % 1440 + 1440) % 1440;
+                return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
+            };
+
+            window.getDayOfWeekFromDate = function(fechaISO) {
+                const [y, m, d] = String(fechaISO).split("-").map(Number);
+                return new Date(y, (m || 1) - 1, d || 1).getDay();
+            };
+
+            window.validarEsHoraPasada = function(fechaISO, horaStr) {
+                const hoyISO = window.obtenerFechaHoy();
+                if (fechaISO < hoyISO) return true;
+                if (fechaISO > hoyISO) return false;
+                const ahora = new Date();
+                return window.aMinutos(horaStr) <= (ahora.getHours() * 60 + ahora.getMinutes());
+            };
+
+            window.obtenerReservasCompartidas = function() {
+                return Array.isArray(reservasCompartidasCache) ? reservasCompartidasCache : [];
+            };
+
+            window.guardarReservasCompartidas = function(reservas) {
+                const lista = reservas || window.obtenerReservasCompartidas();
+                lista.forEach(r => guardarReservaEnFirebase(r).catch(error => logFirebaseError("guardado de reserva", error)));
+            };
+
+            window.obtenerConfiguracionClub = function(clubId) {
+                const club = clubesData.find(c => c.nombre === clubId) || clubesData[0] || {};
+                const totalDesdeTexto = String(club.canchas || "").match(/\d+/g)?.map(Number).reduce((a,b)=>a+b,0) || 1;
+                const configFirebase = configsClubesCache[clubId] || configsClubesCache[normalizarIdFirestore(clubId)];
+                return configFirebase || {
+                    clubId,
+                    nombre: clubId,
+                    primerTurno: club.apertura || "08:00",
+                    ultimoTurno: club.cierre || "21:30",
+                    duracionDefault: DURACION_PARTIDO_DEFAULT,
+                    diasAbiertos: [0,1,2,3,4,5,6],
+                    canchasIndoor: totalDesdeTexto,
+                    canchasOutdoor: 0,
+                    canchasTenis: 0
+                };
+            };
+
+            window.calcularBloquesReserva = function(hora, duracion) {
+                const bloques = [];
+                const bloquesTotales = Math.ceil((Number(duracion) || DURACION_PARTIDO_DEFAULT) / 30);
+                for (let i = 0; i < bloquesTotales; i++) bloques.push(window.sumarMinutos(hora, i * 30));
+                return bloques;
+            };
+
+            window.reservaAplicaEnFecha = function(reserva, fechaISO) {
+                const canceladas = reserva.fechasCanceladas || [];
+                if (canceladas.includes(fechaISO)) return false;
+                if ((reserva.fecha || fechaISO) === fechaISO) return true;
+                return reserva.fijo === true && window.getDayOfWeekFromDate(reserva.fecha) === window.getDayOfWeekFromDate(fechaISO) && fechaISO > reserva.fecha;
+            };
+
+            window.obtenerCanchasDisponibles = function(datos = {}) {
+                const clubId = datos.clubId || document.getElementById("input-club-crear")?.value || clubesData[0]?.nombre || "Club Central";
+                const fechaISO = datos.fecha || window.formatearAFechaString(fechaSeleccionadaCrear);
+                const hora = datos.hora || horaSeleccionadaCrear;
+                const duracion = Number(datos.duracion) || DURACION_PARTIDO_DEFAULT;
+                const config = window.obtenerConfiguracionClub(clubId);
+                const totalCanchas = Math.max(1, (Number(config.canchasIndoor)||0) + (Number(config.canchasOutdoor)||0) + (Number(config.canchasTenis)||0));
+                const bloquesNuevos = window.calcularBloquesReserva(hora, duracion);
+
+                const ocupadas = new Set();
+                window.obtenerReservasCompartidas()
+                    .filter(r => (r.clubId || clubId) === clubId)
+                    .forEach(r => {
+                        if (!window.reservaAplicaEnFecha(r, fechaISO)) return;
+                        const bloquesReserva = window.calcularBloquesReserva(r.hora, r.duracion || DURACION_PARTIDO_DEFAULT);
+                        if (bloquesNuevos.some(b => bloquesReserva.includes(b))) ocupadas.add(String(r.cancha));
+                    });
+
+                partidosData
+                    .filter(p => p.club === clubId && p.fecha === fechaISO && p.estado !== "Finalizado" && p.hora)
+                    .forEach((p, index) => {
+                        const bloquesPartido = window.calcularBloquesReserva(p.hora, p.duracion || DURACION_PARTIDO_DEFAULT);
+                        if (bloquesNuevos.some(b => bloquesPartido.includes(b))) ocupadas.add(String(p.cancha || (index + 1)));
+                    });
+
+                const disponibles = [];
+                for (let c = 1; c <= totalCanchas; c++) {
+                    if (!ocupadas.has(String(c))) disponibles.push(String(c));
+                }
+                return disponibles;
+            };
+
+            window.hayDisponibilidad = function(datos = {}) {
+                return window.obtenerCanchasDisponibles(datos).length > 0;
+            };
+
+            window.crearReserva = function(datos = {}) {
+                const clubId = datos.clubId || datos.club || document.getElementById("input-club-crear")?.value || clubesData[0]?.nombre || "Club Central";
+                const fecha = datos.fecha || window.formatearAFechaString(fechaSeleccionadaCrear);
+                const hora = datos.hora || horaSeleccionadaCrear;
+                const duracion = Number(datos.duracion) || DURACION_PARTIDO_DEFAULT;
+
+                if (!fecha || !hora) return { ok:false, error:"Falta fecha u horario." };
+                if (window.validarEsHoraPasada(fecha, hora)) return { ok:false, error:"No se puede reservar un horario pasado." };
+
+                const disponibles = window.obtenerCanchasDisponibles({ clubId, fecha, hora, duracion });
+                const cancha = datos.cancha ? String(datos.cancha) : disponibles[0];
+                if (!cancha || !disponibles.includes(String(cancha))) return { ok:false, error:"No hay canchas disponibles para ese horario." };
+
+                const nueva = {
+                    id: datos.id || (crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString()),
+                    clubId,
+                    fecha,
+                    hora,
+                    cancha,
+                    jugador: datos.jugador || datos.nombre || getNombreCompleto(),
+                    telefono: datos.telefono || perfilUsuario.telefono || "",
+                    duracion,
+                    fechaRegistro: datos.fechaRegistro || new Date().toISOString(),
+                    asistencia: false,
+                    fijo: false,
+                    fechasCanceladas: [],
+                    pagoEfectivo: 0,
+                    pagoTransferencia: 0,
+                    descuento: 0,
+                    consumos: [],
+                    tipoEvento: datos.tipoEvento || "Partido",
+                    esClase: false,
+                    profe: null,
+                    origen: datos.origen || "circuito",
+                    partidoId: datos.partidoId || null
+                };
+                reservasCompartidasCache.push(nueva);
+                guardarReservaEnFirebase(nueva).catch(error => logFirebaseError("creación de reserva", error));
+                return { ok:true, reserva:nueva };
+            };
+
+            window.seleccionarFecha = function(fechaISO) {
+                const [y,m,d] = String(fechaISO).split("-").map(Number);
+                fechaSeleccionadaCrear = new Date(y, (m || 1) - 1, d || 1);
+                fechaSeleccionadaCrear.setHours(0,0,0,0);
+                window.actualizarDisplayFecha();
+                window.actualizarHorariosDisponibles();
+            };
+
+            window.cambiarDia = function(delta) {
+                const hoy = new Date(); hoy.setHours(0,0,0,0);
+                const nuevaFecha = new Date(fechaSeleccionadaCrear);
+                nuevaFecha.setDate(nuevaFecha.getDate() + delta);
+                if (nuevaFecha >= hoy) {
+                    fechaSeleccionadaCrear = nuevaFecha;
+                    window.actualizarDisplayFecha();
+                    window.actualizarHorariosDisponibles();
+                }
+            };
+
+            window.cambiarFechaCrear = window.cambiarDia;
+
+            window.actualizarDisplayFecha = function() {
+                const hoy = new Date(); hoy.setHours(0,0,0,0);
+                const diffDays = Math.round((fechaSeleccionadaCrear - hoy) / (1000 * 60 * 60 * 24));
+                const lbl = document.getElementById("lbl-fecha-crear");
+                if (!lbl) return;
+                if (diffDays === 0) lbl.innerText = "Hoy";
+                else if (diffDays === 1) lbl.innerText = "Mañana";
+                else lbl.innerText = `${String(fechaSeleccionadaCrear.getDate()).padStart(2,"0")}/${String(fechaSeleccionadaCrear.getMonth()+1).padStart(2,"0")}/${fechaSeleccionadaCrear.getFullYear()}`;
+            };
+
+            window.actualizarHorariosDisponibles = function() {
+                const grid = document.getElementById("grid-horarios");
+                const msgVacio = document.getElementById("msg-sin-horarios");
+                const clubId = document.getElementById("input-club-crear")?.value;
+                if (!grid || !msgVacio || !clubId) return;
+
+                const config = window.obtenerConfiguracionClub(clubId);
+                const fechaISO = window.formatearAFechaString(fechaSeleccionadaCrear);
+                const dow = window.getDayOfWeekFromDate(fechaISO);
+                const diasAbiertos = config.diasAbiertos || [0,1,2,3,4,5,6];
+
+                grid.innerHTML = "";
+                horaSeleccionadaCrear = "";
+
+                if (!diasAbiertos.includes(dow)) {
+                    grid.style.display = "none";
+                    msgVacio.style.display = "block";
+                    msgVacio.innerText = "El club está cerrado este día.";
+                    return;
+                }
+
+                let inicio = window.aMinutos(config.primerTurno || "08:00");
+                let fin = window.aMinutos(config.ultimoTurno || "21:30");
+                if (fin <= inicio) fin += 1440;
+
+                let hayTurnos = false;
+                let html = "";
+                for (let m = inicio; m <= fin; m += 30) {
+                    const hStr = window.minutosAHora(m);
+                    if (window.validarEsHoraPasada(fechaISO, hStr)) continue;
+                    if (!window.hayDisponibilidad({ clubId, fecha: fechaISO, hora: hStr, duracion: DURACION_PARTIDO_DEFAULT })) continue;
+                    html += `<button class="btn-horario" id="btn-h-${hStr.replace(":","")}" onclick="seleccionarHora('${hStr}', this)">${hStr}</button>`;
+                    hayTurnos = true;
+                }
+
+                if (hayTurnos) {
+                    grid.innerHTML = html;
+                    grid.style.display = "grid";
+                    msgVacio.style.display = "none";
+                } else {
+                    grid.style.display = "none";
+                    msgVacio.style.display = "block";
+                    msgVacio.innerText = "No hay turnos disponibles para esta fecha.";
+                }
+            };
+
+            window.seleccionarHora = function(hora, btnElement) {
+                horaSeleccionadaCrear = hora;
+                document.querySelectorAll(".btn-horario").forEach(b => b.classList.remove("activo"));
+                if (btnElement) btnElement.classList.add("activo");
+            };
+
+            window.crearPartido = function() {
+                const fecha = window.formatearAFechaString(fechaSeleccionadaCrear);
+                const hora = horaSeleccionadaCrear;
+                const club = document.getElementById("input-club-crear").value;
+                const modalidad = document.getElementById("input-mod-crear").value;
+                const tipo = document.getElementById("input-tipo-crear").value;
+                const visibilidad = tipo === "Casual" ? document.getElementById("input-visibilidad-crear").value : "Publico";
+
+                if (!fecha || !hora) return alert("Selecciona un horario disponible.");
+
+                const partidoId = crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
+                const reserva = window.crearReserva({
+                    id: `partido-${partidoId}`,
+                    clubId: club,
+                    fecha,
+                    hora,
+                    duracion: DURACION_PARTIDO_DEFAULT,
+                    jugador: getNombreCompleto(),
+                    telefono: perfilUsuario.telefono,
+                    tipoEvento: `Partido ${tipo}`,
+                    origen: "circuito",
+                    partidoId
+                });
+
+                if (!reserva.ok) return alert("❌ " + reserva.error);
+
+                const partidoNuevo = {
+                    id: partidoId,
+                    reservaId: reserva.reserva.id,
+                    cancha: reserva.reserva.cancha,
+                    fecha,
+                    hora,
+                    club,
+                    modalidad,
+                    tipo,
+                    visibilidad,
+                    estado: "Buscando Rival",
+                    duracion: DURACION_PARTIDO_DEFAULT,
+                    j1: getNombreCompleto(),
+                    j2: "Libre",
+                    j3: "Libre",
+                    j4: "Libre",
+                    guardadoEnFirebase: true
+                };
+
+                partidosData.push(partidoNuevo);
+                guardarPartidoEnFirebase(partidoNuevo).catch(error => logFirebaseError("creación de partido", error));
+
+                alert(`Partido ${tipo} creado y turno reservado en ${club}, cancha ${reserva.reserva.cancha}.`);
+                cambiarAccionPartido("unirse");
+                renderizarPartidosAbiertos();
+                renderizarMisPartidos();
+                window.actualizarHorariosDisponibles();
+            };
+
+            window.renderizarPantallas = function() {
+                if (typeof renderizarTodo === "function") renderizarTodo();
+                window.actualizarHorariosDisponibles();
+            };
+
+            document.addEventListener("DOMContentLoaded", inicializarFirebase);
+        })();
+
     </script>
 </body>
 </html>
