@@ -731,14 +731,297 @@
             font-weight: 650;
         }
 
+    
+
+        /* --- OVERRIDE MINIMALISTA --- */
+        :root {
+            --bg-base: #f3f4f6;
+            --bg-card: #ffffff;
+            --bg-light: #ffffff;
+            --glass: #ffffff;
+            --glass-strong: #ffffff;
+            --border-base: #dbe1e8;
+            --border-light: #e5e7eb;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #334155;
+            --primary: #0f172a;
+            --primary-2: #0f172a;
+            --success: #166534;
+            --warning: #92400e;
+            --danger: #b91c1c;
+            --shadow-blue: 0 8px 24px rgba(15, 23, 42, 0.06);
+            --shadow-deep: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --radius-xl: 18px;
+            --radius-lg: 14px;
+            --font-ui: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: var(--text-main);
+            background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+            padding: 20px 12px;
+        }
+
+        body::before,
+        .cancha-bg::before,
+        .cancha-bg::after,
+        .carousel-container::before {
+            display: none !important;
+            content: none !important;
+        }
+
+        .contenedor-principal {
+            max-width: 460px;
+            padding: 6px 6px 28px;
+        }
+
+        .header-acciones {
+            margin-bottom: 18px;
+        }
+
+        .header-acciones h2,
+        .header-vista h3,
+        #pantalla-auth h2 {
+            color: var(--text-main);
+            text-shadow: none;
+            letter-spacing: -0.03em;
+        }
+
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            background: #fff;
+            color: #334155;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 4px 14px rgba(15,23,42,.05);
+            text-shadow: none;
+        }
+        .icon-btn:hover {
+            transform: translateY(-1px);
+            color: #0f172a;
+        }
+
+        .cancha-bg,
+        .tarjeta-item,
+        details,
+        .modal-content,
+        .carousel-container,
+        #pantalla-auth,
+        .toggle-container,
+        .selector-fecha,
+        .scrollable,
+        #vista-ranking .scrollable,
+        #vista-partidos > div,
+        #vista-academia details .details-content > div,
+        #vista-perfil > div {
+            background: #fff !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 10px 30px rgba(15,23,42,.05) !important;
+            backdrop-filter: none !important;
+        }
+
+        #pantalla-auth {
+            min-height: auto;
+            padding: 28px 22px;
+            background: #fff !important;
+            border: 1px solid var(--border-light) !important;
+            border-radius: 24px;
+            box-shadow: 0 18px 50px rgba(15,23,42,.08) !important;
+        }
+        #pantalla-auth::before { display:none !important; }
+        .auth-subtitle,
+        .auth-register-link,
+        #vista-inicio > h4 {
+            color: var(--text-muted) !important;
+        }
+
+        #notificaciones-container {
+            box-shadow: 0 10px 28px rgba(15,23,42,.05) !important;
+            margin-bottom: 18px;
+        }
+        #notificaciones-container summary {
+            min-height: 52px;
+            padding: 14px 16px;
+        }
+        #badge-notif {
+            background: #0f172a !important;
+            border: none !important;
+            color: #fff !important;
+        }
+
+        .carousel-container {
+            min-height: 210px;
+            border-radius: 18px;
+            background: #fff !important;
+            margin-bottom: 20px;
+        }
+        .carousel-slide {
+            text-shadow: none;
+            color: var(--text-main);
+            padding: 24px 18px 34px;
+        }
+        .carousel-slide > div:first-child { color: var(--text-muted) !important; }
+        .indicator {
+            background-color: #cbd5e1;
+            height: 6px;
+        }
+        .indicator.activo {
+            background: #0f172a;
+            box-shadow: none;
+        }
+
+        .menu-grid {
+            gap: 12px;
+        }
+        .tarjeta-menu {
+            min-height: 104px;
+            padding: 16px;
+            background: #fff !important;
+            background-image: none !important;
+            border: 1px solid var(--border-light) !important;
+            box-shadow: 0 10px 28px rgba(15,23,42,.05) !important;
+            color: var(--text-main) !important;
+            text-shadow: none !important;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .tarjeta-menu span {
+            display: block !important;
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+        .tarjeta-menu:hover {
+            transform: translateY(-1px);
+            filter: none;
+        }
+        .card-ranking, .card-partidos, .card-academia, .card-torneos {
+            background-image: none !important;
+        }
+
+        .input-form,
+        textarea.input-form,
+        select.input-form {
+            background: #fff;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            box-shadow: none;
+        }
+        .input-form:focus {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.18);
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: none !important;
+        }
+        .btn-primario,
+        .btn-secundario,
+        .toggle-btn.activo,
+        .btn-horario.activo {
+            background: #0f172a !important;
+            color: #fff !important;
+            border: 1px solid #0f172a !important;
+        }
+        .btn-secundario:hover,
+        .btn-primario:hover,
+        .btn-horario:hover,
+        .toggle-btn:hover {
+            filter: none;
+        }
+        .btn-cerrar {
+            background: #e5e7eb !important;
+            color: #0f172a !important;
+            border: 1px solid #e5e7eb;
+        }
+        .btn-alerta {
+            background: #fff1f2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #fecdd3 !important;
+        }
+
+        .toggle-container {
+            gap: 8px;
+            padding: 6px;
+            background: #fff !important;
+        }
+        .toggle-btn {
+            color: var(--text-muted);
+            border: 1px solid transparent;
+        }
+
+        .selector-fecha {
+            background: #fff !important;
+        }
+
+        .horarios-grid {
+            gap: 8px;
+        }
+        .btn-horario {
+            background: #fff;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+        }
+
+        .header-vista {
+            border-bottom: 1px solid var(--border-light);
+            margin-bottom: 18px;
+        }
+        .btn-volver {
+            color: var(--text-main);
+        }
+
+        table {
+            color: var(--text-main);
+        }
+        th { color: var(--text-muted); }
+        td, th { border-bottom: 1px solid #edf2f7; }
+        tr:hover td { background-color: #f8fafc; }
+
+        summary {
+            color: var(--text-main);
+        }
+        .details-content {
+            border-top: 1px solid var(--border-light);
+        }
+
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        .modal-content {
+            max-width: 420px;
+        }
+
+        .scrollable::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+        }
+
+        @media (max-width: 420px) {
+            .tarjeta-menu {
+                min-height: 96px;
+            }
+            .carousel-container {
+                min-height: 190px;
+            }
+        }
+
     </style>
 </head>
 <body>
 
 
     <div id="pantalla-auth">
-        <h2>🎾 Circuito Competitivo</h2>
-        <p class="auth-subtitle">Ingresá a tu cuenta para ver partidos, ranking, torneos y academia.</p>
+        <h2>Circuito Competitivo</h2>
+        <p class="auth-subtitle">Ingresá con tu cuenta para acceder a ranking, partidos, academia y torneos.</p>
 
         <div class="auth-tabs" aria-hidden="true">
             <button id="tab-login" class="auth-tab activo" type="button" onclick="alternarAuthModo('login')">Ingresar</button>
@@ -805,7 +1088,7 @@
         <!-- VISTA INICIO -->
         <div id="vista-inicio">
             <div class="header-acciones">
-                <h2 style="margin: 0;">👋 Hola, <span id="lbl-nombre-usuario" style="color: var(--primary);"></span></h2>
+                <h2 style="margin: 0;">Hola, <span id="lbl-nombre-usuario" style="color: var(--primary);"></span></h2>
                 <div style="display: flex; gap: 10px;">
                     <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos">👥</button>
                     <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil">👤</button>
@@ -822,7 +1105,7 @@
 
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
 
-            <h4 style="color: var(--text-muted); margin-bottom: 10px; text-align: center;">¿Qué querés hacer?</h4>
+            <h4 style="color: var(--text-muted); margin-bottom: 10px; text-align: center;">Accesos rápidos</h4>
             
             <div class="menu-grid">
                 <div class="tarjeta-menu cancha-bg card-ranking" onclick="cambiarVistaPrincipal('ranking')"><span style="font-size: 2.2em;">🏆</span> Ranking</div>
@@ -1185,7 +1468,7 @@
 
     <script>
         // --- BASE DE DATOS (MOCKS) ---
-        let perfilUsuario = { nombre: "Jugador", apellido: "Uno", edad: 28, genero: "Masculino", telefono: "3511234567", dni: "35000000", preferencia: "Drive", foto: "" };
+        let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "" };
         let usuarioActual = null;
         const getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
@@ -1222,7 +1505,11 @@
         // --- HELPERS ---
         function obtenerAvatarUrl(nombre) {
             if (nombre === getNombreCompleto() && perfilUsuario.foto) return perfilUsuario.foto;
-            return `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=random&color=fff`;
+            const limpio = String(nombre || "Jugador").trim();
+            const partes = limpio.split(/\s+/).filter(Boolean);
+            const iniciales = (partes[0]?.[0] || "J") + (partes[1]?.[0] || "");
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="80" height="80" rx="40" fill="#E2E8F0"/><text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#334155">${iniciales.toUpperCase()}</text></svg>`;
+            return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
         }
 
         function aMinutos(horaStr) {
