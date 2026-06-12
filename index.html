@@ -146,11 +146,120 @@
         .scrollable::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: var(--bg-base); border-radius: 4px; }
         .scrollable::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { background: var(--border-base); border-radius: 4px; }
         .scrollable::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* --- LOGIN / REGISTRO FIREBASE AUTH --- */
+        #pantalla-auth {
+            width: 100%;
+            max-width: 430px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-base);
+            border-radius: 12px;
+            padding: 22px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 6px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 18px;
+        }
+        .auth-tab {
+            flex: 1;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--text-muted);
+            background: transparent;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .auth-tab.activo {
+            background: var(--primary);
+            color: white;
+        }
+        .auth-extra {
+            display: none;
+        }
+        #auth-mensaje {
+            display: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 0.9em;
+            background: rgba(239, 68, 68, 0.14);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fecaca;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="contenedor-principal">
+
+    <div id="pantalla-auth">
+        <h2 style="margin-top: 0; text-align:center;">🎾 Circuito Competitivo</h2>
+        <p style="color: var(--text-muted); text-align:center; margin-top:-6px;">Ingresá con tu cuenta o registrate para guardar tu perfil, partidos y ranking.</p>
+
+        <div class="auth-tabs">
+            <button id="tab-login" class="auth-tab activo" onclick="alternarAuthModo('login')">Ingresar</button>
+            <button id="tab-registro" class="auth-tab" onclick="alternarAuthModo('registro')">Registrarme</button>
+        </div>
+
+        <div id="auth-mensaje"></div>
+
+        <label>Email:</label>
+        <input type="email" id="auth-email" class="input-form" autocomplete="email" placeholder="tuemail@gmail.com">
+
+        <label>Contraseña:</label>
+        <input type="password" id="auth-password" class="input-form" autocomplete="current-password" placeholder="Mínimo 6 caracteres">
+
+        <div id="auth-campos-registro" class="auth-extra">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>Nombre:</label>
+                    <input type="text" id="auth-nombre" class="input-form" placeholder="Ej: Salvador">
+                </div>
+                <div style="flex:1;">
+                    <label>Apellido:</label>
+                    <input type="text" id="auth-apellido" class="input-form" placeholder="Ej: Prato">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>DNI:</label>
+                    <input type="text" id="auth-dni" class="input-form" placeholder="Ej: 12345678">
+                </div>
+                <div style="flex:1;">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="auth-telefono" class="input-form" placeholder="Ej: 3511234567">
+                </div>
+            </div>
+
+            <label>Género:</label>
+            <select id="auth-genero" class="input-form">
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+            </select>
+
+            <label>Preferencia:</label>
+            <select id="auth-preferencia" class="input-form">
+                <option value="Drive">Drive</option>
+                <option value="Revés">Revés</option>
+                <option value="Indistinto">Indistinto</option>
+            </select>
+        </div>
+
+        <button id="btn-auth-login" class="btn btn-secundario" onclick="loginUsuario()">Ingresar</button>
+        <button id="btn-auth-registro" class="btn btn-primario" onclick="registrarUsuario()" style="display:none;">Crear cuenta</button>
+    </div>
+
+    <div id="app-shell" class="contenedor-principal" style="display:none;">
         
         <!-- VISTA INICIO -->
         <div id="vista-inicio">
@@ -453,6 +562,7 @@
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
                 <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
+                <button class="btn btn-cerrar" style="text-align: left; padding: 15px;" onclick="cerrarSesionUsuario()">🚪 Cerrar sesión</button>
             </div>
         </div>
 
@@ -535,6 +645,7 @@
     <script>
         // --- BASE DE DATOS (MOCKS) ---
         let perfilUsuario = { nombre: "Jugador", apellido: "Uno", edad: 28, genero: "Masculino", telefono: "3511234567", dni: "35000000", preferencia: "Drive", foto: "" };
+        let usuarioActual = null;
         const getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
@@ -1127,6 +1238,8 @@
             let firebaseAPI = null;
             let reservasCompartidasCache = [];
             let configsClubesCache = {};
+            let authModoActual = "login";
+            let unsubscribeFirebase = [];
 
             function normalizarIdFirestore(valor) {
                 return String(valor || "Club Central").trim().replace(/[\/#[\]?]/g, "_") || "Club Central";
@@ -1139,14 +1252,16 @@
 
             async function inicializarFirebase() {
                 try {
-                    const [appMod, firestoreMod, analyticsMod] = await Promise.all([
+                    const [appMod, firestoreMod, authMod, analyticsMod] = await Promise.all([
                         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app.js`),
                         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-firestore.js`),
+                        import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-auth.js`),
                         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-analytics.js`).catch(() => null)
                     ]);
 
-                    const app = appMod.initializeApp(firebaseConfig);
+                    const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
                     const db = firestoreMod.getFirestore(app);
+                    const auth = authMod.getAuth(app);
 
                     try {
                         if (analyticsMod && typeof analyticsMod.getAnalytics === "function") analyticsMod.getAnalytics(app);
@@ -1154,22 +1269,193 @@
                         console.warn("Analytics no disponible en este entorno:", e);
                     }
 
-                    firebaseAPI = { app, db, ...firestoreMod };
-                    iniciarEscuchasFirebase();
+                    firebaseAPI = { app, db, auth, ...firestoreMod, ...authMod };
+
+                    firebaseAPI.onAuthStateChanged(auth, async (user) => {
+                        if (!user) {
+                            usuarioActual = null;
+                            detenerEscuchasFirebase();
+                            mostrarPantallaAuth();
+                            return;
+                        }
+
+                        usuarioActual = user;
+                        await cargarOCrearPerfilUsuario(user);
+                        mostrarAppAutenticada();
+                        iniciarEscuchasFirebase();
+                        renderizarTodo();
+                        window.actualizarHorariosDisponibles();
+                    });
                 } catch(error) {
                     logFirebaseError("inicialización", error);
                 }
             }
 
-            function iniciarEscuchasFirebase() {
-                if (!firebaseAPI) return;
+            function detenerEscuchasFirebase() {
+                unsubscribeFirebase.forEach(fn => {
+                    try { if (typeof fn === "function") fn(); } catch(e) {}
+                });
+                unsubscribeFirebase = [];
+            }
 
-                firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
+            function mostrarPantallaAuth() {
+                document.getElementById("pantalla-auth").style.display = "block";
+                document.getElementById("app-shell").style.display = "none";
+            }
+
+            function mostrarAppAutenticada() {
+                document.getElementById("pantalla-auth").style.display = "none";
+                document.getElementById("app-shell").style.display = "block";
+            }
+
+            function setAuthMensaje(texto, tipo = "error") {
+                const box = document.getElementById("auth-mensaje");
+                if (!box) return;
+                if (!texto) {
+                    box.style.display = "none";
+                    box.innerText = "";
+                    return;
+                }
+                box.style.display = "block";
+                box.innerText = texto;
+                if (tipo === "ok") {
+                    box.style.background = "rgba(16, 185, 129, 0.14)";
+                    box.style.borderColor = "rgba(16, 185, 129, 0.45)";
+                    box.style.color = "#bbf7d0";
+                } else {
+                    box.style.background = "rgba(239, 68, 68, 0.14)";
+                    box.style.borderColor = "rgba(239, 68, 68, 0.45)";
+                    box.style.color = "#fecaca";
+                }
+            }
+
+            function traducirAuthError(error) {
+                const code = error?.code || "";
+                if (code.includes("invalid-credential")) return "Email o contraseña incorrectos.";
+                if (code.includes("email-already-in-use")) return "Ese email ya tiene una cuenta.";
+                if (code.includes("weak-password")) return "La contraseña debe tener al menos 6 caracteres.";
+                if (code.includes("invalid-email")) return "El email no es válido.";
+                if (code.includes("network-request-failed")) return "No hay conexión o Firebase no responde.";
+                return error?.message || "Ocurrió un error de autenticación.";
+            }
+
+            async function cargarOCrearPerfilUsuario(user) {
+                const ref = firebaseAPI.doc(firebaseAPI.db, "users", user.uid);
+                const snap = await firebaseAPI.getDoc(ref);
+
+                if (snap.exists()) {
+                    const data = snap.data();
+                    perfilUsuario = {
+                        nombre: data.nombre || "Jugador",
+                        apellido: data.apellido || "",
+                        edad: data.edad || "",
+                        genero: data.genero || "Masculino",
+                        telefono: data.telefono || "",
+                        dni: data.dni || "",
+                        preferencia: data.preferencia || "Drive",
+                        foto: data.foto || ""
+                    };
+                } else {
+                    perfilUsuario = {
+                        nombre: user.email?.split("@")[0] || "Jugador",
+                        apellido: "",
+                        edad: "",
+                        genero: "Masculino",
+                        telefono: "",
+                        dni: "",
+                        preferencia: "Drive",
+                        foto: ""
+                    };
+                    await firebaseAPI.setDoc(ref, {
+                        uid: user.uid,
+                        email: user.email || "",
+                        ...perfilUsuario,
+                        creadoEn: firebaseAPI.serverTimestamp(),
+                        actualizadoEn: firebaseAPI.serverTimestamp()
+                    }, { merge: true });
+                }
+
+                if (typeof cargarDatosPerfilEnFormulario === "function") cargarDatosPerfilEnFormulario();
+            }
+
+            window.alternarAuthModo = function(modo) {
+                authModoActual = modo === "registro" ? "registro" : "login";
+                document.getElementById("tab-login").classList.toggle("activo", authModoActual === "login");
+                document.getElementById("tab-registro").classList.toggle("activo", authModoActual === "registro");
+                document.getElementById("auth-campos-registro").style.display = authModoActual === "registro" ? "block" : "none";
+                document.getElementById("btn-auth-login").style.display = authModoActual === "login" ? "block" : "none";
+                document.getElementById("btn-auth-registro").style.display = authModoActual === "registro" ? "block" : "none";
+                setAuthMensaje("");
+            };
+
+            window.loginUsuario = async function() {
+                if (!firebaseAPI) return setAuthMensaje("Firebase todavía no terminó de inicializar.");
+                const email = document.getElementById("auth-email").value.trim();
+                const password = document.getElementById("auth-password").value;
+                if (!email || !password) return setAuthMensaje("Completá email y contraseña.");
+
+                try {
+                    setAuthMensaje("");
+                    await firebaseAPI.signInWithEmailAndPassword(firebaseAPI.auth, email, password);
+                } catch(error) {
+                    setAuthMensaje(traducirAuthError(error));
+                }
+            };
+
+            window.registrarUsuario = async function() {
+                if (!firebaseAPI) return setAuthMensaje("Firebase todavía no terminó de inicializar.");
+
+                const email = document.getElementById("auth-email").value.trim();
+                const password = document.getElementById("auth-password").value;
+                const nombre = document.getElementById("auth-nombre").value.trim();
+                const apellido = document.getElementById("auth-apellido").value.trim();
+                const dni = document.getElementById("auth-dni").value.trim();
+                const telefono = document.getElementById("auth-telefono").value.trim();
+                const genero = document.getElementById("auth-genero").value;
+                const preferencia = document.getElementById("auth-preferencia").value;
+
+                if (!email || !password || !nombre || !apellido || !dni) {
+                    return setAuthMensaje("Completá email, contraseña, nombre, apellido y DNI.");
+                }
+
+                try {
+                    setAuthMensaje("");
+                    const cred = await firebaseAPI.createUserWithEmailAndPassword(firebaseAPI.auth, email, password);
+                    await firebaseAPI.updateProfile(cred.user, { displayName: `${nombre} ${apellido}`.trim() });
+
+                    perfilUsuario = { nombre, apellido, edad: "", genero, telefono, dni, preferencia, foto: "" };
+
+                    await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", cred.user.uid), {
+                        uid: cred.user.uid,
+                        email,
+                        ...perfilUsuario,
+                        puntos: 0,
+                        pj: 0,
+                        creadoEn: firebaseAPI.serverTimestamp(),
+                        actualizadoEn: firebaseAPI.serverTimestamp()
+                    }, { merge: true });
+
+                    setAuthMensaje("Cuenta creada correctamente.", "ok");
+                } catch(error) {
+                    setAuthMensaje(traducirAuthError(error));
+                }
+            };
+
+            window.cerrarSesionUsuario = async function() {
+                if (!firebaseAPI) return;
+                await firebaseAPI.signOut(firebaseAPI.auth);
+                cambiarVistaPrincipal("inicio");
+            };
+
+            function iniciarEscuchasFirebase() {
+                if (!firebaseAPI || unsubscribeFirebase.length) return;
+
+                const unsubReservas = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
                     reservasCompartidasCache = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
                     window.renderizarPantallas();
                 }, (error) => logFirebaseError("lectura de reservas", error));
 
-                firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
+                const unsubClubes = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
                     configsClubesCache = {};
                     snapshot.docs.forEach(docSnap => {
                         const data = docSnap.data();
@@ -1180,13 +1466,15 @@
                     window.actualizarHorariosDisponibles();
                 }, (error) => console.warn("Firebase lectura de clubes:", error));
 
-                firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
+                const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
                     const externos = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
                     const localesNoFirebase = partidosData.filter(p => !p.guardadoEnFirebase);
                     partidosData = [...localesNoFirebase, ...externos];
                     renderizarTodo();
                     window.actualizarHorariosDisponibles();
                 }, (error) => console.warn("Firebase lectura de partidos:", error));
+
+                unsubscribeFirebase = [unsubReservas, unsubClubes, unsubPartidos];
             }
 
             async function guardarReservaEnFirebase(reserva) {
@@ -1353,6 +1641,7 @@
                     hora,
                     cancha,
                     jugador: datos.jugador || datos.nombre || getNombreCompleto(),
+                    jugadorUid: datos.jugadorUid || usuarioActual?.uid || null,
                     telefono: datos.telefono || perfilUsuario.telefono || "",
                     duracion,
                     fechaRegistro: datos.fechaRegistro || new Date().toISOString(),
@@ -1475,6 +1764,7 @@
                     hora,
                     duracion: DURACION_PARTIDO_DEFAULT,
                     jugador: getNombreCompleto(),
+                    jugadorUid: usuarioActual?.uid || null,
                     telefono: perfilUsuario.telefono,
                     tipoEvento: `Partido ${tipo}`,
                     origen: "circuito",
@@ -1496,6 +1786,8 @@
                     estado: "Buscando Rival",
                     duracion: DURACION_PARTIDO_DEFAULT,
                     j1: getNombreCompleto(),
+                    creadorUid: usuarioActual?.uid || null,
+                    jugadoresUid: [usuarioActual?.uid].filter(Boolean),
                     j2: "Libre",
                     j3: "Libre",
                     j4: "Libre",
@@ -1516,6 +1808,55 @@
                 if (typeof renderizarTodo === "function") renderizarTodo();
                 window.actualizarHorariosDisponibles();
             };
+
+
+            const guardarPerfilBase = window.guardarPerfil;
+            window.guardarPerfil = async function() {
+                ["nombre","apellido","edad","genero","telefono","dni","preferencia","foto"].forEach(k => {
+                    const el = document.getElementById(`perfil-${k}`);
+                    if (el) perfilUsuario[k] = el.value.trim();
+                });
+
+                if (firebaseAPI && usuarioActual) {
+                    await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid), {
+                        uid: usuarioActual.uid,
+                        email: usuarioActual.email || "",
+                        ...perfilUsuario,
+                        actualizadoEn: firebaseAPI.serverTimestamp()
+                    }, { merge: true });
+                }
+
+                alert("Perfil guardado");
+                cambiarVistaPrincipal("inicio");
+                renderizarTodo();
+            };
+
+            const unirsePartidoBase = window.unirsePartido;
+            window.unirsePartido = async function(id) {
+                let p = partidosData.find(x => String(x.id) === String(id));
+                let user = getNombreCompleto();
+                if (!p) return;
+                if ([p.j1, p.j2, p.j3, p.j4].includes(user)) return alert("Ya estás anotado en este partido.");
+
+                if (p.j2 === "Libre") p.j2 = user;
+                else if (p.j3 === "Libre") p.j3 = user;
+                else if (p.j4 === "Libre") p.j4 = user;
+                else return alert("Ese partido ya está completo.");
+
+                p.jugadoresUid = Array.from(new Set([...(p.jugadoresUid || []), usuarioActual?.uid].filter(Boolean)));
+
+                if (![p.j1, p.j2, p.j3, p.j4].includes("Libre")) {
+                    p.estado = "Partido Confirmado";
+                    alert("¡Partido completado!");
+                } else {
+                    alert("Te has unido.");
+                }
+
+                await guardarPartidoEnFirebase(p).catch(error => logFirebaseError("actualización de partido", error));
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+            };
+
 
             document.addEventListener("DOMContentLoaded", inicializarFirebase);
         })();
