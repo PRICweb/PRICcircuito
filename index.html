@@ -557,6 +557,180 @@
             .tarjeta-menu { min-height: 82px; font-size: 1.06rem; }
             .header-acciones h2 { font-size: 1.34rem; }
         }
+
+        /* =========================================================
+           AJUSTE VISUAL FINAL: HOME + LOGIN IGUAL A LA REFERENCIA
+           ========================================================= */
+        :root {
+            --bg-base: #001126;
+            --bg-card: rgba(0, 21, 52, 0.72);
+            --bg-light: rgba(0, 54, 115, 0.62);
+            --glass: rgba(0, 77, 164, 0.42);
+            --border-base: rgba(53, 163, 255, 0.74);
+            --border-light: rgba(255, 255, 255, 0.20);
+            --text-main: #ffffff;
+            --text-muted: rgba(216, 234, 255, 0.72);
+            --text-light: #eaf6ff;
+            --primary: #0b8dff;
+            --primary-2: #ffffff;
+            --shadow-blue: 0 0 0 1px rgba(38, 162, 255, .28), 0 0 22px rgba(0, 146, 255, .42);
+            --shadow-deep: 0 18px 42px rgba(0, 0, 0, .48);
+        }
+
+        body {
+            padding: 24px 16px;
+            background:
+                linear-gradient(180deg, rgba(0, 84, 165, .58) 0%, rgba(0, 28, 72, .86) 38%, rgba(0, 10, 32, .98) 100%),
+                radial-gradient(circle at 50% 0%, rgba(10, 141, 255, .34), transparent 36%),
+                url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1400&q=85') center/cover fixed no-repeat,
+                #001126;
+        }
+
+        body::before {
+            opacity: .26;
+            background:
+                linear-gradient(180deg, rgba(0, 16, 40, 0) 0%, rgba(0, 8, 26, .78) 62%, rgba(0, 4, 15, .95) 100%),
+                linear-gradient(17deg, transparent 55%, rgba(255,255,255,.13) 55.25%, transparent 55.6%),
+                linear-gradient(164deg, transparent 46%, rgba(255,255,255,.10) 46.25%, transparent 46.6%);
+        }
+
+        .contenedor-principal {
+            max-width: 430px;
+            padding: 4px 2px 28px;
+        }
+
+        .header-acciones {
+            margin: 4px 0 24px;
+        }
+
+        .header-acciones h2 {
+            font-size: 1.56rem;
+            font-weight: 900;
+        }
+
+        .icon-btn {
+            color: #0788ff;
+            font-size: 1.62rem;
+            text-shadow: 0 0 14px rgba(0, 136, 255, .68);
+        }
+
+        #notificaciones-container {
+            margin-bottom: 24px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(0, 116, 224, .58), rgba(0, 62, 139, .58)) !important;
+            border: 1px solid rgba(47, 167, 255, .72) !important;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 0 18px rgba(0,137,255,.38), 0 12px 24px rgba(0,0,0,.34);
+        }
+
+        #notificaciones-container summary {
+            min-height: 58px;
+            font-size: 1.02rem;
+            letter-spacing: -0.02em;
+        }
+
+        .carousel-container {
+            min-height: 236px;
+            border-radius: 14px;
+            border: 1px solid rgba(38, 168, 255, .76) !important;
+            background:
+                linear-gradient(180deg, rgba(0, 58, 120, .10), rgba(0, 9, 28, .76)),
+                url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=85') center/cover no-repeat !important;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 0 26px rgba(0, 153, 255, .42), 0 20px 38px rgba(0,0,0,.48);
+        }
+
+        .carousel-container::before {
+            left: 8%;
+            right: 8%;
+            top: 39%;
+            height: 3px;
+            background: #34c8ff;
+            box-shadow: 0 0 12px rgba(52, 200, 255, .95), 0 0 28px rgba(52, 200, 255, .75);
+        }
+
+        .carousel-slide {
+            padding: 40px 22px 42px;
+        }
+
+        .carousel-slide > div:first-child {
+            color: rgba(216, 234, 255, .82) !important;
+            text-transform: uppercase;
+        }
+
+        #vista-inicio > h4 {
+            margin: 8px 0 13px !important;
+            font-size: 1rem;
+            color: rgba(216, 234, 255, .72) !important;
+            font-weight: 900;
+        }
+
+        .menu-grid {
+            gap: 15px 14px;
+        }
+
+        .tarjeta-menu {
+            min-height: 82px;
+            border-radius: 11px;
+            border: 1px solid rgba(0, 157, 255, .84) !important;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.05), 0 0 16px rgba(0, 142, 255, .35), 0 12px 22px rgba(0,0,0,.42);
+            font-size: 1.12rem;
+            font-weight: 900;
+        }
+
+        .tarjeta-menu::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 54, 112, .02), rgba(0, 8, 26, .62));
+            z-index: -1;
+        }
+
+        .card-ranking { background-image: linear-gradient(180deg, rgba(0,32,76,.08), rgba(0,6,20,.72)), url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=900&q=80') !important; }
+        .card-partidos { background-image: linear-gradient(180deg, rgba(0,32,76,.05), rgba(0,6,20,.70)), url('https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=900&q=80') !important; }
+        .card-academia { background-image: linear-gradient(180deg, rgba(0,32,76,.08), rgba(0,6,20,.70)), url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=900&q=80') !important; }
+        .card-torneos { background-image: linear-gradient(180deg, rgba(0,32,76,.08), rgba(0,6,20,.70)), url('https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=900&q=80') !important; }
+
+        .input-form,
+        .selector-fecha,
+        .btn-horario {
+            background: rgba(0, 14, 38, .68);
+            border-color: rgba(85, 180, 255, .34);
+        }
+
+        .btn-secundario,
+        .toggle-btn.activo,
+        .btn-horario.activo {
+            background: linear-gradient(135deg, #0078ff, #16b9ff);
+            color: #fff;
+            box-shadow: 0 0 18px rgba(0, 152, 255, .32);
+        }
+
+        .btn-primario {
+            background: linear-gradient(135deg, #006fff, #00bbff);
+        }
+
+        #pantalla-auth {
+            max-width: 430px;
+            min-height: min(760px, calc(100vh - 48px));
+            border-radius: 24px;
+            border: 1px solid rgba(38, 168, 255, .72);
+            background:
+                linear-gradient(180deg, rgba(0, 63, 135, .50), rgba(0, 11, 31, .92)),
+                radial-gradient(circle at 50% 0%, rgba(0, 156, 255, .38), transparent 34%),
+                url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=85') center/cover no-repeat;
+            box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 0 28px rgba(0, 152, 255, .45), 0 22px 46px rgba(0,0,0,.54);
+        }
+
+        #pantalla-auth h2 {
+            font-size: 2.05rem;
+            font-weight: 950;
+            text-shadow: 0 4px 14px rgba(0,0,0,.52);
+        }
+
+        .auth-subtitle {
+            color: rgba(234, 246, 255, .76);
+            font-weight: 650;
+        }
+
     </style>
 </head>
 <body>
@@ -1017,34 +1191,19 @@
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
         const formatearAFechaString = (dateObj) => `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
 
-        let notificacionesData = [
-            { id: 1, texto: "¡Te invitaron a un partido el 25/06!", leida: false }, 
-            { id: 2, texto: "Tu resultado fue confirmado.", leida: true },
-            { id: 3, texto: "Carlos Tevez te ha invitado a jugar con él", leida: false, accion: "unirse" }
-        ];
-        
-        let amigosData = [{ id: 10, nombre: "Carlos Tevez", dni: "10101010" }, { id: 11, nombre: "Maria Sharapova", dni: "20202020" }];
-        let clubesData = [
-            { id: 1, nombre: "Club Central", ubicacion: "Av. Siempre Viva", canchas: "3 In, 2 Out", contacto: "351", apertura: "08:00", cierre: "23:00" },
-            { id: 2, nombre: "Padel Pro Norte", ubicacion: "Calle Falsa", canchas: "4 In", contacto: "351", apertura: "09:00", cierre: "00:00" },
-            { id: 3, nombre: "Elite Sur", ubicacion: "Ruta 9", canchas: "6 Out", contacto: "351", apertura: "10:00", cierre: "22:00" }
-        ];
-        let rankingData = [
-            { id: 1, nombre: "Jugador Uno", puntos: 1500, pj: 10, modalidad: 'Masculino', dni: "35000000" }, { id: 2, nombre: "Carlos Tevez", puntos: 1250, pj: 8, modalidad: 'Masculino', dni: "10101010" },
-            { id: 3, nombre: "Maria Sharapova", puntos: 1400, pj: 9, modalidad: 'Femenino', dni: "20202020" }, { id: 4, nombre: "Jugador Uno", puntos: 800, pj: 5, modalidad: 'Mixto', dni: "35000000" }
-        ];
-        let partidosData = [
-            { id: 100, fecha: "2024-01-20", hora: "19:00", club: "Club Central", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Finalizado", resultado: "6-4, 6-3", j1: "Jugador Uno", j2: "Pedro", j3: "Carlos", j4: "Juan" },
-            { id: 102, fecha: "2026-05-10", hora: "20:00", club: "Padel Pro Norte", tipo: "Competitivo", visibilidad: "Publico", modalidad: "Masculino", estado: "Pendiente Resultado", j1: "Jugador Uno", j2: "Carlos Tevez", j3: "Pedro", j4: "Juan" },
-            { id: 101, fecha: "2026-05-15", hora: "18:00", club: "Club Central", tipo: "Casual", visibilidad: "Publico", modalidad: "Masculino", estado: "Buscando Rival", j1: "Carlos Tevez", j2: "Libre", j3: "Libre", j4: "Libre", invitados: ["Jugador Uno"] }
-        ];
-        let torneosData = [{ id: 201, nombre: "Torneo Invierno", fecha: "2026-06-01", club: "Club Central", cupo: 16, inscriptos: ["Pedro / Juan"] }];
-
-        let clasesUsuario = [{ id: 1, dia: "Martes", hora: "18:30", notificar: true, anticipacion: "2" }];
-        let profesoresData = [
-            { id: 1, nombre: "Miguel Lamperti", telefono: "3511111111", clubes: ["Club Central"], categorias: ["1ra", "2da", "3ra"], horarios: ["Mañana", "Tarde"] },
-            { id: 2, nombre: "Ale Salazar", telefono: "3512222222", clubes: ["Padel Pro Norte", "Club Central"], categorias: ["6ta", "7ma", "8va"], horarios: ["Tarde", "Noche"] }
-        ];
+        /*
+         * DATOS DE LA APP
+         * Importante: estas colecciones arrancan vacías.
+         * No hay información mock/local. Todo lo que se muestra se carga desde Firestore.
+         */
+        let notificacionesData = [];
+        let amigosData = [];
+        let clubesData = [];
+        let rankingData = [];
+        let partidosData = [];
+        let torneosData = [];
+        let clasesUsuario = [];
+        let profesoresData = [];
 
         // Variables Globales
         let bannerInterval, currentSlide = 0, partidoEnEdicion = null, catRankingActual = 'Masculino';
@@ -1131,7 +1290,7 @@
         }
 
         function inicializarFormularioCrear() {
-            document.getElementById('input-club-crear').innerHTML = clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+            document.getElementById('input-club-crear').innerHTML = clubesData.length ? clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('') : '<option value="">Sin clubes cargados</option>';
             actualizarDisplayFecha(); actualizarHorariosDisponibles();
         }
 
@@ -1431,14 +1590,15 @@
 
         function renderizarTorneos() {
             document.getElementById('lista-torneos').innerHTML = torneosData.length ? torneosData.map(t => {
-                const inscripto = t.inscriptos.some(i => i.includes(getNombreCompleto()));
-                const btn = inscripto ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` : `<button class="btn btn-primario" style="padding:5px; font-size:0.85em;" onclick="inscribirseTorneo(${t.id})">Inscribirse</button>`;
+                const inscriptos = Array.isArray(t.inscriptos) ? t.inscriptos : [];
+                const inscripto = inscriptos.some(i => String(i).includes(getNombreCompleto()) || String(i) === String(usuarioActual?.uid));
+                const btn = inscripto ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` : `<button class="btn btn-primario" style="padding:5px; font-size:0.85em;" onclick="inscribirseTorneo('${String(t.id).replace(/'/g, "\\'")}')">Inscribirse</button>`;
                 return `
                 <div class="tarjeta-item">
                     <div style="color:var(--warning); font-weight:bold; font-size:1.1em;">🏆 ${t.nombre}</div>
                     <div style="color:var(--text-light); font-size:0.85em; margin-bottom:8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-base); padding-top:10px; margin-top:5px;">
-                        <small style="color:var(--text-muted);">Cupos: ${t.inscriptos.length}/${t.cupo}</small>${btn}
+                        <small style="color:var(--text-muted);">Cupos: ${inscriptos.length}/${t.cupo || "Sin límite"}</small>${btn}
                     </div>
                 </div>`;
             }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos disponibles.</p>';
@@ -1448,7 +1608,7 @@
             document.getElementById('lista-amigos').innerHTML = amigosData.length ? amigosData.map((a, idx) => `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border-base); padding:10px 15px; border-radius:8px;">
                     <div><strong style="color:var(--text-light);">${a.nombre}</strong><br><small style="color:var(--text-muted);">DNI: ${a.dni}</small></div>
-                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarAmigo(${idx})">❌</button>
+                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarAmigo('${String(a.id).replace(/'/g, "\\'")}')">❌</button>
                 </div>`).join('') : '<p style="color:var(--text-muted); font-size:0.9em;">Aún no tienes amigos.</p>';
         }
 
@@ -1457,8 +1617,8 @@
                 <div class="tarjeta-item">
                     <div style="color:var(--primary); font-weight:bold; font-size:1.1em;">🎾 ${c.nombre}</div>
                     <div style="color:var(--text-light); font-size:0.9em; margin:5px 0;">📍 ${c.ubicacion}</div>
-                    <div style="color:var(--success); font-size:0.85em; margin-bottom:10px;">Canchas: ${c.canchas}</div>
-                    <button class="btn btn-secundario" style="padding:5px; font-size:0.85em;" onclick="window.open('https://wa.me/${c.contacto}', '_blank')">💬 WhatsApp del Club</button>
+                    <div style="color:var(--success); font-size:0.85em; margin-bottom:10px;">Canchas: ${c.canchas || c.canchasTexto || "-"}</div>
+                    <button class="btn btn-secundario" style="padding:5px; font-size:0.85em;" onclick="window.open('https://wa.me/${c.contacto || ''}', '_blank')">💬 WhatsApp del Club</button>
                 </div>`).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay clubes.</p>';
         }
 
@@ -1510,7 +1670,7 @@
                             ${c.notificar ? `🔔 Notificación: ${c.anticipacion} hs antes` : `🔕 Sin notificación`}
                         </div>
                     </div>
-                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarClase(${c.id})">❌</button>
+                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarClase('${String(c.id).replace(/'/g, "\\'")}')">❌</button>
                 </div>
             `).join('');
         }
@@ -1886,34 +2046,154 @@
                 cambiarVistaPrincipal("inicio");
             };
 
+            function docsToArray(snapshot) {
+                return snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+            }
+
+            function actualizarSelectorClubes() {
+                const select = document.getElementById("input-club-crear");
+                if (!select) return;
+                const valorActual = select.value;
+                select.innerHTML = clubesData.length
+                    ? clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join("")
+                    : `<option value="">Sin clubes cargados</option>`;
+                if (valorActual && clubesData.some(c => c.nombre === valorActual)) select.value = valorActual;
+            }
+
             function iniciarEscuchasFirebase() {
-                if (!firebaseAPI || unsubscribeFirebase.length) return;
+                if (!firebaseAPI || unsubscribeFirebase.length || !usuarioActual) return;
 
                 const unsubReservas = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
-                    reservasCompartidasCache = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                    reservasCompartidasCache = docsToArray(snapshot);
                     window.renderizarPantallas();
                 }, (error) => logFirebaseError("lectura de reservas", error));
 
                 const unsubClubes = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
                     configsClubesCache = {};
-                    snapshot.docs.forEach(docSnap => {
+                    clubesData = snapshot.docs.map(docSnap => {
                         const data = docSnap.data();
                         const nombre = data.nombre || data.clubId || docSnap.id;
-                        configsClubesCache[nombre] = data;
-                        configsClubesCache[docSnap.id] = data;
+                        const totalCanchas = [data.canchasIndoor, data.canchasOutdoor, data.canchasTenis]
+                            .map(n => Number(n) || 0)
+                            .reduce((a,b) => a + b, 0);
+
+                        const club = {
+                            id: docSnap.id,
+                            ...data,
+                            nombre,
+                            ubicacion: data.ubicacion || data.direccion || "",
+                            contacto: data.contacto || data.whatsapp || data.telefono || "",
+                            apertura: data.apertura || data.primerTurno || "08:00",
+                            cierre: data.cierre || data.ultimoTurno || "21:30",
+                            canchas: data.canchas || data.canchasTexto || (totalCanchas ? `${totalCanchas}` : "")
+                        };
+
+                        configsClubesCache[nombre] = {
+                            ...data,
+                            clubId: nombre,
+                            nombre,
+                            primerTurno: data.primerTurno || data.apertura || "08:00",
+                            ultimoTurno: data.ultimoTurno || data.cierre || "21:30",
+                            duracionDefault: Number(data.duracionDefault) || DURACION_PARTIDO_DEFAULT,
+                            diasAbiertos: Array.isArray(data.diasAbiertos) ? data.diasAbiertos : [0,1,2,3,4,5,6],
+                            canchasIndoor: Number(data.canchasIndoor) || totalCanchas || 1,
+                            canchasOutdoor: Number(data.canchasOutdoor) || 0,
+                            canchasTenis: Number(data.canchasTenis) || 0
+                        };
+                        configsClubesCache[docSnap.id] = configsClubesCache[nombre];
+                        return club;
                     });
+
+                    actualizarSelectorClubes();
+                    renderizarClubes();
                     window.actualizarHorariosDisponibles();
-                }, (error) => console.warn("Firebase lectura de clubes:", error));
+                }, (error) => logFirebaseError("lectura de clubes", error));
 
                 const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
-                    const externos = snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
-                    const localesNoFirebase = partidosData.filter(p => !p.guardadoEnFirebase);
-                    partidosData = [...localesNoFirebase, ...externos];
+                    partidosData = docsToArray(snapshot).map(p => ({
+                        ...p,
+                        j1: p.j1 || p.jugador1 || p.creador || "Libre",
+                        j2: p.j2 || p.jugador2 || "Libre",
+                        j3: p.j3 || p.jugador3 || "Libre",
+                        j4: p.j4 || p.jugador4 || "Libre",
+                        estado: p.estado || "Buscando Rival",
+                        tipo: p.tipo || "Competitivo",
+                        visibilidad: p.visibilidad || "Publico",
+                        modalidad: p.modalidad || "Masculino"
+                    }));
                     renderizarTodo();
                     window.actualizarHorariosDisponibles();
-                }, (error) => console.warn("Firebase lectura de partidos:", error));
+                }, (error) => logFirebaseError("lectura de partidos", error));
 
-                unsubscribeFirebase = [unsubReservas, unsubClubes, unsubPartidos];
+                const unsubUsuarios = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users"), (snapshot) => {
+                    rankingData = snapshot.docs.map(docSnap => {
+                        const data = docSnap.data();
+                        const nombre = `${data.nombre || ""} ${data.apellido || ""}`.trim() || data.displayName || data.email || "Jugador";
+                        return {
+                            id: docSnap.id,
+                            uid: docSnap.id,
+                            ...data,
+                            nombre,
+                            dni: data.dni || "",
+                            modalidad: data.modalidad || data.genero || "Masculino",
+                            puntos: Number(data.puntos) || 0,
+                            pj: Number(data.pj) || Number(data.partidosJugados) || 0
+                        };
+                    });
+                    renderizarRanking();
+                }, (error) => logFirebaseError("lectura de usuarios/ranking", error));
+
+                const unsubTorneos = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "torneos"), (snapshot) => {
+                    torneosData = docsToArray(snapshot).map(t => ({
+                        ...t,
+                        nombre: t.nombre || t.titulo || "Torneo",
+                        fecha: t.fecha || "",
+                        club: t.club || t.clubNombre || "",
+                        cupo: t.cupo || t.cupos || "",
+                        inscriptos: Array.isArray(t.inscriptos) ? t.inscriptos : []
+                    }));
+                    renderizarTorneos();
+                    renderizarBanner();
+                }, (error) => logFirebaseError("lectura de torneos", error));
+
+                const unsubProfesores = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "profesores"), (snapshot) => {
+                    profesoresData = docsToArray(snapshot).map(p => ({
+                        ...p,
+                        nombre: p.nombre || p.displayName || "Profesor",
+                        telefono: p.telefono || p.whatsapp || "",
+                        clubes: Array.isArray(p.clubes) ? p.clubes : (p.club ? [p.club] : []),
+                        categorias: Array.isArray(p.categorias) ? p.categorias : [],
+                        horarios: Array.isArray(p.horarios) ? p.horarios : []
+                    }));
+                    renderizarAcademia();
+                }, (error) => logFirebaseError("lectura de profesores", error));
+
+                const unsubNotificaciones = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones"), (snapshot) => {
+                    notificacionesData = docsToArray(snapshot).sort((a,b) => String(b.fecha || b.creadoEn || "").localeCompare(String(a.fecha || a.creadoEn || "")));
+                    renderizarNotificaciones();
+                }, (error) => logFirebaseError("lectura de notificaciones", error));
+
+                const unsubAmigos = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "amigos"), (snapshot) => {
+                    amigosData = docsToArray(snapshot);
+                    renderizarAmigos();
+                }, (error) => logFirebaseError("lectura de amigos", error));
+
+                const unsubClases = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "clases"), (snapshot) => {
+                    clasesUsuario = docsToArray(snapshot);
+                    renderizarMisClases();
+                }, (error) => logFirebaseError("lectura de clases", error));
+
+                unsubscribeFirebase = [
+                    unsubReservas,
+                    unsubClubes,
+                    unsubPartidos,
+                    unsubUsuarios,
+                    unsubTorneos,
+                    unsubProfesores,
+                    unsubNotificaciones,
+                    unsubAmigos,
+                    unsubClases
+                ];
             }
 
             async function guardarReservaEnFirebase(reserva) {
@@ -2296,6 +2576,146 @@
                 renderizarPartidosAbiertos();
             };
 
+
+
+            window.marcarNotificacionesLeidas = async function() {
+                notificacionesData.forEach(n => n.leida = true);
+                renderizarNotificaciones();
+
+                if (!firebaseAPI || !usuarioActual) return;
+                await Promise.all(notificacionesData.map(n => {
+                    if (!n.id) return Promise.resolve();
+                    return firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones", String(n.id)),
+                        { leida: true, actualizadoEn: firebaseAPI.serverTimestamp() },
+                        { merge: true }
+                    );
+                })).catch(error => logFirebaseError("marcar notificaciones", error));
+            };
+
+            window.ejecutarAccionNotificacion = async function(accion, notifId) {
+                const notif = notificacionesData.find(n => String(n.id) === String(notifId));
+                if (notif) {
+                    notif.leida = true;
+                    if (firebaseAPI && usuarioActual && notif.id) {
+                        await firebaseAPI.setDoc(
+                            firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones", String(notif.id)),
+                            { leida: true, actualizadoEn: firebaseAPI.serverTimestamp() },
+                            { merge: true }
+                        ).catch(error => logFirebaseError("actualización de notificación", error));
+                    }
+                }
+
+                if (accion === "unirse") {
+                    cambiarVistaPrincipal("partidos");
+                    cambiarAccionPartido("unirse");
+                }
+                renderizarNotificaciones();
+            };
+
+            window.guardarClase = async function() {
+                const dia = document.getElementById("clase-dia").value;
+                const hora = document.getElementById("clase-hora").value;
+                const notificar = document.getElementById("clase-notificar").checked;
+                const anticipacion = document.getElementById("clase-anticipacion").value;
+
+                if (!hora) return alert("Por favor, selecciona una hora para tu clase.");
+                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión para guardar la clase.");
+
+                const id = crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
+                await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "clases", id), {
+                    id,
+                    dia,
+                    hora,
+                    notificar,
+                    anticipacion,
+                    creadoEn: firebaseAPI.serverTimestamp(),
+                    actualizadoEn: firebaseAPI.serverTimestamp()
+                }, { merge: true }).catch(error => logFirebaseError("guardado de clase", error));
+
+                document.getElementById("clase-hora").value = "";
+            };
+
+            window.eliminarClase = async function(id) {
+                if (!confirm("¿Seguro que deseas eliminar esta clase de tu calendario?")) return;
+                if (!firebaseAPI || !usuarioActual) return;
+
+                await firebaseAPI.deleteDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "clases", String(id))
+                ).catch(error => logFirebaseError("eliminación de clase", error));
+            };
+
+            window.agregarAmigo = async function() {
+                const input = document.getElementById("input-buscar-amigo");
+                const q = input.value.trim().toLowerCase();
+                if (!q) return alert("Escribí un DNI o nombre para buscar.");
+
+                const jugador = rankingData.find(j =>
+                    String(j.dni || "").toLowerCase() === q ||
+                    String(j.nombre || "").toLowerCase().includes(q)
+                );
+
+                if (!jugador) return alert("No encontré ese jugador en la base de datos.");
+                if (String(jugador.uid || jugador.id) === String(usuarioActual?.uid)) return alert("No podés agregarte a vos mismo.");
+
+                const amigoId = String(jugador.uid || jugador.id);
+                await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", amigoId), {
+                    id: amigoId,
+                    uid: amigoId,
+                    nombre: jugador.nombre,
+                    dni: jugador.dni || "",
+                    agregadoEn: firebaseAPI.serverTimestamp()
+                }, { merge: true }).catch(error => logFirebaseError("guardado de amigo", error));
+
+                input.value = "";
+            };
+
+            window.eliminarAmigo = async function(id) {
+                if (!firebaseAPI || !usuarioActual) return;
+                await firebaseAPI.deleteDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", String(id))
+                ).catch(error => logFirebaseError("eliminación de amigo", error));
+            };
+
+            window.inscribirseTorneo = async function(id) {
+                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión para inscribirte.");
+                const torneo = torneosData.find(t => String(t.id) === String(id));
+                if (!torneo) return alert("No encontré ese torneo en la base de datos.");
+
+                const inscriptos = Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [];
+                const yaInscripto = inscriptos.some(i => String(i).includes(getNombreCompleto()) || String(i) === String(usuarioActual.uid));
+                if (yaInscripto) return alert("Ya estás inscripto.");
+
+                if (torneo.cupo && inscriptos.length >= Number(torneo.cupo)) return alert("El torneo no tiene cupos disponibles.");
+
+                const nuevoValor = `${getNombreCompleto()}|${usuarioActual.uid}`;
+                await firebaseAPI.updateDoc(firebaseAPI.doc(firebaseAPI.db, "torneos", String(id)), {
+                    inscriptos: firebaseAPI.arrayUnion(nuevoValor),
+                    actualizadoEn: firebaseAPI.serverTimestamp()
+                }).catch(error => logFirebaseError("inscripción a torneo", error));
+            };
+
+            window.enviarDenuncia = async function() {
+                const jugador = document.getElementById("denuncia-jugador").value;
+                const motivo = document.getElementById("denuncia-motivo").value.trim();
+                if (!jugador || !motivo) return alert("Completa los datos.");
+                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión para enviar la denuncia.");
+
+                const id = crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
+                await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "denuncias", id), {
+                    id,
+                    denuncianteUid: usuarioActual.uid,
+                    denunciante: getNombreCompleto(),
+                    jugador,
+                    motivo,
+                    estado: "Pendiente",
+                    creadoEn: firebaseAPI.serverTimestamp()
+                }).catch(error => logFirebaseError("envío de denuncia", error));
+
+                document.getElementById("denuncia-motivo").value = "";
+                cerrarModales();
+                alert("Denuncia enviada.");
+            };
 
             document.addEventListener("DOMContentLoaded", inicializarFirebase);
         })();
