@@ -12,17 +12,17 @@
             --bg-light: rgba(5, 32, 67, 0.82);
             --glass: rgba(2, 33, 77, 0.68);
             --glass-strong: rgba(0, 82, 170, 0.72);
-            --border-base: rgba(55, 170, 255, 0.42);
-            --border-light: rgba(77, 184, 255, 0.26);
+            --border-base: rgba(255, 255, 255, 0.46);
+            --border-light: rgba(255, 255, 255, 0.24);
             --text-main: #ffffff;
             --text-muted: #a9c3dd;
             --text-light: #d8eaff;
             --primary: #0b8dff;
-            --primary-2: #00c2ff;
+            --primary-2: #ffffff;
             --success: #16d49a;
             --warning: #f8c349;
             --danger: #ff4d68;
-            --shadow-blue: 0 0 22px rgba(0, 153, 255, 0.35);
+            --shadow-blue: 0 0 18px rgba(255, 255, 255, 0.22);
             --shadow-deep: 0 18px 45px rgba(0, 0, 0, 0.45);
             --radius-xl: 18px;
             --radius-lg: 14px;
@@ -43,9 +43,9 @@
             -webkit-font-smoothing: antialiased;
             background:
                 linear-gradient(180deg, rgba(0, 32, 73, 0.82), rgba(0, 11, 26, 0.96)),
-                radial-gradient(circle at 50% 18%, rgba(0, 174, 255, 0.30), transparent 38%),
-                linear-gradient(130deg, transparent 0 58%, rgba(110, 210, 255, 0.12) 58.2% 58.6%, transparent 58.9%),
-                linear-gradient(32deg, transparent 0 49%, rgba(110, 210, 255, 0.10) 49.3% 49.7%, transparent 50%),
+                radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.18), transparent 38%),
+                linear-gradient(130deg, transparent 0 58%, rgba(255, 255, 255, 0.11) 58.2% 58.6%, transparent 58.9%),
+                linear-gradient(32deg, transparent 0 49%, rgba(255, 255, 255, 0.09) 49.3% 49.7%, transparent 50%),
                 #021123;
             background-attachment: fixed;
             position: relative;
@@ -59,9 +59,9 @@
             pointer-events: none;
             z-index: -1;
             background:
-                linear-gradient(90deg, transparent 8%, rgba(122,210,255,.12) 8.2%, transparent 8.5%, transparent 91%, rgba(122,210,255,.12) 91.2%, transparent 91.5%),
-                linear-gradient(0deg, transparent 52%, rgba(122,210,255,.14) 52.2%, transparent 52.5%),
-                linear-gradient(90deg, transparent 49.6%, rgba(122,210,255,.10) 49.9%, transparent 50.2%);
+                linear-gradient(90deg, transparent 8%, rgba(255,255,255,.10) 8.2%, transparent 8.5%, transparent 91%, rgba(255,255,255,.10) 91.2%, transparent 91.5%),
+                linear-gradient(0deg, transparent 52%, rgba(255,255,255,.12) 52.2%, transparent 52.5%),
+                linear-gradient(90deg, transparent 49.6%, rgba(255,255,255,.08) 49.9%, transparent 50.2%);
             opacity: .38;
         }
 
@@ -106,11 +106,11 @@
             border: none;
             border-radius: 999px;
             background: transparent;
-            color: var(--primary);
+            color: #ffffff;
             font-size: 1.55em;
             cursor: pointer;
             transition: .2s ease;
-            text-shadow: 0 0 14px rgba(0, 145, 255, .55);
+            text-shadow: 0 0 12px rgba(255, 255, 255, .45);
         }
         .icon-btn:hover { transform: translateY(-1px) scale(1.05); color: var(--primary-2); }
 
@@ -139,7 +139,7 @@
             padding: 0 8px !important;
         }
 
-        /* --- FONDO FOTO/NEÓN REUTILIZABLE --- */
+        /* --- FONDO FOTO / BLANCO REUTILIZABLE --- */
         .cancha-bg {
             position: relative;
             isolation: isolate;
@@ -147,7 +147,7 @@
             color: var(--text-main) !important;
             background:
                 linear-gradient(180deg, rgba(1, 27, 58, .20), rgba(2, 11, 29, .78)),
-                radial-gradient(circle at 50% 18%, rgba(0,194,255,.35), transparent 30%),
+                radial-gradient(circle at 50% 18%, rgba(255,255,255,.20), transparent 30%),
                 linear-gradient(90deg, rgba(9,76,152,.88), rgba(0,33,78,.88)) !important;
             border: 1px solid var(--border-base) !important;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), var(--shadow-blue), var(--shadow-deep);
@@ -160,10 +160,10 @@
             inset: 0;
             z-index: -2;
             background:
-                linear-gradient(90deg, transparent 9%, rgba(125,215,255,.28) 9.4%, transparent 9.8%, transparent 90%, rgba(125,215,255,.28) 90.4%, transparent 90.8%),
-                linear-gradient(0deg, transparent 55%, rgba(125,215,255,.28) 55.4%, transparent 55.8%),
-                linear-gradient(90deg, transparent 50%, rgba(125,215,255,.18) 50.3%, transparent 50.7%),
-                linear-gradient(180deg, rgba(0,154,255,.28), rgba(0,24,58,.75));
+                linear-gradient(90deg, transparent 9%, rgba(255,255,255,.22) 9.4%, transparent 9.8%, transparent 90%, rgba(255,255,255,.22) 90.4%, transparent 90.8%),
+                linear-gradient(0deg, transparent 55%, rgba(255,255,255,.22) 55.4%, transparent 55.8%),
+                linear-gradient(90deg, transparent 50%, rgba(255,255,255,.15) 50.3%, transparent 50.7%),
+                linear-gradient(180deg, rgba(255,255,255,.16), rgba(0,24,58,.75));
             opacity: .72;
         }
 
@@ -188,7 +188,7 @@
             position: relative;
             overflow: hidden;
             min-height: 235px;
-            border: 1px solid rgba(54, 186, 255, .65) !important;
+            border: 1px solid rgba(255, 255, 255, .66) !important;
             background:
                 linear-gradient(180deg, rgba(0,18,42,.05), rgba(0,11,30,.72)),
                 url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat !important;
@@ -200,8 +200,8 @@
             left: 7%; right: 7%; top: 38%;
             height: 4px;
             border-radius: 999px;
-            background: #37c7ff;
-            box-shadow: 0 0 18px #1db8ff, 0 0 34px rgba(0,178,255,.8);
+            background: #ffffff;
+            box-shadow: 0 0 16px rgba(255,255,255,.85), 0 0 30px rgba(255,255,255,.42);
             z-index: 1;
             opacity: .9;
         }
@@ -244,6 +244,17 @@
             transition: .25s;
         }
         .indicator.activo { width: 38px; background: #fff; box-shadow: 0 0 14px rgba(255,255,255,.75); }
+
+
+        .carousel-container {
+            touch-action: pan-y;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .carousel-container.arrastrando {
+            cursor: grabbing;
+        }
 
         /* --- MENÚ PRINCIPAL --- */
         #vista-inicio > h4 {
@@ -327,7 +338,7 @@
         }
         .input-form:focus {
             border-color: rgba(0, 194, 255, .86);
-            box-shadow: 0 0 0 3px rgba(0, 148, 255, .18);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, .18);
         }
 
         .btn {
@@ -342,7 +353,7 @@
         }
         .btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
         .btn-primario { background: linear-gradient(135deg, #0bd28f, #079dff); }
-        .btn-secundario { background: linear-gradient(135deg, #0878ff, #00c2ff); box-shadow: 0 0 20px rgba(0,145,255,.28); }
+        .btn-secundario { background: linear-gradient(135deg, #0878ff, #ffffff); box-shadow: 0 0 18px rgba(255,255,255,.22); }
         .btn-cerrar { background: rgba(79, 96, 120, .78); margin-top: 10px; }
         .btn-alerta { background: linear-gradient(135deg, #ef4444, #fb7185); }
 
@@ -428,7 +439,7 @@
             -webkit-appearance: none;
         }
         .toggle-btn:hover { color: var(--text-light); }
-        .toggle-btn.activo { background: linear-gradient(135deg, #0078ff, #00c2ff); color: var(--text-main); }
+        .toggle-btn.activo { background: linear-gradient(135deg, #0078ff, #ffffff); color: var(--text-main); }
 
         .busqueda-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .avatar-circulo { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid #60c8ff; flex-shrink: 0; }
@@ -455,7 +466,7 @@
             font-weight: 800;
             transition: .2s;
         }
-        .btn-horario.activo { background: linear-gradient(135deg, #0078ff, #00c2ff); color: white; border-color: transparent; }
+        .btn-horario.activo { background: linear-gradient(135deg, #0078ff, #ffffff); color: white; border-color: transparent; }
         .btn-horario:hover:not(.activo) { border-color: rgba(255,255,255,.45); }
 
         .scrollable { max-height: 55vh; overflow-y: auto; padding-right: 5px; }
@@ -1254,6 +1265,7 @@
                 </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
 
             bannerContainer.innerHTML = `${slidePartido}${slideTorneo}${slideClub}<div class="carousel-indicators"><div class="indicator activo" onclick="cambiarSlide(0)"></div><div class="indicator" onclick="cambiarSlide(1)"></div><div class="indicator" onclick="cambiarSlide(2)"></div></div>`;
+            activarSwipeBanner();
 
             clearInterval(bannerInterval);
             bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
@@ -1270,6 +1282,54 @@
             
             clearInterval(bannerInterval);
             bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
+        }
+
+
+        function activarSwipeBanner() {
+            const banner = document.getElementById('banner-proximo-partido');
+            if (!banner || banner.dataset.swipeActivo === 'true') return;
+            banner.dataset.swipeActivo = 'true';
+
+            let inicioX = 0;
+            let inicioY = 0;
+            let arrastrando = false;
+            const umbral = 45;
+
+            const obtenerX = (e) => e.touches ? e.touches[0].clientX : e.clientX;
+            const obtenerY = (e) => e.touches ? e.touches[0].clientY : e.clientY;
+
+            const iniciar = (e) => {
+                inicioX = obtenerX(e);
+                inicioY = obtenerY(e);
+                arrastrando = true;
+                banner.classList.add('arrastrando');
+                clearInterval(bannerInterval);
+            };
+
+            const finalizar = (e) => {
+                if (!arrastrando) return;
+                arrastrando = false;
+                banner.classList.remove('arrastrando');
+
+                const finX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                const finY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+                const deltaX = finX - inicioX;
+                const deltaY = finY - inicioY;
+
+                if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > umbral) {
+                    const totalSlides = document.querySelectorAll('#banner-proximo-partido .carousel-slide').length;
+                    if (deltaX < 0) cambiarSlide((currentSlide + 1) % totalSlides);
+                    else cambiarSlide((currentSlide - 1 + totalSlides) % totalSlides);
+                } else {
+                    bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
+                }
+            };
+
+            banner.addEventListener('touchstart', iniciar, { passive: true });
+            banner.addEventListener('touchend', finalizar, { passive: true });
+            banner.addEventListener('mousedown', iniciar);
+            banner.addEventListener('mouseup', finalizar);
+            banner.addEventListener('mouseleave', finalizar);
         }
 
         function renderizarRanking() {
