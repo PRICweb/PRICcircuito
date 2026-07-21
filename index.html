@@ -391,6 +391,44 @@ tr:hover td{background:#f9fafb}
   overflow-y:auto;
   padding:24px;
 }
+
+.partidos-nav{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:6px;
+  padding:6px;
+  margin-bottom:16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+  overflow-x:auto;
+}
+.partidos-nav button{
+  min-width:72px;
+  padding:9px 6px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+.partidos-nav button.activo{background:var(--primary);color:#fff}
+.panel-partidos{display:none}
+.panel-partidos.activo{display:block}
+.partidos-panel-card{
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.partidos-panel-title{margin:0 0 4px;font-size:1.05rem}
+.partidos-panel-help{margin:0 0 16px;color:var(--muted);font-size:.84rem;line-height:1.4}
+.partido-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.partido-chip{padding:4px 8px;border-radius:999px;background:#f2f4f7;color:#475467;font-size:.76rem;font-weight:700}
 @media(max-width:420px){
   body{padding:18px 10px}
   .contenedor-principal{max-width:100%}
@@ -531,91 +569,84 @@ tr:hover td{background:#f9fafb}
         <div id="vista-partidos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
-                <h3 style="margin: 0;">🎾 Partidos</h3>
-                <div style="width: 30px;"></div>
-            </div>
-            
-            <details open>
-                <summary>⏳ Pendientes</summary>
-                <div class="details-content scrollable" id="lista-mis-partidos"></div>
-            </details>
-
-            <div class="toggle-container" style="background-color: var(--bg-base); margin-top: 20px;">
-                <button type="button" id="subtab-crear" class="toggle-btn activo" onclick="cambiarAccionPartido('crear')">Crear Partido</button>
-                <button type="button" id="subtab-unirse" class="toggle-btn" onclick="cambiarAccionPartido('unirse')">Unirse a Partido</button>
+                <h3 style="margin:0;">🎾 Partidos</h3>
+                <div style="width:38px;"></div>
             </div>
 
-            <!-- SECCIÓN CREAR PARTIDO -->
-            <div id="seccion-crear-partido" style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
-                <label>Tipo de Partido:</label>
+            <div class="partidos-nav" aria-label="Secciones de partidos">
+                <button id="partidos-tab-crear" class="activo" onclick="cambiarPanelPartidos('crear')">＋ Crear</button>
+                <button id="partidos-tab-unirse" onclick="cambiarPanelPartidos('unirse')">🔎 Unirse</button>
+                <button id="partidos-tab-curso" onclick="cambiarPanelPartidos('curso')">🎾 En curso</button>
+                <button id="partidos-tab-pendientes" onclick="cambiarPanelPartidos('pendientes')">⏳ Resultados</button>
+                <button id="partidos-tab-historial" onclick="cambiarPanelPartidos('historial')">📜 Historial</button>
+            </div>
+
+            <section id="panel-partidos-crear" class="panel-partidos activo partidos-panel-card">
+                <h4 class="partidos-panel-title">Crear un partido</h4>
+                <p class="partidos-panel-help">Elegí el club, la modalidad disponible y un horario libre.</p>
+
+                <label>Tipo de partido</label>
                 <select id="input-tipo-crear" class="input-form" onchange="toggleVisibilidadPartido()">
-                    <option value="Competitivo">Competitivo (Suma Puntos)</option>
-                    <option value="Casual">Casual (Amistoso)</option>
+                    <option value="Competitivo">Competitivo (suma puntos)</option>
+                    <option value="Casual">Casual (amistoso)</option>
                 </select>
-
-                <div id="div-visibilidad-crear" style="display: none;">
-                    <label>Visibilidad:</label>
+                <div id="div-visibilidad-crear" style="display:none;">
+                    <label>Visibilidad</label>
                     <select id="input-visibilidad-crear" class="input-form">
-                        <option value="Publico">Público (Aparece a todos)</option>
-                        <option value="Privado">Privado (Solo con invitación)</option>
+                        <option value="Publico">Público</option>
+                        <option value="Privado">Privado, solo con invitación</option>
                     </select>
                 </div>
 
-                <label>Modalidad:</label>
-                <select id="input-mod-crear" class="input-form">
-                    <option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="Mixto">Mixto</option>
-                </select>
+                <label>Club</label>
+                <select id="input-club-crear" class="input-form" onchange="actualizarModalidadesCrear(); actualizarHorariosDisponibles();"></select>
 
-                <label>Club:</label>
-                <select id="input-club-crear" class="input-form" onchange="actualizarHorariosDisponibles()"></select>
+                <label>Modalidad disponible</label>
+                <select id="input-mod-crear" class="input-form" onchange="actualizarHorariosDisponibles()"></select>
+                <div id="msg-sin-modalidades-crear" style="display:none;color:var(--danger);font-size:.84rem;margin:-7px 0 14px;">Este club no tiene modalidades configuradas.</div>
 
-                <label>Fecha:</label>
+                <label>Fecha</label>
                 <div class="selector-fecha">
                     <button class="icon-btn" onclick="cambiarFechaCrear(-1)">⬅</button>
-                    <strong id="lbl-fecha-crear" style="font-size: 1.1em; color: var(--primary);">Hoy</strong>
+                    <strong id="lbl-fecha-crear" style="font-size:1.1em;color:var(--primary);">Hoy</strong>
                     <button class="icon-btn" onclick="cambiarFechaCrear(1)">➡</button>
                 </div>
 
-                <label>Horarios Disponibles:</label>
+                <label>Horarios disponibles</label>
                 <div id="grid-horarios" class="horarios-grid"></div>
-                <div id="msg-sin-horarios" style="display:none; color:var(--text-muted); text-align:center; margin-bottom:15px; font-size:0.9em;">
-                    No hay turnos disponibles para esta fecha.
-                </div>
+                <div id="msg-sin-horarios" style="display:none;color:var(--muted);text-align:center;margin-bottom:15px;font-size:.9em;">No hay turnos disponibles para esta fecha.</div>
+                <button class="btn btn-secundario" onclick="crearPartido()">Crear y reservar</button>
+            </section>
 
-                <button class="btn btn-secundario" onclick="crearPartido()">Crear Partido</button>
-            </div>
-
-            <!-- SECCIÓN UNIRSE A PARTIDO -->
-            <div id="seccion-unirse-partido" style="display: none; background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light);">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <div style="flex:1;">
-                        <select id="filtro-tipo-unirse" class="input-form" style="margin:0; padding:8px;" onchange="renderizarPartidosAbiertos()">
-                            <option value="Todos">Cualquier Tipo</option>
-                            <option value="Competitivo">Competitivo</option>
-                            <option value="Casual">Casual</option>
-                        </select>
-                    </div>
-                    <div style="flex:1;">
-                        <select id="filtro-mod-unirse" class="input-form" style="margin:0; padding:8px;" onchange="renderizarPartidosAbiertos()">
-                            <option value="Todos">Todas las Modalidades</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Femenino">Femenino</option>
-                            <option value="Mixto">Mixto</option>
-                        </select>
-                    </div>
+            <section id="panel-partidos-unirse" class="panel-partidos partidos-panel-card">
+                <h4 class="partidos-panel-title">Unirse a un partido</h4>
+                <p class="partidos-panel-help">Filtrá primero por club y luego por una modalidad que ese club ofrezca.</p>
+                <label>Club</label>
+                <select id="filtro-club-unirse" class="input-form" onchange="actualizarModalidadesUnirse(); renderizarPartidosAbiertos();"></select>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div><label>Modalidad</label><select id="filtro-mod-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"></select></div>
+                    <div><label>Tipo</label><select id="filtro-tipo-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"><option value="Todos">Todos</option><option value="Competitivo">Competitivo</option><option value="Casual">Casual</option></select></div>
                 </div>
                 <div id="lista-partidos-abiertos" class="scrollable"></div>
-            </div>
+            </section>
 
-            <details style="margin-top: 20px;">
-                <summary>🎾 En curso</summary>
-                <div class="details-content scrollable" id="lista-en-curso-partidos"></div>
-            </details>
+            <section id="panel-partidos-curso" class="panel-partidos partidos-panel-card">
+                <h4 class="partidos-panel-title">Partidos en curso</h4>
+                <p class="partidos-panel-help">Partidos que están buscando jugadores o ya quedaron confirmados.</p>
+                <div id="lista-en-curso-partidos" class="scrollable"></div>
+            </section>
 
-            <details style="margin-top: 15px;">
-                <summary>📜 Historial</summary>
-                <div class="details-content scrollable" id="lista-historial-partidos"></div>
-            </details>
+            <section id="panel-partidos-pendientes" class="panel-partidos partidos-panel-card">
+                <h4 class="partidos-panel-title">Resultados pendientes</h4>
+                <p class="partidos-panel-help">Partidos competitivos jugados cuyo resultado todavía debe cargarse.</p>
+                <div id="lista-mis-partidos" class="scrollable"></div>
+            </section>
+
+            <section id="panel-partidos-historial" class="panel-partidos partidos-panel-card">
+                <h4 class="partidos-panel-title">Historial</h4>
+                <p class="partidos-panel-help">Todos tus partidos finalizados y sus resultados.</p>
+                <div id="lista-historial-partidos" class="scrollable"></div>
+            </section>
         </div>
 
         <!-- VISTA ACADEMIA -->
@@ -957,8 +988,55 @@ tr:hover td{background:#f9fafb}
             else lbl.innerText = `${String(fechaSeleccionadaCrear.getDate()).padStart(2,'0')}/${String(fechaSeleccionadaCrear.getMonth()+1).padStart(2,'0')}/${fechaSeleccionadaCrear.getFullYear()}`;
         }
 
+        function obtenerModalidadesClub(clubRef) {
+            const club = typeof clubRef === 'string' ? clubesData.find(c => c.nombre === clubRef || c.id === clubRef) : clubRef;
+            if (!club) return [];
+            const config = window.obtenerConfiguracionClub ? window.obtenerConfiguracionClub(club.nombre || club.id) : club;
+            const modalidades = [];
+            if (Number(config.canchasIndoor ?? club.canchasIndoor) > 0) modalidades.push('Indoor');
+            if (Number(config.canchasOutdoor ?? club.canchasOutdoor) > 0) modalidades.push('Outdoor');
+            if (Number(config.canchasTenis ?? club.canchasTenis) > 0) modalidades.push('Tenis');
+            return modalidades;
+        }
+
+        function actualizarModalidadesCrear() {
+            const clubNombre = document.getElementById('input-club-crear')?.value;
+            const select = document.getElementById('input-mod-crear');
+            const aviso = document.getElementById('msg-sin-modalidades-crear');
+            if (!select) return;
+            const anterior = select.value;
+            const modalidades = obtenerModalidadesClub(clubNombre);
+            select.innerHTML = modalidades.map(m => `<option value="${m}">${m}</option>`).join('');
+            if (modalidades.includes(anterior)) select.value = anterior;
+            select.disabled = modalidades.length === 0;
+            if (aviso) aviso.style.display = modalidades.length ? 'none' : 'block';
+        }
+
+        function actualizarClubesUnirse() {
+            const select = document.getElementById('filtro-club-unirse');
+            if (!select) return;
+            const anterior = select.value;
+            select.innerHTML = '<option value="Todos">Todos los clubes</option>' + clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('');
+            if ([...select.options].some(o => o.value === anterior)) select.value = anterior;
+        }
+
+        function actualizarModalidadesUnirse() {
+            const clubNombre = document.getElementById('filtro-club-unirse')?.value || 'Todos';
+            const select = document.getElementById('filtro-mod-unirse');
+            if (!select) return;
+            const anterior = select.value;
+            const modalidades = clubNombre === 'Todos'
+                ? [...new Set(clubesData.flatMap(obtenerModalidadesClub))]
+                : obtenerModalidadesClub(clubNombre);
+            select.innerHTML = '<option value="Todos">Todas</option>' + modalidades.map(m => `<option value="${m}">${m}</option>`).join('');
+            if ([...select.options].some(o => o.value === anterior)) select.value = anterior;
+        }
+
         function inicializarFormularioCrear() {
             document.getElementById('input-club-crear').innerHTML = clubesData.length ? clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join('') : '<option value="">Sin clubes cargados</option>';
+            actualizarClubesUnirse();
+            actualizarModalidadesCrear();
+            actualizarModalidadesUnirse();
             actualizarDisplayFecha(); actualizarHorariosDisponibles();
         }
 
@@ -1019,12 +1097,17 @@ tr:hover td{background:#f9fafb}
             renderizarRanking();
         }
 
+        function cambiarPanelPartidos(panel) {
+            ['crear','unirse','curso','pendientes','historial'].forEach(nombre => {
+                document.getElementById(`panel-partidos-${nombre}`)?.classList.toggle('activo', nombre === panel);
+                document.getElementById(`partidos-tab-${nombre}`)?.classList.toggle('activo', nombre === panel);
+            });
+            if (panel === 'unirse') { actualizarModalidadesUnirse(); renderizarPartidosAbiertos(); }
+            if (['curso','pendientes','historial'].includes(panel)) renderizarMisPartidos();
+        }
+
         function cambiarAccionPartido(accion) {
-            document.getElementById('seccion-crear-partido').style.display = accion === 'crear' ? 'block' : 'none';
-            document.getElementById('seccion-unirse-partido').style.display = accion === 'unirse' ? 'block' : 'none';
-            document.getElementById('subtab-crear').classList.remove('activo');
-            document.getElementById('subtab-unirse').classList.remove('activo');
-            document.getElementById(`subtab-${accion}`).classList.add('activo');
+            cambiarPanelPartidos(accion === 'unirse' ? 'unirse' : 'crear');
         }
 
         function irACrearPartidoEnClub(nombreClub) {
@@ -1162,12 +1245,14 @@ tr:hover td{background:#f9fafb}
         function renderizarRanking() {
             const busqueda = document.getElementById('input-buscar-ranking') ? document.getElementById('input-buscar-ranking').value.toLowerCase() : '';
             const filtrados = rankingData.filter(r => {
+                // Solo aparecen jugadores que ya cargaron al menos un resultado.
+                const tienePartidosJugados = Number(r.pj || r.partidosJugados || 0) > 0;
                 let coincideModalidad = r.modalidad === catRankingActual;
                 let coincideBusqueda = true;
                 if (busqueda) {
                     coincideBusqueda = r.nombre.toLowerCase().includes(busqueda) || (r.dni && r.dni.includes(busqueda));
                 }
-                return coincideModalidad && coincideBusqueda;
+                return tienePartidosJugados && coincideModalidad && coincideBusqueda;
             }).sort((a, b) => b.puntos - a.puntos);
 
             document.getElementById('tabla-ranking').innerHTML = filtrados.length ? filtrados.map((j, i) => `
@@ -1224,11 +1309,13 @@ tr:hover td{background:#f9fafb}
             const user = getNombreCompleto();
             const fTipo = document.getElementById('filtro-tipo-unirse').value;
             const fMod = document.getElementById('filtro-mod-unirse').value;
+            const fClub = document.getElementById('filtro-club-unirse')?.value || 'Todos';
 
             const abiertos = partidosData.filter(p => {
                 if(p.estado !== 'Buscando Rival') return false;
                 if([p.j1, p.j2, p.j3, p.j4].includes(user)) return false;
                 if(p.visibilidad === 'Privado') return false; 
+                if(fClub !== 'Todos' && p.club !== fClub) return false;
                 if(fTipo !== 'Todos' && p.tipo !== fTipo) return false;
                 if(fMod !== 'Todos' && p.modalidad !== fMod) return false;
                 return true;
@@ -1249,27 +1336,52 @@ tr:hover td{background:#f9fafb}
                         </div>
                         <span style="font-size: 0.8em; color:var(--primary); font-weight:bold;">${badgeTipo}</span>
                     </div>
-                    <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                    <div style="color:var(--success); font-size:0.85em; margin-top:5px;">Lugares: ${cupos} libres</div>
-                    <button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="unirsePartido(${p.id})">Unirme</button>
+                    <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} · ⌚ ${p.hora} · 📍 ${p.club}</div>
+                    <div class="partido-meta"><span class="partido-chip">${p.modalidad}</span><span class="partido-chip">${cupos} lugares libres</span></div>
+                    <button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick='unirsePartido(${JSON.stringify(p.id)})'>Unirme</button>
                 </div>`;
             }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay partidos con estos filtros.</p>';
         }
 
+        function torneoEsPublico(torneo) {
+            const valor = torneo?.visibilidad ?? torneo?.publico ?? torneo?.esPublico ?? torneo?.isPublic;
+            if (typeof valor === 'boolean') return valor;
+            const texto = String(valor ?? 'Publico').trim().toLowerCase();
+            return ['publico', 'público', 'public', 'true', '1', 'si', 'sí'].includes(texto);
+        }
+
+        function invitarAmigoATorneo(id) {
+            const torneo = torneosData.find(t => String(t.id) === String(id));
+            if (!torneo) return alert('No encontré ese torneo.');
+            const texto = `¡Te invito al torneo ${torneo.nombre} en ${torneo.club}, el ${torneo.fecha}! Inscribite desde Circuito Competitivo.`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+        }
+
         function renderizarTorneos() {
-            document.getElementById('lista-torneos').innerHTML = torneosData.length ? torneosData.map(t => {
+            const torneosPublicos = torneosData
+                .filter(torneoEsPublico)
+                .sort((a, b) => String(a.fecha || '').localeCompare(String(b.fecha || '')));
+
+            document.getElementById('lista-torneos').innerHTML = torneosPublicos.length ? torneosPublicos.map(t => {
                 const inscriptos = Array.isArray(t.inscriptos) ? t.inscriptos : [];
                 const inscripto = inscriptos.some(i => String(i).includes(getNombreCompleto()) || String(i) === String(usuarioActual?.uid));
-                const btn = inscripto ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>` : `<button class="btn btn-primario" style="padding:5px; font-size:0.85em;" onclick="inscribirseTorneo('${String(t.id).replace(/'/g, "\\'")}')">Inscribirse</button>`;
+                const idSeguro = String(t.id).replace(/'/g, "\\'");
+                const btnInscripcion = inscripto
+                    ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>`
+                    : `<button class="btn btn-primario" style="padding:7px 10px; font-size:0.85em; width:auto;" onclick="inscribirseTorneo('${idSeguro}')">Inscribirse</button>`;
                 return `
                 <div class="tarjeta-item">
                     <div style="color:var(--warning); font-weight:bold; font-size:1.1em;">🏆 ${t.nombre}</div>
                     <div style="color:var(--text-light); font-size:0.85em; margin-bottom:8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-base); padding-top:10px; margin-top:5px;">
-                        <small style="color:var(--text-muted);">Cupos: ${inscriptos.length}/${t.cupo || "Sin límite"}</small>${btn}
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-base); padding-top:10px; margin-top:5px; gap:8px;">
+                        <small style="color:var(--text-muted);">Cupos: ${inscriptos.length}/${t.cupo || 'Sin límite'}</small>
+                        <div style="display:flex; align-items:center; gap:7px;">
+                            ${btnInscripcion}
+                            <button class="btn btn-secundario" style="padding:7px 10px; font-size:0.85em; width:auto;" onclick="invitarAmigoATorneo('${idSeguro}')">💬 Invitar</button>
+                        </div>
                     </div>
                 </div>`;
-            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos disponibles.</p>';
+            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos públicos disponibles.</p>';
         }
 
         function renderizarAmigos() {
@@ -1715,7 +1827,7 @@ tr:hover td{background:#f9fafb}
             };
 
             function docsToArray(snapshot) {
-                return snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+                return snapshot.docs.map(docSnap => ({ id: docSnap.id, _firestorePath: docSnap.ref.path, ...docSnap.data() }));
             }
 
             function actualizarSelectorClubes() {
@@ -1726,6 +1838,9 @@ tr:hover td{background:#f9fafb}
                     ? clubesData.map(c => `<option value="${c.nombre}">${c.nombre}</option>`).join("")
                     : `<option value="">Sin clubes cargados</option>`;
                 if (valorActual && clubesData.some(c => c.nombre === valorActual)) select.value = valorActual;
+                actualizarClubesUnirse();
+                actualizarModalidadesCrear();
+                actualizarModalidadesUnirse();
             }
 
             function iniciarEscuchasFirebase() {
@@ -1739,11 +1854,43 @@ tr:hover td{background:#f9fafb}
                 const unsubClubes = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
                     configsClubesCache = {};
                     clubesData = snapshot.docs.map(docSnap => {
-                        const data = docSnap.data();
-                        const nombre = data.nombre || data.clubId || docSnap.id;
-                        const totalCanchas = [data.canchasIndoor, data.canchasOutdoor, data.canchasTenis]
-                            .map(n => Number(n) || 0)
-                            .reduce((a,b) => a + b, 0);
+                        const raiz = docSnap.data() || {};
+                        // El panel administrador guarda la configuración operativa dentro de datosClub.
+                        // Se combinan los campos raíz con datosClub, dando prioridad a datosClub.
+                        const datosClub = raiz.datosClub && typeof raiz.datosClub === "object"
+                            ? raiz.datosClub
+                            : {};
+                        const data = { ...raiz, ...datosClub };
+                        const nombre = raiz.nombre || data.nombre || raiz.clubId || data.clubId || docSnap.id;
+                        const leerNumero = (...valores) => {
+                            for (const valor of valores) {
+                                const n = Number(valor);
+                                if (Number.isFinite(n) && n >= 0) return n;
+                            }
+                            return 0;
+                        };
+                        const normalizarTexto = v => String(v || "").trim().toLowerCase();
+                        const listaCanchas = Array.isArray(data.canchas)
+                            ? data.canchas
+                            : Array.isArray(data.listaCanchas)
+                                ? data.listaCanchas
+                                : Array.isArray(data.courts)
+                                    ? data.courts
+                                    : [];
+                        const contarLista = tipo => listaCanchas.filter(cancha => {
+                            const texto = normalizarTexto(cancha?.modalidad || cancha?.tipo || cancha?.categoria || cancha?.nombre || cancha);
+                            if (tipo === "Indoor") return texto.includes("indoor") || texto.includes("cubierta") || texto.includes("techada");
+                            if (tipo === "Outdoor") return texto.includes("outdoor") || texto.includes("descubierta") || texto.includes("aire libre");
+                            return texto.includes("tenis") || texto.includes("tennis");
+                        }).length;
+                        const modalidadesObj = data.modalidades && typeof data.modalidades === "object" && !Array.isArray(data.modalidades) ? data.modalidades : {};
+                        const modalidadesLista = Array.isArray(data.modalidades) ? data.modalidades.map(normalizarTexto) : [];
+                        const canchasIndoor = leerNumero(data.canchasIndoor, data.indoor, data.cantidadIndoor, data.canchas_indoor, modalidadesObj.Indoor, modalidadesObj.indoor) || contarLista("Indoor") || (modalidadesLista.includes("indoor") ? 1 : 0);
+                        const canchasOutdoor = leerNumero(data.canchasOutdoor, data.outdoor, data.cantidadOutdoor, data.canchas_outdoor, modalidadesObj.Outdoor, modalidadesObj.outdoor) || contarLista("Outdoor") || (modalidadesLista.includes("outdoor") ? 1 : 0);
+                        const canchasTenis = leerNumero(data.canchasTenis, data.tenis, data.cantidadTenis, data.canchas_tenis, modalidadesObj.Tenis, modalidadesObj.tenis) || contarLista("Tenis") || (modalidadesLista.some(m => m === "tenis" || m === "tennis") ? 1 : 0);
+                        const totalCanchas = canchasIndoor + canchasOutdoor + canchasTenis;
+                        const apertura = data.primerTurno || data.apertura || data.horaApertura || data.horarioApertura || data.desde || "08:00";
+                        const cierre = data.ultimoTurno || data.cierre || data.horaCierre || data.horarioCierre || data.hasta || "23:30";
 
                         const club = {
                             id: docSnap.id,
@@ -1751,22 +1898,36 @@ tr:hover td{background:#f9fafb}
                             nombre,
                             ubicacion: data.ubicacion || data.direccion || "",
                             contacto: data.contacto || data.whatsapp || data.telefono || "",
-                            apertura: data.apertura || data.primerTurno || "08:00",
-                            cierre: data.cierre || data.ultimoTurno || "21:30",
-                            canchas: data.canchas || data.canchasTexto || (totalCanchas ? `${totalCanchas}` : "")
+                            apertura,
+                            cierre,
+                            canchasIndoor,
+                            canchasOutdoor,
+                            canchasTenis,
+                            canchas: data.canchasTexto || (totalCanchas ? `${totalCanchas}` : "")
                         };
 
                         configsClubesCache[nombre] = {
+                            ...raiz,
                             ...data,
-                            clubId: nombre,
+                            clubId: docSnap.id,
                             nombre,
-                            primerTurno: data.primerTurno || data.apertura || "08:00",
-                            ultimoTurno: data.ultimoTurno || data.cierre || "21:30",
-                            duracionDefault: Number(data.duracionDefault) || DURACION_PARTIDO_DEFAULT,
-                            diasAbiertos: Array.isArray(data.diasAbiertos) ? data.diasAbiertos : [0,1,2,3,4,5,6],
-                            canchasIndoor: Number(data.canchasIndoor) || totalCanchas || 1,
-                            canchasOutdoor: Number(data.canchasOutdoor) || 0,
-                            canchasTenis: Number(data.canchasTenis) || 0
+                            primerTurno: apertura,
+                            ultimoTurno: cierre,
+                            horarios: data.horarios || data.horariosPorDia || data.horarioSemanal || null,
+                            duracionDefault: Number(data.duracionDefault ?? data.duracionGlobal ?? data.duracionTurno ?? data.duracionReserva) || DURACION_PARTIDO_DEFAULT,
+                            duracionIndoor: Number(data.duracionIndoor) || Number(data.duracionDefault ?? data.duracionGlobal) || 90,
+                            duracionOutdoor: Number(data.duracionOutdoor) || Number(data.duracionDefault ?? data.duracionGlobal) || 90,
+                            duracionTenis: Number(data.duracionTenis) || 60,
+                            diasAbiertos: Array.isArray(data.diasAbiertos)
+                                ? data.diasAbiertos.map(Number).filter(Number.isFinite)
+                                : [0,1,2,3,4,5,6],
+                            canchasIndoor,
+                            canchasOutdoor,
+                            canchasTenis,
+                            nombresIndoor: Array.isArray(data.nombresIndoor) ? data.nombresIndoor : [],
+                            nombresOutdoor: Array.isArray(data.nombresOutdoor) ? data.nombresOutdoor : [],
+                            nombresTenis: Array.isArray(data.nombresTenis) ? data.nombresTenis : [],
+                            nombresCanchas: Array.isArray(data.nombresCanchas) ? data.nombresCanchas : []
                         };
                         configsClubesCache[docSnap.id] = configsClubesCache[nombre];
                         return club;
@@ -1811,14 +1972,15 @@ tr:hover td{background:#f9fafb}
                     renderizarRanking();
                 }, (error) => logFirebaseError("lectura de usuarios/ranking", error));
 
-                const unsubTorneos = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "torneos"), (snapshot) => {
+                const unsubTorneos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "torneos"), (snapshot) => {
                     torneosData = docsToArray(snapshot).map(t => ({
                         ...t,
                         nombre: t.nombre || t.titulo || "Torneo",
                         fecha: t.fecha || "",
                         club: t.club || t.clubNombre || "",
                         cupo: t.cupo || t.cupos || "",
-                        inscriptos: Array.isArray(t.inscriptos) ? t.inscriptos : []
+                        inscriptos: Array.isArray(t.inscriptos) ? t.inscriptos : [],
+                        visibilidad: t.visibilidad ?? t.publico ?? t.esPublico ?? t.isPublic ?? "Publico"
                     }));
                     renderizarTorneos();
                     renderizarBanner();
@@ -1864,9 +2026,17 @@ tr:hover td{background:#f9fafb}
                 ];
             }
 
+
+            function resolverClubDocId(valor) {
+                const texto = String(valor || "");
+                const club = clubesData.find(c => String(c.id) === texto || String(c.nombre) === texto);
+                const config = configsClubesCache[texto];
+                return String(club?.id || config?.clubId || texto || "Club Central");
+            }
+
             async function guardarReservaEnFirebase(reserva) {
                 if (!firebaseAPI || !reserva?.id) return;
-                const clubDocId = normalizarIdFirestore(reserva.clubId || reserva.club || "Club Central");
+                const clubDocId = resolverClubDocId(reserva.clubId || reserva.club || "Club Central");
                 await firebaseAPI.setDoc(
                     firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "reservas", String(reserva.id)),
                     {
@@ -1878,9 +2048,54 @@ tr:hover td{background:#f9fafb}
                 );
             }
 
+            async function crearNotificacionReserva(reserva) {
+                if (!firebaseAPI || !reserva?.id) return;
+                const clubDocId = resolverClubDocId(reserva.clubId || reserva.club || 'Club Central');
+                const notifId = `reserva-${reserva.id}`;
+                const texto = `Nueva reserva en ${reserva.clubId || reserva.club}: ${reserva.fecha} a las ${reserva.hora}, cancha ${reserva.canchaNombre || reserva.cancha}. Cliente: ${reserva.jugador || 'Sin nombre'}.`;
+                const datosNotificacion = {
+                    id: notifId,
+                    tipo: 'nueva_reserva',
+                    texto,
+                    titulo: 'Nueva reserva',
+                    clubId: reserva.clubId || reserva.club || 'Club Central',
+                    reservaId: reserva.id,
+                    partidoId: reserva.partidoId || null,
+                    fecha: reserva.fecha,
+                    hora: reserva.hora,
+                    cancha: reserva.cancha,
+                    canchaNombre: reserva.canchaNombre || '',
+                    jugador: reserva.jugador || '',
+                    jugadorUid: reserva.jugadorUid || null,
+                    telefono: reserva.telefono || '',
+                    leida: false,
+                    creadoEn: firebaseAPI.serverTimestamp()
+                };
+
+                // Notificación para el panel del club.
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'clubs', clubDocId, 'notificaciones', notifId),
+                    datosNotificacion,
+                    { merge: true }
+                );
+
+                // Confirmación visible para el jugador que realizó la reserva.
+                if (reserva.jugadorUid) {
+                    await firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, 'users', String(reserva.jugadorUid), 'notificaciones', notifId),
+                        {
+                            ...datosNotificacion,
+                            titulo: 'Reserva confirmada',
+                            texto: `Reserva confirmada en ${reserva.clubId || reserva.club}, el ${reserva.fecha} a las ${reserva.hora}, cancha ${reserva.canchaNombre || reserva.cancha}.`
+                        },
+                        { merge: true }
+                    );
+                }
+            }
+
             async function guardarPartidoEnFirebase(partido) {
                 if (!firebaseAPI || !partido?.id) return;
-                const clubDocId = normalizarIdFirestore(partido.club || "Club Central");
+                const clubDocId = resolverClubDocId(partido.club || "Club Central");
                 await firebaseAPI.setDoc(
                     firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "partidos", String(partido.id)),
                     {
@@ -1952,10 +2167,77 @@ tr:hover td{background:#f9fafb}
                     ultimoTurno: club.cierre || "21:30",
                     duracionDefault: DURACION_PARTIDO_DEFAULT,
                     diasAbiertos: [0,1,2,3,4,5,6],
-                    canchasIndoor: totalDesdeTexto,
-                    canchasOutdoor: 0,
-                    canchasTenis: 0
+                    canchasIndoor: Number(club.canchasIndoor) || 0,
+                    canchasOutdoor: Number(club.canchasOutdoor) || 0,
+                    canchasTenis: Number(club.canchasTenis) || 0
                 };
+            };
+
+
+            window.obtenerDuracionModalidadClub = function(config, modalidad) {
+                const mod = String(modalidad || "").toLowerCase();
+                if (mod === "tenis") return Number(config.duracionTenis) || 60;
+                if (mod === "outdoor") return Number(config.duracionOutdoor) || Number(config.duracionDefault) || 90;
+                if (mod === "indoor") return Number(config.duracionIndoor) || Number(config.duracionDefault) || 90;
+                return Number(config.duracionDefault) || DURACION_PARTIDO_DEFAULT;
+            };
+
+            window.obtenerCanchasClub = function(clubId, filtroModalidad = "") {
+                const config = window.obtenerConfiguracionClub(clubId);
+                const canchas = [];
+                const indoor = Math.max(0, Number(config.canchasIndoor) || 0);
+                const outdoor = Math.max(0, Number(config.canchasOutdoor) || 0);
+                const tenis = Math.max(0, Number(config.canchasTenis) || 0);
+                const nombresIndoor = Array.isArray(config.nombresIndoor) ? config.nombresIndoor : [];
+                const nombresOutdoor = Array.isArray(config.nombresOutdoor) ? config.nombresOutdoor : [];
+                const nombresTenis = Array.isArray(config.nombresTenis) ? config.nombresTenis : [];
+                const nombresCanchas = Array.isArray(config.nombresCanchas) ? config.nombresCanchas : [];
+
+                for (let i = 1; i <= indoor; i++) {
+                    canchas.push({
+                        numero: String(i),
+                        modalidad: "Indoor",
+                        nombre: nombresIndoor[i - 1] || nombresCanchas[i - 1] || `Cancha ${i} Indoor`
+                    });
+                }
+
+                const inicioOutdoor = indoor + 1;
+                for (let i = 0; i < outdoor; i++) {
+                    const numero = inicioOutdoor + i;
+                    canchas.push({
+                        numero: String(numero),
+                        modalidad: "Outdoor",
+                        nombre: nombresOutdoor[i] || nombresCanchas[numero - 1] || `Cancha ${numero} Outdoor`
+                    });
+                }
+
+                const inicioTenis = indoor + outdoor + 1;
+                for (let i = 0; i < tenis; i++) {
+                    const numero = inicioTenis + i;
+                    canchas.push({
+                        numero: String(numero),
+                        modalidad: "Tenis",
+                        nombre: nombresTenis[i] || nombresCanchas[numero - 1] || `Cancha ${numero} Tenis`
+                    });
+                }
+
+                return filtroModalidad
+                    ? canchas.filter(c => c.modalidad.toLowerCase() === String(filtroModalidad).toLowerCase())
+                    : canchas;
+            };
+
+            window.reservaBloqueaDisponibilidad = function(reserva) {
+                const estado = String(reserva?.estado || reserva?.status || reserva?.estadoPago || "").toLowerCase();
+                const libres = [
+                    "cancelada", "cancelado", "vencida", "vencido",
+                    "rechazada", "rechazado", "error_pago", "pago_error"
+                ];
+                if (libres.includes(estado)) return false;
+
+                const expira = Number(reserva?.expiraPagoEnMs || 0);
+                const pendiente = estado === "pendiente_pago";
+                if (pendiente && expira > 0 && Date.now() >= expira) return false;
+                return true;
             };
 
             window.calcularBloquesReserva = function(hora, duracion) {
@@ -1973,35 +2255,48 @@ tr:hover td{background:#f9fafb}
             };
 
             window.obtenerCanchasDisponibles = function(datos = {}) {
-                const clubId = datos.clubId || document.getElementById("input-club-crear")?.value || clubesData[0]?.nombre || "Club Central";
+                const clubSeleccionado = datos.clubId || document.getElementById("input-club-crear")?.value || clubesData[0]?.nombre || "Club Central";
+                const clubActual = clubesData.find(c => c.nombre === clubSeleccionado || c.id === clubSeleccionado);
+                const clubDocId = clubActual?.id || window.obtenerConfiguracionClub(clubSeleccionado)?.clubId || clubSeleccionado;
                 const fechaISO = datos.fecha || window.formatearAFechaString(fechaSeleccionadaCrear);
                 const hora = datos.hora || horaSeleccionadaCrear;
-                const duracion = Number(datos.duracion) || DURACION_PARTIDO_DEFAULT;
-                const config = window.obtenerConfiguracionClub(clubId);
-                const totalCanchas = Math.max(1, (Number(config.canchasIndoor)||0) + (Number(config.canchasOutdoor)||0) + (Number(config.canchasTenis)||0));
+                const modalidad = datos.modalidad || document.getElementById("input-mod-crear")?.value || "";
+                const config = window.obtenerConfiguracionClub(clubSeleccionado);
+                const duracion = Number(datos.duracion) || window.obtenerDuracionModalidadClub(config, modalidad);
                 const bloquesNuevos = window.calcularBloquesReserva(hora, duracion);
+                const canchas = window.obtenerCanchasClub(clubSeleccionado, modalidad);
+                const referenciasClub = new Set([
+                    clubSeleccionado,
+                    clubDocId,
+                    clubActual?.id,
+                    clubActual?.nombre
+                ].filter(Boolean).map(String));
 
-                const ocupadas = new Set();
-                window.obtenerReservasCompartidas()
-                    .filter(r => (r.clubId || clubId) === clubId)
-                    .forEach(r => {
-                        if (!window.reservaAplicaEnFecha(r, fechaISO)) return;
-                        const bloquesReserva = window.calcularBloquesReserva(r.hora, r.duracion || DURACION_PARTIDO_DEFAULT);
-                        if (bloquesNuevos.some(b => bloquesReserva.includes(b))) ocupadas.add(String(r.cancha));
+                return canchas.filter(cancha => {
+                    const ocupadaPorReserva = window.obtenerReservasCompartidas().some(reserva => {
+                        if (!window.reservaBloqueaDisponibilidad(reserva)) return false;
+                        const refReserva = [reserva.clubId, reserva.club, reserva.clubDocId]
+                            .filter(Boolean).map(String);
+                        if (!refReserva.some(ref => referenciasClub.has(ref))) return false;
+                        if (!window.reservaAplicaEnFecha(reserva, fechaISO)) return false;
+                        if (String(reserva.cancha) !== String(cancha.numero)) return false;
+                        const duracionReserva = Number(reserva.duracion) || Number(config.duracionDefault) || 90;
+                        const bloquesReserva = window.calcularBloquesReserva(reserva.hora, duracionReserva);
+                        return bloquesNuevos.some(b => bloquesReserva.includes(b));
                     });
 
-                partidosData
-                    .filter(p => p.club === clubId && p.fecha === fechaISO && p.estado !== "Finalizado" && p.hora)
-                    .forEach((p, index) => {
-                        const bloquesPartido = window.calcularBloquesReserva(p.hora, p.duracion || DURACION_PARTIDO_DEFAULT);
-                        if (bloquesNuevos.some(b => bloquesPartido.includes(b))) ocupadas.add(String(p.cancha || (index + 1)));
-                    });
+                    if (ocupadaPorReserva) return false;
 
-                const disponibles = [];
-                for (let c = 1; c <= totalCanchas; c++) {
-                    if (!ocupadas.has(String(c))) disponibles.push(String(c));
-                }
-                return disponibles;
+                    return !partidosData.some(partido => {
+                        if (partido.estado === "Finalizado") return false;
+                        const mismoClub = referenciasClub.has(String(partido.club || partido.clubId || ""));
+                        if (!mismoClub || partido.fecha !== fechaISO || !partido.hora) return false;
+                        if (String(partido.cancha || "") !== String(cancha.numero)) return false;
+                        const duracionPartido = Number(partido.duracion) || Number(config.duracionDefault) || 90;
+                        const bloquesPartido = window.calcularBloquesReserva(partido.hora, duracionPartido);
+                        return bloquesNuevos.some(b => bloquesPartido.includes(b));
+                    });
+                });
             };
 
             window.hayDisponibilidad = function(datos = {}) {
@@ -2013,24 +2308,31 @@ tr:hover td{background:#f9fafb}
                 const fecha = datos.fecha || window.formatearAFechaString(fechaSeleccionadaCrear);
                 const hora = datos.hora || horaSeleccionadaCrear;
                 const duracion = Number(datos.duracion) || DURACION_PARTIDO_DEFAULT;
+                const modalidad = datos.modalidad || document.getElementById("input-mod-crear")?.value || "";
 
                 if (!fecha || !hora) return { ok:false, error:"Falta fecha u horario." };
                 if (window.validarEsHoraPasada(fecha, hora)) return { ok:false, error:"No se puede reservar un horario pasado." };
 
-                const disponibles = window.obtenerCanchasDisponibles({ clubId, fecha, hora, duracion });
-                const cancha = datos.cancha ? String(datos.cancha) : disponibles[0];
-                if (!cancha || !disponibles.includes(String(cancha))) return { ok:false, error:"No hay canchas disponibles para ese horario." };
+                const config = window.obtenerConfiguracionClub(clubId);
+                const duracionReal = Number(datos.duracion) || window.obtenerDuracionModalidadClub(config, modalidad);
+                const disponibles = window.obtenerCanchasDisponibles({ clubId, fecha, hora, duracion: duracionReal, modalidad });
+                const canchaElegida = datos.cancha
+                    ? disponibles.find(c => String(c.numero) === String(datos.cancha))
+                    : disponibles[0];
+                if (!canchaElegida) return { ok:false, error:"No hay canchas disponibles para ese horario." };
 
                 const nueva = {
                     id: datos.id || (crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString()),
                     clubId,
                     fecha,
                     hora,
-                    cancha,
+                    cancha: String(canchaElegida.numero),
+                    canchaNombre: canchaElegida.nombre,
                     jugador: datos.jugador || datos.nombre || getNombreCompleto(),
                     jugadorUid: datos.jugadorUid || usuarioActual?.uid || null,
                     telefono: datos.telefono || perfilUsuario.telefono || "",
-                    duracion,
+                    duracion: duracionReal,
+                    modalidad,
                     fechaRegistro: datos.fechaRegistro || new Date().toISOString(),
                     asistencia: false,
                     fijo: false,
@@ -2046,7 +2348,9 @@ tr:hover td{background:#f9fafb}
                     partidoId: datos.partidoId || null
                 };
                 reservasCompartidasCache.push(nueva);
-                guardarReservaEnFirebase(nueva).catch(error => logFirebaseError("creación de reserva", error));
+                guardarReservaEnFirebase(nueva)
+                    .then(() => crearNotificacionReserva(nueva))
+                    .catch(error => logFirebaseError("creación de reserva y notificación", error));
                 return { ok:true, reserva:nueva };
             };
 
@@ -2102,16 +2406,33 @@ tr:hover td{background:#f9fafb}
                     return;
                 }
 
-                let inicio = window.aMinutos(config.primerTurno || "08:00");
-                let fin = window.aMinutos(config.ultimoTurno || "21:30");
+                const nombresDia = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+                const nombreDia = nombresDia[dow];
+                const horarios = config.horarios;
+                let horarioDia = null;
+                if (horarios && typeof horarios === "object") {
+                    horarioDia = horarios[dow] || horarios[String(dow)] || horarios[nombreDia] || horarios[nombreDia === "miercoles" ? "miércoles" : nombreDia];
+                }
+                if (horarioDia === false || horarioDia?.cerrado === true || horarioDia?.abierto === false) {
+                    grid.style.display = "none";
+                    msgVacio.style.display = "block";
+                    msgVacio.innerText = "El club está cerrado este día.";
+                    return;
+                }
+                const inicioTexto = horarioDia?.primerTurno || horarioDia?.apertura || horarioDia?.desde || horarioDia?.inicio || (Array.isArray(horarioDia) ? horarioDia[0] : null) || config.primerTurno || "08:00";
+                const finTexto = horarioDia?.ultimoTurno || horarioDia?.cierre || horarioDia?.hasta || horarioDia?.fin || (Array.isArray(horarioDia) ? horarioDia[1] : null) || config.ultimoTurno || "23:30";
+                let inicio = window.aMinutos(inicioTexto);
+                let fin = window.aMinutos(finTexto);
                 if (fin <= inicio) fin += 1440;
 
                 let hayTurnos = false;
                 let html = "";
+                const modalidad = document.getElementById("input-mod-crear")?.value || "";
+                const duracionTurno = window.obtenerDuracionModalidadClub(config, modalidad);
                 for (let m = inicio; m <= fin; m += 30) {
                     const hStr = window.minutosAHora(m);
                     if (window.validarEsHoraPasada(fechaISO, hStr)) continue;
-                    if (!window.hayDisponibilidad({ clubId, fecha: fechaISO, hora: hStr, duracion: DURACION_PARTIDO_DEFAULT })) continue;
+                    if (!window.hayDisponibilidad({ clubId, fecha: fechaISO, hora: hStr, duracion: duracionTurno, modalidad })) continue;
                     html += `<button class="btn-horario" id="btn-h-${hStr.replace(":","")}" onclick="seleccionarHora('${hStr}', this)">${hStr}</button>`;
                     hayTurnos = true;
                 }
@@ -2143,13 +2464,16 @@ tr:hover td{background:#f9fafb}
 
                 if (!fecha || !hora) return alert("Selecciona un horario disponible.");
 
+                const configClub = window.obtenerConfiguracionClub(club);
+                const duracionPartido = window.obtenerDuracionModalidadClub(configClub, modalidad);
                 const partidoId = crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
                 const reserva = window.crearReserva({
                     id: `partido-${partidoId}`,
                     clubId: club,
                     fecha,
                     hora,
-                    duracion: DURACION_PARTIDO_DEFAULT,
+                    duracion: duracionPartido,
+                    modalidad,
                     jugador: getNombreCompleto(),
                     jugadorUid: usuarioActual?.uid || null,
                     telefono: perfilUsuario.telefono,
@@ -2171,7 +2495,7 @@ tr:hover td{background:#f9fafb}
                     tipo,
                     visibilidad,
                     estado: "Buscando Rival",
-                    duracion: DURACION_PARTIDO_DEFAULT,
+                    duracion: duracionPartido,
                     j1: getNombreCompleto(),
                     creadorUid: usuarioActual?.uid || null,
                     jugadoresUid: [usuarioActual?.uid].filter(Boolean),
@@ -2185,7 +2509,7 @@ tr:hover td{background:#f9fafb}
                 guardarPartidoEnFirebase(partidoNuevo).catch(error => logFirebaseError("creación de partido", error));
 
                 alert(`Partido ${tipo} creado y turno reservado en ${club}, cancha ${reserva.reserva.cancha}.`);
-                cambiarAccionPartido("unirse");
+                cambiarPanelPartidos("curso");
                 renderizarPartidosAbiertos();
                 renderizarMisPartidos();
                 window.actualizarHorariosDisponibles();
@@ -2355,7 +2679,8 @@ tr:hover td{background:#f9fafb}
                 if (torneo.cupo && inscriptos.length >= Number(torneo.cupo)) return alert("El torneo no tiene cupos disponibles.");
 
                 const nuevoValor = `${getNombreCompleto()}|${usuarioActual.uid}`;
-                await firebaseAPI.updateDoc(firebaseAPI.doc(firebaseAPI.db, "torneos", String(id)), {
+                const rutaTorneo = torneo._firestorePath || `torneos/${String(id)}`;
+                await firebaseAPI.updateDoc(firebaseAPI.doc(firebaseAPI.db, ...rutaTorneo.split("/")), {
                     inscriptos: firebaseAPI.arrayUnion(nuevoValor),
                     actualizadoEn: firebaseAPI.serverTimestamp()
                 }).catch(error => logFirebaseError("inscripción a torneo", error));
