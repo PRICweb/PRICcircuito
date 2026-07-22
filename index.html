@@ -1588,6 +1588,139 @@ tr:hover td{background:#f9fafb}
 }
 </style>
 
+
+<style id="amigos-solicitudes-css">
+.amigos-buscador-card,.amigos-seccion{
+  margin-bottom:16px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+}
+.amigos-buscador-card label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--text);
+  font-size:.78rem;
+  font-weight:850;
+}
+.amigos-buscador-card .input-form{margin:0!important}
+.resultados-busqueda-amigos{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  margin-top:9px;
+}
+.amigos-seccion-titulo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.amigos-seccion-titulo h4{
+  margin:0;
+  color:var(--text);
+  font-size:.9rem;
+}
+.amigos-seccion-titulo span{
+  min-width:25px;
+  height:25px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:850;
+}
+.amigos-lista{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.amigo-persona-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:58px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface);
+}
+.amigo-persona-identidad{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+.amigo-persona-identidad img{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.amigo-persona-texto{min-width:0}
+.amigo-persona-texto strong{
+  display:block;
+  overflow:hidden;
+  color:var(--text);
+  font-size:.82rem;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.amigo-persona-texto small{
+  display:block;
+  margin-top:2px;
+  color:var(--muted);
+  font-size:.69rem;
+}
+.amigo-persona-acciones{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.amigo-mini-btn{
+  min-height:34px;
+  padding:7px 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  color:var(--text);
+  font-size:.72rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.amigo-mini-btn:hover{background:var(--surface-2)}
+.amigo-mini-btn.primario{
+  border-color:#101828;
+  background:#101828;
+  color:#fff;
+}
+.amigo-mini-btn.peligro{
+  color:var(--danger);
+  border-color:#fecdca;
+  background:#fffafa;
+}
+.amigo-estado-pendiente{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#f2f4f7;
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:800;
+}
+.amigos-vacio{
+  margin:4px 0;
+  color:var(--muted);
+  font-size:.78rem;
+  text-align:center;
+}
+</style>
+
 </head>
 <body>
 
@@ -1919,18 +2052,37 @@ tr:hover td{background:#f9fafb}
         <div id="vista-amigos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
-                <h3 style="margin: 0;">👥 Amigos</h3>
-                <div style="width: 30px;"></div>
+                <h3 style="margin:0;">Amigos</h3>
+                <div style="width:30px;"></div>
             </div>
-            <div style="background: var(--bg-light); padding: 15px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 20px;">
-                <label style="color: var(--text-light); font-weight: bold; font-size: 0.9em;">Buscar por DNI o Nombre:</label>
-                <div class="busqueda-container">
-                    <input type="text" id="input-buscar-amigo" class="input-form" placeholder="Ej: 12345678 o Juan Pérez" style="margin-bottom: 0;">
-                    <button class="btn btn-secundario" style="width: auto;" onclick="agregarAmigo()">Agregar</button>
+
+            <section class="amigos-buscador-card">
+                <label for="input-buscar-amigo">Buscar personas</label>
+                <input
+                    type="text"
+                    id="input-buscar-amigo"
+                    class="input-form"
+                    placeholder="Escribí un DNI o nombre"
+                    autocomplete="off"
+                    oninput="renderizarResultadosBusquedaAmigos()">
+                <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
+            </section>
+
+            <section id="seccion-solicitudes-amistad" class="amigos-seccion">
+                <div class="amigos-seccion-titulo">
+                    <h4>Solicitudes recibidas</h4>
+                    <span id="contador-solicitudes-amistad">0</span>
                 </div>
-            </div>
-            <h4 style="color: var(--text-muted); margin-bottom: 10px;">Tu lista de amigos:</h4>
-            <div id="lista-amigos" class="scrollable" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                <div id="lista-solicitudes-amistad" class="amigos-lista"></div>
+            </section>
+
+            <section class="amigos-seccion">
+                <div class="amigos-seccion-titulo">
+                    <h4>Mis amigos</h4>
+                    <span id="contador-amigos">0</span>
+                </div>
+                <div id="lista-amigos" class="amigos-lista"></div>
+            </section>
         </div>
 
         <!-- VISTA PERFIL -->
@@ -2150,6 +2302,7 @@ tr:hover td{background:#f9fafb}
         // Datos cargados exclusivamente desde Firestore.
         let notificacionesData = [];
         let amigosData = [];
+        let solicitudesAmistadData = [];
         let clubesData = [];
         let rankingData = [];
         let partidosData = [];
@@ -3588,12 +3741,117 @@ tr:hover td{background:#f9fafb}
             }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos públicos disponibles.</p>';
         }
 
+        function normalizarTextoBusqueda(valor) {
+            return String(valor || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim();
+        }
+
+        function solicitudPendienteConUsuario(uid) {
+            return solicitudesAmistadData.some(s =>
+                String(s.deUid || '') === String(uid) ||
+                String(s.paraUid || '') === String(uid)
+            );
+        }
+
+        function esAmigoActual(uid) {
+            return amigosData.some(a => String(a.uid || a.id) === String(uid));
+        }
+
+        function renderizarResultadosBusquedaAmigos() {
+            const contenedor = document.getElementById('resultados-busqueda-amigos');
+            const input = document.getElementById('input-buscar-amigo');
+            if (!contenedor || !input) return;
+
+            const consulta = normalizarTextoBusqueda(input.value);
+            if (!consulta) {
+                contenedor.innerHTML = '';
+                return;
+            }
+
+            const resultados = rankingData
+                .filter(j => String(j.uid || j.id) !== String(usuarioActual?.uid))
+                .filter(j => {
+                    const nombre = normalizarTextoBusqueda(j.nombre);
+                    const dni = normalizarTextoBusqueda(j.dni);
+                    return nombre.includes(consulta) || dni.includes(consulta);
+                })
+                .slice(0, 8);
+
+            contenedor.innerHTML = resultados.length
+                ? resultados.map(j => {
+                    const uid = String(j.uid || j.id);
+                    const yaAmigo = esAmigoActual(uid);
+                    const pendiente = solicitudPendienteConUsuario(uid);
+                    let accion = `<button class="amigo-mini-btn primario" onclick="enviarSolicitudAmistadDesdeBusqueda('${escaparAtributoJs(uid)}')">Agregar</button>`;
+                    if (yaAmigo) accion = `<span class="amigo-estado-pendiente">Ya es tu amigo</span>`;
+                    else if (pendiente) accion = `<span class="amigo-estado-pendiente">Solicitud pendiente</span>`;
+
+                    return `
+                        <div class="amigo-persona-row">
+                            <div class="amigo-persona-identidad">
+                                <img src="${obtenerAvatarUrl(j.nombre)}" alt="">
+                                <div class="amigo-persona-texto">
+                                    <strong>${escaparHtmlClub(j.nombre)}</strong>
+                                    <small>DNI: ${escaparHtmlClub(j.dni || 'Sin DNI')}</small>
+                                </div>
+                            </div>
+                            <div class="amigo-persona-acciones">${accion}</div>
+                        </div>`;
+                }).join('')
+                : `<p class="amigos-vacio">No se encontraron coincidencias.</p>`;
+        }
+
+        function renderizarSolicitudesAmistad() {
+            const lista = document.getElementById('lista-solicitudes-amistad');
+            const contador = document.getElementById('contador-solicitudes-amistad');
+            if (!lista || !contador) return;
+
+            contador.textContent = solicitudesAmistadData.length;
+            lista.innerHTML = solicitudesAmistadData.length
+                ? solicitudesAmistadData.map(s => `
+                    <div class="amigo-persona-row">
+                        <div class="amigo-persona-identidad">
+                            <img src="${obtenerAvatarUrl(s.deNombre || 'Jugador')}" alt="">
+                            <div class="amigo-persona-texto">
+                                <strong>${escaparHtmlClub(s.deNombre || 'Jugador')}</strong>
+                                <small>Quiere agregarte como amigo</small>
+                            </div>
+                        </div>
+                        <div class="amigo-persona-acciones">
+                            <button class="amigo-mini-btn primario" onclick="aceptarSolicitudAmistad('${escaparAtributoJs(s.id)}')">Aceptar</button>
+                            <button class="amigo-mini-btn peligro" onclick="rechazarSolicitudAmistad('${escaparAtributoJs(s.id)}')">Rechazar</button>
+                        </div>
+                    </div>`).join('')
+                : `<p class="amigos-vacio">No tenés solicitudes pendientes.</p>`;
+        }
+
         function renderizarAmigos() {
-            document.getElementById('lista-amigos').innerHTML = amigosData.length ? amigosData.map((a, idx) => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-card); border:1px solid var(--border-base); padding:10px 15px; border-radius:8px;">
-                    <div><strong style="color:var(--text-light);">${a.nombre}</strong><br><small style="color:var(--text-muted);">DNI: ${a.dni}</small></div>
-                    <button style="background:none; border:none; color:var(--danger); font-size:1.2em; cursor:pointer;" onclick="eliminarAmigo('${String(a.id).replace(/'/g, "\\'")}')">❌</button>
-                </div>`).join('') : '<p style="color:var(--text-muted); font-size:0.9em;">Aún no tienes amigos.</p>';
+            const lista = document.getElementById('lista-amigos');
+            const contador = document.getElementById('contador-amigos');
+            if (!lista || !contador) return;
+
+            contador.textContent = amigosData.length;
+            lista.innerHTML = amigosData.length
+                ? amigosData.map(a => `
+                    <div class="amigo-persona-row">
+                        <div class="amigo-persona-identidad">
+                            <img src="${obtenerAvatarUrl(a.nombre || 'Jugador')}" alt="">
+                            <div class="amigo-persona-texto">
+                                <strong>${escaparHtmlClub(a.nombre || 'Jugador')}</strong>
+                                <small>DNI: ${escaparHtmlClub(a.dni || 'Sin DNI')}</small>
+                            </div>
+                        </div>
+                        <div class="amigo-persona-acciones">
+                            <button class="amigo-mini-btn peligro" onclick="eliminarAmigo('${escaparAtributoJs(a.uid || a.id)}')">Eliminar</button>
+                        </div>
+                    </div>`).join('')
+                : `<p class="amigos-vacio">Todavía no tenés amigos agregados.</p>`;
+
+            renderizarSolicitudesAmistad();
+            renderizarResultadosBusquedaAmigos();
         }
 
         function escaparHtmlClub(valor) {
@@ -4622,6 +4880,17 @@ tr:hover td{background:#f9fafb}
                     renderizarAmigos();
                 }, (error) => logFirebaseError("lectura de amigos", error));
 
+                const unsubSolicitudesAmistad = firebaseAPI.onSnapshot(
+                    firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad"),
+                    (snapshot) => {
+                        solicitudesAmistadData = docsToArray(snapshot)
+                            .filter(s => (s.estado || "pendiente") === "pendiente");
+                        renderizarSolicitudesAmistad();
+                        renderizarResultadosBusquedaAmigos();
+                    },
+                    (error) => logFirebaseError("lectura de solicitudes de amistad", error)
+                );
+
                 const unsubClases = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "clases"), (snapshot) => {
                     clasesUsuario = docsToArray(snapshot);
                     renderizarMisClases();
@@ -4636,6 +4905,7 @@ tr:hover td{background:#f9fafb}
                     unsubProfesores,
                     unsubNotificaciones,
                     unsubAmigos,
+                    unsubSolicitudesAmistad,
                     unsubClases
                 ];
             }
@@ -5249,36 +5519,131 @@ tr:hover td{background:#f9fafb}
                 ).catch(error => logFirebaseError("eliminación de clase", error));
             };
 
-            window.agregarAmigo = async function() {
-                const input = document.getElementById("input-buscar-amigo");
-                const q = input.value.trim().toLowerCase();
-                if (!q) return alert("Escribí un DNI o nombre para buscar.");
+            window.enviarSolicitudAmistadDesdeBusqueda = async function(uidDestino) {
+                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión.");
+                const jugador = rankingData.find(j => String(j.uid || j.id) === String(uidDestino));
+                if (!jugador) return alert("No se encontró ese jugador.");
+                if (String(uidDestino) === String(usuarioActual.uid)) return;
+                if (esAmigoActual(uidDestino)) return alert("Esta persona ya es tu amiga.");
+                if (solicitudPendienteConUsuario(uidDestino)) return alert("Ya existe una solicitud pendiente.");
 
-                const jugador = rankingData.find(j =>
-                    String(j.dni || "").toLowerCase() === q ||
-                    String(j.nombre || "").toLowerCase().includes(q)
-                );
+                const solicitudId = `${usuarioActual.uid}_${uidDestino}`;
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "users", String(uidDestino), "solicitudesAmistad", solicitudId),
+                    {
+                        id: solicitudId,
+                        deUid: usuarioActual.uid,
+                        deNombre: getNombreCompleto(),
+                        deDni: perfilUsuario.dni || "",
+                        paraUid: String(uidDestino),
+                        paraNombre: jugador.nombre,
+                        estado: "pendiente",
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError("envío de solicitud de amistad", error));
 
-                if (!jugador) return alert("No encontré ese jugador en la base de datos.");
-                if (String(jugador.uid || jugador.id) === String(usuarioActual?.uid)) return alert("No podés agregarte a vos mismo.");
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "users", String(uidDestino), "notificaciones", solicitudId),
+                    {
+                        id: solicitudId,
+                        tipo: "solicitud_amistad",
+                        titulo: "Nueva solicitud de amistad",
+                        texto: `${getNombreCompleto()} te envió una solicitud de amistad.`,
+                        leida: false,
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError("notificación de solicitud", error));
 
-                const amigoId = String(jugador.uid || jugador.id);
-                await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", amigoId), {
-                    id: amigoId,
-                    uid: amigoId,
-                    nombre: jugador.nombre,
-                    dni: jugador.dni || "",
-                    agregadoEn: firebaseAPI.serverTimestamp()
-                }, { merge: true }).catch(error => logFirebaseError("guardado de amigo", error));
-
-                input.value = "";
+                document.getElementById("input-buscar-amigo").value = "";
+                renderizarResultadosBusquedaAmigos();
+                alert("Solicitud enviada.");
             };
 
-            window.eliminarAmigo = async function(id) {
+            window.agregarAmigo = async function() {
+                const input = document.getElementById("input-buscar-amigo");
+                const q = normalizarTextoBusqueda(input?.value);
+                if (!q) return alert("Escribí un DNI o nombre.");
+                const jugador = rankingData.find(j =>
+                    normalizarTextoBusqueda(j.dni) === q ||
+                    normalizarTextoBusqueda(j.nombre).includes(q)
+                );
+                if (!jugador) return alert("No se encontró ese jugador.");
+                await window.enviarSolicitudAmistadDesdeBusqueda(String(jugador.uid || jugador.id));
+            };
+
+            window.aceptarSolicitudAmistad = async function(solicitudId) {
+                if (!firebaseAPI || !usuarioActual) return;
+                const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
+                if (!solicitud) return;
+
+                const miUid = usuarioActual.uid;
+                const otroUid = String(solicitud.deUid);
+                const miNombre = getNombreCompleto();
+                const otroNombre = solicitud.deNombre || "Jugador";
+                const otroUsuario = rankingData.find(j => String(j.uid || j.id) === otroUid);
+
+                await Promise.all([
+                    firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", miUid, "amigos", otroUid),
+                        {
+                            id: otroUid,
+                            uid: otroUid,
+                            nombre: otroNombre,
+                            dni: solicitud.deDni || otroUsuario?.dni || "",
+                            agregadoEn: firebaseAPI.serverTimestamp()
+                        },
+                        { merge: true }
+                    ),
+                    firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "amigos", miUid),
+                        {
+                            id: miUid,
+                            uid: miUid,
+                            nombre: miNombre,
+                            dni: perfilUsuario.dni || "",
+                            agregadoEn: firebaseAPI.serverTimestamp()
+                        },
+                        { merge: true }
+                    ),
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", miUid, "solicitudesAmistad", String(solicitudId))
+                    ),
+                    firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "notificaciones", `amistad-aceptada-${miUid}`),
+                        {
+                            id: `amistad-aceptada-${miUid}`,
+                            tipo: "amistad_aceptada",
+                            titulo: "Solicitud aceptada",
+                            texto: `${miNombre} aceptó tu solicitud de amistad.`,
+                            leida: false,
+                            creadoEn: firebaseAPI.serverTimestamp()
+                        },
+                        { merge: true }
+                    )
+                ]).catch(error => logFirebaseError("aceptación de solicitud", error));
+            };
+
+            window.rechazarSolicitudAmistad = async function(solicitudId) {
                 if (!firebaseAPI || !usuarioActual) return;
                 await firebaseAPI.deleteDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", String(id))
-                ).catch(error => logFirebaseError("eliminación de amigo", error));
+                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad", String(solicitudId))
+                ).catch(error => logFirebaseError("rechazo de solicitud", error));
+            };
+
+            window.eliminarAmigo = async function(uidAmigo) {
+                if (!firebaseAPI || !usuarioActual) return;
+                if (!confirm("¿Querés eliminar a esta persona de tus amigos?")) return;
+
+                await Promise.all([
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", String(uidAmigo))
+                    ),
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", String(uidAmigo), "amigos", usuarioActual.uid)
+                    )
+                ]).catch(error => logFirebaseError("eliminación de amistad", error));
             };
 
             window.inscribirseTorneo = async function(id) {
