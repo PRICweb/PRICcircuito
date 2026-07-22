@@ -438,6 +438,1156 @@ tr:hover td{background:#f9fafb}
 }
 
     </style>
+
+<style id="clubes-circuito-redesign-css">
+#vista-clubes .clubes-intro{margin:0 0 16px;color:var(--muted);font-size:.92rem;text-align:center}
+#lista-clubes{display:flex;flex-direction:column;gap:12px;max-height:none;overflow:visible;padding:0}
+.club-circuito-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:17px 18px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 8px 24px rgba(16,24,40,.055);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.club-circuito-card:hover{transform:translateY(-1px);border-color:#cbd5e1;box-shadow:0 12px 30px rgba(16,24,40,.08)}
+.club-circuito-main{min-width:0}
+.club-circuito-title{display:flex;align-items:center;gap:9px;margin:0 0 7px;color:var(--text);font-size:1.02rem;font-weight:850;letter-spacing:-.015em}
+.club-circuito-title-icon{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;border-radius:10px;background:#f2f4f7;font-size:1rem}
+.club-circuito-location{display:flex;align-items:center;gap:7px;margin:0 0 11px;color:var(--muted);font-size:.86rem;line-height:1.35}
+.club-circuito-modalidades{display:flex;flex-wrap:wrap;gap:7px}
+.club-modalidad-chip{display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:5px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);color:#344054;font-size:.76rem;font-weight:750;white-space:nowrap}
+.club-modalidad-chip strong{color:var(--text);font-weight:900}
+.club-whatsapp-btn{width:46px;height:46px;min-width:46px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:1px solid #d0d5dd;border-radius:15px;background:var(--surface);color:#101828;box-shadow:0 5px 14px rgba(16,24,40,.06);cursor:pointer;transition:transform .16s ease,background .16s ease,box-shadow .16s ease}
+.club-whatsapp-btn:hover{transform:translateY(-1px);background:#f9fafb;box-shadow:0 8px 18px rgba(16,24,40,.1)}
+.club-whatsapp-btn svg{width:23px;height:23px;fill:currentColor}
+.club-whatsapp-btn[disabled]{opacity:.38;cursor:not-allowed;transform:none}
+.clubes-empty{padding:28px 18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center;background:var(--surface-2)}
+@media(max-width:420px){.club-circuito-card{padding:15px;gap:12px}.club-whatsapp-btn{width:43px;height:43px;min-width:43px;border-radius:14px}.club-modalidad-chip{font-size:.72rem}}
+</style>
+
+
+<style id="banner-inicio-minimalista-css">
+#banner-proximo-partido.carousel-container{
+  min-height:252px;
+  border:1px solid var(--line)!important;
+  border-radius:20px;
+  background:var(--surface)!important;
+  box-shadow:0 10px 28px rgba(16,24,40,.055)!important;
+}
+#banner-proximo-partido .carousel-slide{
+  padding:20px 20px 38px;
+  justify-content:flex-start;
+  color:var(--text);
+}
+.banner-eyebrow{
+  color:var(--muted);
+  font-size:.7rem;
+  font-weight:850;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  text-align:center;
+}
+.banner-match-main{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.banner-match-date{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:7px;
+  color:var(--text);
+  font-size:1.14rem;
+  font-weight:850;
+  letter-spacing:-.025em;
+}
+.banner-match-club{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:.86rem;
+  text-align:center;
+}
+.banner-match-club strong{color:var(--text)}
+.banner-teams{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  margin-top:17px;
+  padding-top:15px;
+  border-top:1px solid var(--line);
+}
+.banner-team{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.banner-team-label{
+  margin-bottom:9px;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.banner-team-players{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+}
+.banner-player{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  cursor:pointer;
+}
+.banner-player .avatar-circulo{
+  width:27px;
+  height:27px;
+}
+.banner-player-name{
+  min-width:0;
+  max-width:120px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:.82rem;
+  font-weight:800;
+}
+.banner-player.libre{
+  cursor:default;
+  color:var(--muted);
+}
+.banner-player.libre .banner-player-name{
+  color:var(--muted);
+  font-weight:650;
+}
+.banner-vs{
+  width:38px;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.7rem;
+  font-weight:900;
+}
+.banner-empty{
+  height:100%;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.banner-empty-icon{
+  width:45px;
+  height:45px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:15px;
+  background:var(--surface-2);
+  font-size:1.25rem;
+  margin-bottom:10px;
+}
+.banner-empty h3{
+  margin:0;
+  color:var(--text);
+  font-size:1.08rem;
+}
+.banner-empty p{
+  max-width:260px;
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.4;
+}
+.banner-tournament-title{
+  margin-top:13px;
+  color:var(--text);
+  font-size:1.3rem;
+  font-weight:850;
+  text-align:center;
+  letter-spacing:-.03em;
+}
+.banner-tournament-meta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  margin-top:11px;
+}
+.banner-meta-chip{
+  padding:6px 9px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+  color:#475467;
+  font-size:.76rem;
+  font-weight:700;
+}
+.banner-clubs-slide{
+  justify-content:flex-start!important;
+  cursor:pointer;
+}
+.banner-clubs-title{
+  margin-top:5px;
+  color:var(--text);
+  font-size:1.14rem;
+  font-weight:850;
+  letter-spacing:-.025em;
+  text-align:center;
+}
+.banner-clubs-subtitle{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:.79rem;
+  text-align:center;
+}
+.banner-club-images{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-top:15px;
+}
+.banner-club-image-card{
+  position:relative;
+  height:105px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface-2);
+}
+.banner-club-image-card img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.banner-club-image-fallback{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#f8fafc,#eef2f6);
+  color:#98a2b3;
+  font-size:1.35rem;
+}
+.banner-club-image-name{
+  position:absolute;
+  left:6px;
+  right:6px;
+  bottom:6px;
+  overflow:hidden;
+  padding:5px 7px;
+  border-radius:8px;
+  background:rgba(255,255,255,.9);
+  color:#101828;
+  font-size:.67rem;
+  font-weight:850;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  backdrop-filter:blur(6px);
+}
+#banner-proximo-partido .carousel-indicators{bottom:14px}
+#banner-proximo-partido .indicator{
+  width:7px;
+  height:7px;
+  background:#d0d5dd;
+}
+#banner-proximo-partido .indicator.activo{
+  width:20px;
+  background:#101828;
+}
+@media(max-width:420px){
+  #banner-proximo-partido.carousel-container{min-height:245px}
+  #banner-proximo-partido .carousel-slide{padding:18px 14px 36px}
+  .banner-teams{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);gap:5px}
+  .banner-vs{width:32px;height:32px}
+  .banner-player{flex-direction:column;gap:3px}
+  .banner-player-name{max-width:100%;font-size:.76rem}
+  .banner-team-players{gap:8px}
+  .banner-club-image-card{height:96px}
+}
+</style>
+
+
+<style id="partidos-pendientes-minimalistas-css">
+.partidos-nav{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:6px!important;
+  padding:6px!important;
+  border:1px solid var(--line)!important;
+  border-radius:16px!important;
+  background:var(--surface)!important;
+  box-shadow:0 8px 24px rgba(16,24,40,.05)!important;
+}
+.partidos-nav button{
+  min-width:0!important;
+  padding:10px 5px!important;
+  border:0!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  font-size:.73rem!important;
+  font-weight:800!important;
+  white-space:nowrap!important;
+}
+.partidos-nav button.activo{
+  background:var(--primary)!important;
+  color:#fff!important;
+}
+.partido-minimal-card{
+  padding:17px!important;
+  margin-bottom:12px;
+  border:1px solid var(--line)!important;
+  border-radius:18px!important;
+  background:var(--surface)!important;
+  box-shadow:0 8px 24px rgba(16,24,40,.05)!important;
+}
+.partido-minimal-meta-top{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:13px;
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:700;
+}
+.partido-minimal-meta-top span{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+}
+.partido-minimal-equipos{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 38px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  padding:14px 0;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.partido-minimal-equipo{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.partido-minimal-label{
+  margin-bottom:8px;
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.partido-minimal-jugadores{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+}
+.partido-minimal-jugador{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.partido-minimal-jugador img{
+  width:25px!important;
+  height:25px!important;
+}
+.partido-minimal-nombre{
+  max-width:125px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:.79rem;
+  font-weight:800;
+}
+.partido-minimal-jugador.libre .partido-minimal-nombre{
+  color:var(--muted);
+  font-weight:650;
+}
+.partido-minimal-vs{
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.65rem;
+  font-weight:900;
+}
+.partido-minimal-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.partido-minimal-detail{
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:700;
+}
+.partido-minimal-action{
+  width:auto!important;
+  min-width:145px;
+  padding:9px 13px!important;
+  margin:0!important;
+  border-radius:11px!important;
+  background:var(--primary)!important;
+  color:#fff!important;
+  font-size:.79rem!important;
+  font-weight:850!important;
+}
+.partido-minimal-status{
+  padding:7px 10px;
+  border-radius:999px;
+  background:#ecfdf3;
+  color:#067647;
+  font-size:.75rem;
+  font-weight:850;
+}
+.modal-invitar-equipo{
+  position:relative;
+  max-width:390px!important;
+  padding:22px!important;
+  text-align:left!important;
+}
+.modal-close-minimal{
+  position:absolute;
+  top:13px;
+  right:13px;
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--text);
+  font-size:1.35rem;
+  cursor:pointer;
+}
+.modal-invitar-header{padding-right:38px}
+.modal-invitar-eyebrow{
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.modal-invitar-header h3{
+  margin:5px 0 6px!important;
+  color:var(--text)!important;
+  font-size:1.25rem;
+}
+.modal-invitar-header p{
+  margin:0 0 16px;
+  color:var(--muted);
+  font-size:.84rem;
+  line-height:1.45;
+}
+.lista-amigos-invitar{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:52vh;
+  overflow-y:auto;
+}
+.amigo-invitar-item{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+}
+.amigo-invitar-info{min-width:0}
+.amigo-invitar-info strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-size:.86rem;
+}
+.amigo-invitar-info small{
+  color:var(--muted);
+  font-size:.73rem;
+}
+.amigo-invitar-btn{
+  width:auto!important;
+  padding:8px 10px!important;
+  border:0!important;
+  border-radius:10px!important;
+  background:var(--primary)!important;
+  color:#fff!important;
+  font-size:.75rem!important;
+  font-weight:850!important;
+}
+.amigos-invitar-empty{
+  padding:22px 14px;
+  border:1px dashed var(--line);
+  border-radius:14px;
+  background:var(--surface-2);
+  color:var(--muted);
+  text-align:center;
+  font-size:.84rem;
+}
+@media(max-width:430px){
+  .partidos-nav{grid-template-columns:repeat(5,minmax(66px,1fr))!important;overflow-x:auto!important}
+  .partidos-nav button{font-size:.69rem!important}
+  .partido-minimal-equipos{grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);gap:4px}
+  .partido-minimal-jugador{flex-direction:column;gap:3px}
+  .partido-minimal-nombre{max-width:100%;font-size:.73rem}
+  .partido-minimal-footer{flex-direction:column;align-items:stretch}
+  .partido-minimal-action{width:100%!important}
+}
+</style>
+
+
+<style id="banner-clubes-imagen-completa-css">
+#banner-proximo-partido .banner-match-clickable{
+  cursor:pointer;
+}
+#banner-proximo-partido .banner-match-clickable:hover{
+  background:#fcfcfd;
+}
+#banner-proximo-partido .banner-clubs-slide{
+  inset:0;
+  padding:0!important;
+  overflow:hidden;
+  border-radius:19px;
+  background:#101828!important;
+  cursor:pointer;
+}
+.banner-club-full{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:#101828;
+}
+.banner-club-full-image{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  opacity:1;
+  transition:opacity .45s ease, transform 10s linear;
+}
+.banner-club-full-image.is-changing{
+  opacity:.15;
+}
+.banner-club-full:hover .banner-club-full-image{
+  transform:scale(1.035);
+}
+.banner-club-full-fallback{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(145deg,#344054,#101828);
+  color:#fff;
+  font-size:2.2rem;
+}
+.banner-club-full-shade{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(16,24,40,.08) 25%,rgba(16,24,40,.84) 100%);
+}
+.banner-club-full-content{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:2;
+  padding:22px 20px 38px;
+  color:#fff;
+}
+.banner-club-full-content .banner-eyebrow{
+  color:rgba(255,255,255,.72);
+  text-align:left;
+}
+.banner-club-full-name{
+  max-width:90%;
+  margin-top:5px;
+  overflow:hidden;
+  color:#fff;
+  font-size:1.3rem;
+  font-weight:900;
+  line-height:1.1;
+  letter-spacing:-.025em;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.banner-club-full-hint{
+  margin-top:6px;
+  color:rgba(255,255,255,.8);
+  font-size:.79rem;
+  font-weight:650;
+}
+#banner-proximo-partido .banner-clubs-slide .carousel-indicators{
+  z-index:4;
+}
+@media(max-width:420px){
+  .banner-club-full-content{
+    padding:18px 16px 36px;
+  }
+  .banner-club-full-name{
+    font-size:1.15rem;
+  }
+}
+</style>
+
+
+<style id="acciones-jugador-banner-css">
+.banner-teams.banner-pendientes-link{
+  cursor:pointer;
+  border-radius:0 0 14px 14px;
+  transition:background .15s ease;
+}
+.banner-teams.banner-pendientes-link:hover{background:#fcfcfd}
+.banner-player:not(.libre){
+  cursor:pointer;
+  padding:4px 6px;
+  border-radius:10px;
+  transition:background .14s ease,transform .14s ease;
+}
+.banner-player:not(.libre):hover{
+  background:var(--surface-2);
+  transform:translateY(-1px);
+}
+.modal-jugador-acciones{
+  position:relative;
+  max-width:360px!important;
+  padding:22px!important;
+  text-align:left!important;
+}
+.jugador-modal-identidad{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-right:36px;
+  margin-bottom:18px;
+}
+.jugador-modal-avatar{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid var(--line);
+}
+.jugador-modal-eyebrow{
+  display:block;
+  color:var(--muted);
+  font-size:.67rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.jugador-modal-identidad h3{
+  margin:3px 0 0!important;
+  color:var(--text)!important;
+  font-size:1.12rem;
+  line-height:1.2;
+}
+.jugador-modal-opciones{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.jugador-modal-opciones button{
+  width:100%;
+  min-height:45px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface);
+  color:var(--text);
+  text-align:left;
+  font-weight:800;
+  cursor:pointer;
+}
+.jugador-modal-opciones button:hover{background:var(--surface-2)}
+.jugador-modal-opciones .jugador-modal-denunciar{
+  color:var(--danger);
+  background:#fffafa;
+  border-color:#fecdca;
+}
+</style>
+
+
+<style id="banner-clubes-ajuste-final-css">
+#banner-proximo-partido .banner-clubs-slide{
+  position:absolute!important;
+  inset:0!important;
+  padding:0!important;
+}
+.banner-club-full{
+  position:absolute;
+  inset:0;
+}
+.banner-club-full-top{
+  position:absolute;
+  top:18px;
+  left:18px;
+  right:18px;
+  z-index:3;
+  text-align:center;
+}
+.banner-club-full-top .banner-eyebrow{
+  color:rgba(255,255,255,.92)!important;
+  text-align:center!important;
+  text-shadow:0 1px 8px rgba(0,0,0,.4);
+}
+.banner-club-full-content{
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  padding:22px 20px 38px!important;
+  text-align:center!important;
+}
+.banner-club-full-name{
+  max-width:100%!important;
+  margin:0 auto!important;
+  text-align:center!important;
+  white-space:normal!important;
+}
+.banner-club-full-hint{
+  max-width:320px;
+  margin:7px auto 0!important;
+  text-align:center!important;
+}
+.banner-club-full-fallback{
+  font-size:0!important;
+}
+.banner-club-full-fallback::before{
+  content:'';
+}
+@media(max-width:420px){
+  .banner-club-full-top{top:15px;left:14px;right:14px}
+  .banner-club-full-content{padding:18px 15px 36px!important}
+}
+</style>
+
+
+<style id="header-iconos-ajuste-css">
+.header-acciones .icon-btn{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0!important;
+  color:#000!important;
+  line-height:1!important;
+  font-size:0!important;
+}
+.header-acciones .icon-btn svg{
+  width:20px;
+  height:20px;
+  display:block;
+  stroke:#000;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.header-acciones .icon-btn.header-menu-icon svg{
+  stroke-width:2.8;
+}
+</style>
+
+
+<style id="modal-jugador-ranking-contexto-css">
+.jugador-modal-opciones button[hidden]{display:none!important}
+</style>
+
+
+<style id="resultado-mejor-tres-css">
+.modal-resultado-mejor-tres{max-width:430px!important;text-align:left!important}
+.modal-resultado-mejor-tres h3{margin:0!important;color:var(--text)!important;text-align:center}
+.resultado-perspectiva{margin:7px 0 16px;color:var(--muted);font-size:.82rem;line-height:1.4;text-align:center}
+.resultado-equipos-head{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);align-items:center;gap:8px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);text-align:center}
+.resultado-equipos-head div{min-width:0}
+.resultado-equipos-head span{display:block;margin-bottom:4px;color:var(--muted);font-size:.67rem;font-weight:850;text-transform:uppercase;letter-spacing:.07em}
+.resultado-equipos-head strong{display:block;overflow:hidden;color:var(--text);font-size:.82rem;white-space:nowrap;text-overflow:ellipsis}
+.resultado-equipos-head b{color:var(--muted);font-size:.7rem}
+.resultado-sets-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0}
+.resultado-set{padding:11px 8px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+.resultado-set label{display:block;margin-bottom:8px;color:var(--text);font-size:.75rem;font-weight:850;text-align:center}
+.resultado-set label small{display:block;margin-top:2px;color:var(--muted);font-size:.59rem;font-weight:650}
+.resultado-set>div{display:grid;grid-template-columns:1fr 12px 1fr;align-items:center;gap:4px}
+.resultado-set input{width:100%!important;min-width:0!important;height:42px!important;margin:0!important;padding:5px!important;text-align:center!important;font-size:1rem!important}
+.resultado-set span{text-align:center;color:var(--muted);font-weight:900}
+.resultado-ayuda{margin:0 0 15px;color:var(--muted);font-size:.75rem;line-height:1.4;text-align:center}
+@media(max-width:420px){.resultado-sets-grid{grid-template-columns:1fr}.resultado-set label small{display:inline;margin-left:4px}}
+</style>
+
+
+<style id="ranking-estadisticas-invitaciones-css">
+#vista-ranking .scrollable{overflow-x:auto!important}
+#vista-ranking table{min-width:1060px}
+#vista-ranking th,#vista-ranking td{white-space:nowrap}
+.invitacion-slot-card{
+  width:100%;
+  max-width:160px;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:7px;
+  padding:7px 8px 7px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--surface-2);
+  color:var(--text);
+}
+.invitacion-slot-info{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+}
+.invitacion-slot-info strong{
+  width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:.73rem;
+}
+.invitacion-slot-info small{
+  color:var(--muted);
+  font-size:.61rem;
+  font-weight:700;
+}
+.invitacion-slot-remove{
+  width:24px;
+  height:24px;
+  min-width:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:999px;
+  background:#fff;
+  color:var(--muted);
+  font-size:1rem;
+  line-height:1;
+  cursor:pointer;
+}
+.invitacion-slot-remove:hover{color:var(--danger);background:#fff1f0}
+.partido-invitacion-badge{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border:1px solid #b2ddff;
+  border-radius:999px;
+  background:#eff8ff;
+  color:#175cd3;
+  font-size:.7rem;
+  font-weight:850;
+}
+</style>
+
+
+<style id="partidos-unirse-acordeon-css">
+#lista-partidos-abiertos{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:visible!important;
+  max-height:none!important;
+}
+.partido-unirse-acordeon{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:var(--surface);
+  box-shadow:0 8px 22px rgba(16,24,40,.045);
+  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.partido-unirse-acordeon.destacado{
+  border:2px solid var(--primary);
+  box-shadow:0 0 0 3px rgba(16,24,40,.08),0 12px 30px rgba(16,24,40,.1);
+  transform:translateY(-1px);
+}
+.partido-unirse-acordeon>summary{
+  list-style:none;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:12px;
+  min-height:67px;
+  padding:13px 15px;
+  cursor:pointer;
+  background:var(--surface);
+}
+.partido-unirse-acordeon>summary::-webkit-details-marker{display:none}
+.partido-unirse-resumen{min-width:0}
+.partido-unirse-club{
+  overflow:hidden;
+  color:var(--text);
+  font-size:.92rem;
+  font-weight:850;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.partido-unirse-fecha{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:.75rem;
+  font-weight:700;
+}
+.partido-unirse-chevron{
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.9rem;
+  transition:transform .16s ease;
+}
+.partido-unirse-acordeon[open] .partido-unirse-chevron{transform:rotate(180deg)}
+.partido-unirse-body{
+  padding:14px 15px 15px;
+  border-top:1px solid var(--line);
+}
+.partido-unirse-equipos{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+}
+.partido-unirse-equipo{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+}
+.partido-unirse-label{
+  color:var(--muted);
+  font-size:.65rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.partido-unirse-slot{
+  width:100%;
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 8px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--surface-2);
+  color:var(--text);
+  font-size:.74rem;
+  font-weight:800;
+  text-align:center;
+}
+.partido-unirse-slot.libre{
+  color:var(--muted);
+  font-weight:700;
+  border-style:dashed;
+}
+.partido-unirse-slot.reservado{
+  color:#175cd3;
+  background:#eff8ff;
+  border-color:#b2ddff;
+}
+.partido-unirse-vs{
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.64rem;
+  font-weight:900;
+}
+.partido-unirse-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+.partido-unirse-meta{
+  min-width:0;
+  color:var(--muted);
+  font-size:.72rem;
+  font-weight:700;
+}
+.partido-unirse-plus{
+  width:42px!important;
+  height:42px!important;
+  min-width:42px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0!important;
+  border:1px solid #101828!important;
+  border-radius:999px!important;
+  background:#fff!important;
+  color:#000!important;
+  font-size:1.55rem!important;
+  font-weight:500!important;
+  line-height:1!important;
+  box-shadow:0 5px 14px rgba(16,24,40,.08);
+}
+.partido-unirse-plus:hover{background:#f8fafc!important;transform:translateY(-1px)}
+.partido-unirse-plus:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.partido-unirse-invitado{
+  display:inline-flex;
+  align-items:center;
+  margin-top:7px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eff8ff;
+  color:#175cd3;
+  font-size:.66rem;
+  font-weight:850;
+}
+@media(max-width:420px){
+  .partido-unirse-equipos{grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:4px}
+  .partido-unirse-vs{width:28px;height:28px}
+  .partido-unirse-body{padding:12px}
+}
+</style>
+
+
+<style id="unirse-equipos-ajustes-css">
+.partido-unirse-destacado-fijo{
+  overflow:hidden;
+  border:2px solid var(--primary);
+  border-radius:17px;
+  background:var(--surface);
+  box-shadow:0 0 0 3px rgba(16,24,40,.08),0 12px 30px rgba(16,24,40,.1);
+}
+.partido-unirse-destacado-fijo .partido-unirse-resumen-fijo{
+  padding:14px 15px;
+  border-bottom:1px solid var(--line);
+  background:var(--surface);
+}
+.partido-unirse-destacado-fijo .partido-unirse-body{
+  border-top:0;
+}
+.modal-seleccionar-equipo{
+  position:relative;
+  max-width:390px!important;
+  text-align:left!important;
+}
+.seleccionar-equipo-header{padding-right:34px}
+.seleccionar-equipo-header>span{
+  display:block;
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.seleccionar-equipo-header h3{
+  margin:5px 0 6px!important;
+  color:var(--text)!important;
+}
+.seleccionar-equipo-header p{
+  margin:0 0 16px;
+  color:var(--muted);
+  font-size:.82rem;
+  line-height:1.45;
+}
+.opciones-equipo-unirse{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.opcion-equipo-unirse{
+  min-height:104px;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+  text-align:center;
+}
+.opcion-equipo-unirse:hover{
+  background:var(--surface-2);
+  transform:translateY(-1px);
+}
+.opcion-equipo-unirse strong{
+  display:block;
+  margin-bottom:7px;
+  font-size:.9rem;
+}
+.opcion-equipo-unirse span{
+  display:block;
+  color:var(--muted);
+  font-size:.74rem;
+}
+.opcion-equipo-unirse:disabled{
+  opacity:.38;
+  cursor:not-allowed;
+  transform:none;
+}
+@media(max-width:420px){
+  .opciones-equipo-unirse{grid-template-columns:1fr}
+}
+</style>
+
 </head>
 <body>
 
@@ -513,9 +1663,27 @@ tr:hover td{background:#f9fafb}
             <div class="header-acciones">
                 <h2 style="margin: 0;">Hola, <span id="lbl-nombre-usuario" style="color: var(--primary);"></span></h2>
                 <div style="display: flex; gap: 10px;">
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos">👥</button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil">👤</button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('menu')" title="Opciones">☰</button>
+                    <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos" aria-label="Amigos">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil" aria-label="Mi Perfil">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M4 21a8 8 0 0 1 16 0"/>
+                        </svg>
+                    </button>
+                    <button class="icon-btn header-menu-icon" onclick="cambiarVistaPrincipal('menu')" title="Opciones" aria-label="Opciones">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 7h16"/>
+                            <path d="M4 12h16"/>
+                            <path d="M4 17h16"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -558,7 +1726,21 @@ tr:hover td{background:#f9fafb}
             <div class="scrollable" style="background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border-light);">
                 <table>
                     <thead>
-                        <tr><th style="width: 25%; text-align: center;">Pos</th><th style="width: 40%;">Jugador</th><th style="width: 20%; text-align: center;">Pts</th><th style="width: 15%; text-align: center;">PJ</th></tr>
+                        <tr>
+                            <th style="text-align:center;">Pos</th>
+                            <th>Jugador</th>
+                            <th style="text-align:center;">Pts</th>
+                            <th style="text-align:center;">PJ</th>
+                            <th style="text-align:center;">PG</th>
+                            <th style="text-align:center;">PP</th>
+                            <th style="text-align:center;">Dif. P</th>
+                            <th style="text-align:center;">SG</th>
+                            <th style="text-align:center;">SP</th>
+                            <th style="text-align:center;">Dif. S</th>
+                            <th style="text-align:center;">GG</th>
+                            <th style="text-align:center;">GP</th>
+                            <th style="text-align:center;">Dif. G</th>
+                        </tr>
                     </thead>
                     <tbody id="tabla-ranking"></tbody>
                 </table>
@@ -574,11 +1756,11 @@ tr:hover td{background:#f9fafb}
             </div>
 
             <div class="partidos-nav" aria-label="Secciones de partidos">
-                <button id="partidos-tab-crear" class="activo" onclick="cambiarPanelPartidos('crear')">＋ Crear</button>
-                <button id="partidos-tab-unirse" onclick="cambiarPanelPartidos('unirse')">🔎 Unirse</button>
-                <button id="partidos-tab-curso" onclick="cambiarPanelPartidos('curso')">🎾 En curso</button>
-                <button id="partidos-tab-pendientes" onclick="cambiarPanelPartidos('pendientes')">⏳ Resultados</button>
-                <button id="partidos-tab-historial" onclick="cambiarPanelPartidos('historial')">📜 Historial</button>
+                <button id="partidos-tab-crear" class="activo" onclick="cambiarPanelPartidos('crear')">Crear</button>
+                <button id="partidos-tab-unirse" onclick="cambiarPanelPartidos('unirse')">Unirse</button>
+                <button id="partidos-tab-curso" onclick="cambiarPanelPartidos('curso')">Pendientes</button>
+                <button id="partidos-tab-pendientes" onclick="cambiarPanelPartidos('pendientes')">Resultados</button>
+                <button id="partidos-tab-historial" onclick="cambiarPanelPartidos('historial')">Historial</button>
             </div>
 
             <section id="panel-partidos-crear" class="panel-partidos activo partidos-panel-card">
@@ -631,8 +1813,8 @@ tr:hover td{background:#f9fafb}
             </section>
 
             <section id="panel-partidos-curso" class="panel-partidos partidos-panel-card">
-                <h4 class="partidos-panel-title">Partidos en curso</h4>
-                <p class="partidos-panel-help">Partidos que están buscando jugadores o ya quedaron confirmados.</p>
+                <h4 class="partidos-panel-title">Partidos pendientes</h4>
+                <p class="partidos-panel-help">Partidos que todavía están buscando jugadores o esperan disputarse.</p>
                 <div id="lista-en-curso-partidos" class="scrollable"></div>
             </section>
 
@@ -813,36 +1995,111 @@ tr:hover td{background:#f9fafb}
                 <h3 style="margin: 0;">🎾 Nuestros Clubes</h3>
                 <div style="width: 30px;"></div>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.9em; text-align: center;">Clubes adheridos al sistema:</p>
+            <p class="clubes-intro">Clubes del circuito:</p>
             <div id="lista-clubes" class="scrollable"></div>
+        </div>
+    </div>
+
+
+
+
+    <!-- MODAL SELECCIONAR EQUIPO -->
+    <div id="modal-seleccionar-equipo" class="modal-overlay">
+        <div class="modal-content modal-seleccionar-equipo">
+            <button type="button" class="modal-close-minimal" onclick="cerrarModalSeleccionarEquipo()" aria-label="Cerrar">×</button>
+            <div class="seleccionar-equipo-header">
+                <span>Unirse al partido</span>
+                <h3>Elegí tu equipo</h3>
+                <p>Seleccioná un equipo con lugar libre. Después podrás invitar a un amigo si queda otro cupo disponible en ese mismo equipo.</p>
+            </div>
+            <div id="opciones-equipo-unirse" class="opciones-equipo-unirse"></div>
+        </div>
+    </div>
+
+    <!-- MODAL ACCIONES DE JUGADOR -->
+    <div id="modal-acciones-jugador" class="modal-overlay">
+        <div class="modal-content modal-jugador-acciones">
+            <button type="button" class="modal-close-minimal" onclick="cerrarModalAccionesJugador()" aria-label="Cerrar">×</button>
+            <div class="jugador-modal-identidad">
+                <img id="jugador-modal-avatar" class="jugador-modal-avatar" src="" alt="">
+                <div>
+                    <span class="jugador-modal-eyebrow">Jugador</span>
+                    <h3 id="jugador-modal-nombre">Jugador</h3>
+                </div>
+            </div>
+            <div class="jugador-modal-opciones">
+                <button id="btn-jugador-amistad" type="button" onclick="enviarSolicitudAmistadJugador()">Enviar solicitud de amistad</button>
+                <button id="btn-jugador-ranking" type="button" onclick="verJugadorEnRanking()">Ver en el ranking</button>
+                <button id="btn-jugador-perfil" type="button" onclick="verPerfilJugadorSeleccionado()">Ver perfil</button>
+                <button id="btn-jugador-denunciar" type="button" class="jugador-modal-denunciar" onclick="denunciarJugadorSeleccionado()">Denunciar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL INVITAR AMIGO AL EQUIPO -->
+    <div id="modal-invitar-amigo-partido" class="modal-overlay">
+        <div class="modal-content modal-invitar-equipo">
+            <button type="button" class="modal-close-minimal" onclick="cerrarModalInvitarAmigoPartido()" aria-label="Cerrar">×</button>
+            <div class="modal-invitar-header">
+                <span class="modal-invitar-eyebrow">Completar tu equipo</span>
+                <h3>Invitar un amigo</h3>
+                <p id="invitar-amigo-partido-resumen">Seleccioná a uno de tus amigos para ocupar el lugar libre de tu equipo.</p>
+            </div>
+            <div id="lista-amigos-invitar-partido" class="lista-amigos-invitar"></div>
         </div>
     </div>
 
     <!-- MODAL RESULTADO -->
     <div id="modal-resultado" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="margin-top: 0; color: var(--success);">Cargar Resultado</h3>
+        <div class="modal-content modal-resultado-mejor-tres">
+            <h3>Cargar resultado</h3>
+            <p class="resultado-perspectiva">Tu equipo siempre aparece a la izquierda. Cargá el marcador desde tu perspectiva.</p>
             <input type="hidden" id="res-id-partido">
-            <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px;">
-                <span id="res-eq1" style="color: var(--primary);">Eq 1</span> <span style="color: var(--warning);">VS</span> <span id="res-eq2" style="color: var(--danger);">Eq 2</span>
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-                <div style="text-align: center;">
-                    <label style="font-size: 0.8em; color: var(--text-muted);">Set 1</label>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <input type="number" id="s1-e1" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0"> -
-                        <input type="number" id="s1-e2" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0">
-                    </div>
+
+            <div class="resultado-equipos-head">
+                <div>
+                    <span>Tu equipo</span>
+                    <strong id="res-eq1">Equipo propio</strong>
                 </div>
-                <div style="text-align: center;">
-                    <label style="font-size: 0.8em; color: var(--text-muted);">Set 2</label>
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <input type="number" id="s2-e1" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0"> -
-                        <input type="number" id="s2-e2" class="input-form" style="width: 50px; padding: 5px; text-align: center; margin:0;" min="0">
-                    </div>
+                <b>VS</b>
+                <div>
+                    <span>Rival</span>
+                    <strong id="res-eq2">Equipo rival</strong>
                 </div>
             </div>
-            <button class="btn btn-primario" onclick="guardarResultado()">Confirmar</button>
+
+            <div class="resultado-sets-grid">
+                <div class="resultado-set">
+                    <label>Set 1</label>
+                    <div>
+                        <input type="number" id="s1-e1" class="input-form" min="0" max="7" inputmode="numeric">
+                        <span>–</span>
+                        <input type="number" id="s1-e2" class="input-form" min="0" max="7" inputmode="numeric">
+                    </div>
+                </div>
+
+                <div class="resultado-set">
+                    <label>Set 2</label>
+                    <div>
+                        <input type="number" id="s2-e1" class="input-form" min="0" max="7" inputmode="numeric">
+                        <span>–</span>
+                        <input type="number" id="s2-e2" class="input-form" min="0" max="7" inputmode="numeric">
+                    </div>
+                </div>
+
+                <div class="resultado-set">
+                    <label>Set 3 <small>solo si quedan 1-1</small></label>
+                    <div>
+                        <input type="number" id="s3-e1" class="input-form" min="0" max="7" inputmode="numeric">
+                        <span>–</span>
+                        <input type="number" id="s3-e2" class="input-form" min="0" max="7" inputmode="numeric">
+                    </div>
+                </div>
+            </div>
+
+            <p class="resultado-ayuda">Marcadores válidos: 6-0 a 6-4, 7-5 o 7-6. El tercer set solo se completa si cada equipo ganó uno de los dos primeros.</p>
+
+            <button class="btn btn-primario" onclick="guardarResultado()">Confirmar resultado</button>
             <button class="btn btn-cerrar" onclick="cerrarModales()">Cancelar</button>
         </div>
     </div>
@@ -901,9 +2158,15 @@ tr:hover td{background:#f9fafb}
         let profesoresData = [];
 
         // Variables Globales
-        let bannerInterval, currentSlide = 0, partidoEnEdicion = null, catRankingActual = 'Masculino';
+        let bannerInterval, clubesBannerInterval, controlPartidosInterval, currentSlide = 0, clubBannerIndex = 0, partidoEnEdicion = null, catRankingActual = 'Masculino';
         let fechaSeleccionadaCrear = new Date(); 
-        let horaSeleccionadaCrear = ''; 
+        let horaSeleccionadaCrear = '';
+        let partidoInvitacionActualId = null;
+        let partidoDestacadoUnirseId = null;
+        let seleccionEquipoPartidoId = null;
+        const partidosCompetitivosProcesando = new Set();
+        let jugadorAccionesActual = null;
+        let contextoModalJugador = 'partido'; 
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -936,14 +2199,38 @@ tr:hover td{background:#f9fafb}
         }
 
         // --- MANEJO DE NOTIFICACIONES ---
-        function ejecutarAccionNotificacion(accion, notifId) {
-            let notif = notificacionesData.find(n => n.id === notifId);
+        async function ejecutarAccionNotificacion(accion, notifId, partidoId = '') {
+            const notif = notificacionesData.find(n => String(n.id) === String(notifId));
             if (notif) notif.leida = true;
-            
-            if (accion === 'unirse') {
-                cambiarVistaPrincipal('partidos');
-                cambiarAccionPartido('unirse');
+
+            if (firebaseAPI && usuarioActual?.uid && notifId) {
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', usuarioActual.uid, 'notificaciones', String(notifId)),
+                    { leida: true },
+                    { merge: true }
+                ).catch(error => logFirebaseError('marcar notificación como leída', error));
             }
+
+            const destinoPartido = String(partidoId || notif?.partidoId || '');
+            if (accion === 'unirse' || notif?.tipo === 'invitacion_partido') {
+                partidoDestacadoUnirseId = destinoPartido || null;
+                cambiarVistaPrincipal('partidos');
+                cambiarPanelPartidos('unirse');
+                renderizarPartidosAbiertos();
+
+                setTimeout(() => {
+                    const selectorId = CSS.escape(destinoPartido);
+                    const elemento = document.querySelector(
+                        `[data-partido-id="${selectorId}"]`
+                    );
+                    if (elemento) {
+                        if (elemento.tagName === 'DETAILS') elemento.open = true;
+                        elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 80);
+            }
+
+            renderizarNotificaciones();
         }
 
         function renderizarNotificaciones() {
@@ -954,8 +2241,15 @@ tr:hover td{background:#f9fafb}
 
             container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
                 let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                let actionAttr = n.accion ? `cursor:pointer;` : '';
-                let clickEvt = n.accion ? `onclick="ejecutarAccionNotificacion('${n.accion}', ${n.id})"` : '';
+                const esInvitacionPartido = n.tipo === 'invitacion_partido';
+                const accion = n.accion || (esInvitacionPartido ? 'unirse' : '');
+                const clickeable = Boolean(accion);
+                let actionAttr = clickeable ? `cursor:pointer;` : '';
+                const idSeguro = String(n.id || '').replace(/'/g, "\\'");
+                const partidoSeguro = String(n.partidoId || '').replace(/'/g, "\\'");
+                let clickEvt = clickeable
+                    ? `onclick="ejecutarAccionNotificacion('${accion}', '${idSeguro}', '${partidoSeguro}')"`
+                    : '';
                 return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
             }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
             : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
@@ -1123,62 +2417,394 @@ tr:hover td{background:#f9fafb}
             renderizarAmigos(); renderizarClubes(); renderizarAcademia();
         }
 
-        function generarFilaJugador(nombre) {
-            if (!nombre || nombre === 'Libre') return '';
-            return `<div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; cursor:pointer;" onclick="abrirPerfilRanking('${nombre}')"><img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="${nombre}"><span style="font-weight:bold;">${nombre}</span></div>`;
+        function escaparAtributoJs(valor) {
+            return String(valor == null ? '' : valor)
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/\r?\n/g, ' ');
+        }
+
+        function generarJugadorBanner(nombre) {
+            const jugador = String(nombre || 'Libre').trim() || 'Libre';
+            if (jugador === 'Libre') {
+                return `
+                    <div class="banner-player libre">
+                        <span class="banner-player-name">Lugar libre</span>
+                    </div>`;
+            }
+
+            return `
+                <div class="banner-player" onclick="event.stopPropagation();abrirModalAccionesJugador('${escaparAtributoJs(jugador)}', 'partido')">
+                    <img src="${obtenerAvatarUrl(jugador)}" class="avatar-circulo" alt="">
+                    <span class="banner-player-name" title="${escaparHtmlClub(jugador)}">${escaparHtmlClub(jugador)}</span>
+                </div>`;
+        }
+
+        function obtenerCandidatosImagenClub(valor) {
+            const original = String(valor || '').trim();
+            if (!original) return [];
+
+            const candidatos = [];
+            const agregar = url => {
+                const limpio = String(url || '').trim();
+                if (limpio && !candidatos.includes(limpio)) candidatos.push(limpio);
+            };
+
+            agregar(original);
+
+            const drivePath = original.match(/drive\.google\.com\/file\/d\/([^/?#]+)/i);
+            const driveQuery = original.match(/[?&]id=([^&#]+)/i);
+            const driveId = drivePath?.[1] || driveQuery?.[1];
+
+            if (driveId) {
+                agregar(`https://lh3.googleusercontent.com/d/${encodeURIComponent(driveId)}=w1600`);
+                agregar(`https://drive.google.com/thumbnail?id=${encodeURIComponent(driveId)}&sz=w1600`);
+                agregar(`https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`);
+                agregar(`https://drive.google.com/uc?export=download&id=${encodeURIComponent(driveId)}`);
+            }
+
+            if (/dropbox\.com/i.test(original)) {
+                try {
+                    const parsed = new URL(original);
+                    parsed.searchParams.delete('dl');
+                    parsed.searchParams.set('raw', '1');
+                    agregar(parsed.toString());
+                } catch (_) {}
+            }
+
+            if (/github\.com\/.+\/blob\//i.test(original)) {
+                agregar(original
+                    .replace('https://github.com/', 'https://raw.githubusercontent.com/')
+                    .replace('/blob/', '/'));
+            }
+
+            return candidatos;
+        }
+
+        function obtenerImagenClub(club) {
+            return String(
+                club?.fotoClub ||
+                club?.imagen ||
+                club?.imagenUrl ||
+                club?.foto ||
+                club?.imagenClub ||
+                club?.portada ||
+                club?.logo ||
+                club?.logoUrl ||
+                ''
+            ).trim();
+        }
+
+        function cargarImagenClubConFallback(img, fallback, valor) {
+            const candidatos = obtenerCandidatosImagenClub(valor);
+            let indice = 0;
+
+            const probarSiguiente = () => {
+                if (indice >= candidatos.length) {
+                    if (img) img.style.display = 'none';
+                    if (fallback) fallback.style.display = 'flex';
+                    return;
+                }
+
+                const url = candidatos[indice++];
+                img.onload = () => {
+                    img.style.display = 'block';
+                    if (fallback) fallback.style.display = 'none';
+                };
+                img.onerror = probarSiguiente;
+                img.referrerPolicy = 'no-referrer';
+                img.crossOrigin = 'anonymous';
+                img.src = url;
+            };
+
+            probarSiguiente();
+        }
+
+        function obtenerClubesConImagenBanner() {
+            const conImagen = clubesData.filter(club => obtenerImagenClub(club));
+            return conImagen.length ? conImagen : clubesData.slice();
+        }
+
+        function generarClubCompletoBanner() {
+            const clubes = obtenerClubesConImagenBanner();
+            if (!clubes.length) {
+                return `
+                    <div class="banner-club-full">
+                        <div class="banner-club-full-fallback" style="display:flex;"></div>
+                        <div class="banner-club-full-shade"></div>
+                        <div class="banner-club-full-top">
+                            <div class="banner-eyebrow">Clubes del circuito</div>
+                        </div>
+                        <div class="banner-club-full-content">
+                            <div class="banner-club-full-name">Explorá dónde jugar</div>
+                            <div class="banner-club-full-hint">Tocá para conocer los clubes.</div>
+                        </div>
+                    </div>`;
+            }
+
+            if (clubBannerIndex >= clubes.length) clubBannerIndex = 0;
+            const club = clubes[clubBannerIndex];
+            const imagen = obtenerImagenClub(club);
+            const imageId = `banner-club-image-${Date.now()}`;
+
+            setTimeout(() => {
+                const img = document.getElementById(imageId);
+                const fallback = document.getElementById(`${imageId}-fallback`);
+                if (img && imagen) cargarImagenClubConFallback(img, fallback, imagen);
+            }, 0);
+
+            return `
+                <div class="banner-club-full">
+                    <img id="${imageId}"
+                         class="banner-club-full-image"
+                         alt="${escaparHtmlClub(club.nombre || 'Club')}"
+                         style="${imagen ? 'display:block;' : 'display:none;'}">
+                    <div id="${imageId}-fallback"
+                         class="banner-club-full-fallback"
+                         style="${imagen ? 'display:none;' : 'display:flex;'}"></div>
+                    <div class="banner-club-full-shade"></div>
+
+                    <div class="banner-club-full-top">
+                        <div class="banner-eyebrow">Clubes del circuito</div>
+                    </div>
+
+                    <div class="banner-club-full-content">
+                        <div id="banner-club-nombre-rotativo" class="banner-club-full-name">${escaparHtmlClub(club.nombre || 'Club')}</div>
+                        <div class="banner-club-full-hint">Tocá para ver modalidades, ubicación y contacto.</div>
+                    </div>
+                </div>`;
+        }
+
+        function actualizarClubRotativoBanner() {
+            const slide = document.querySelector('#banner-proximo-partido .banner-clubs-slide');
+            if (!slide) return;
+
+            const clubes = obtenerClubesConImagenBanner();
+            if (!clubes.length) return;
+
+            clubBannerIndex = (clubBannerIndex + 1) % clubes.length;
+            slide.innerHTML = generarClubCompletoBanner();
+        }
+
+        function irAPartidoPendienteDesdeBanner() {
+            cambiarVistaPrincipal('partidos');
+            cambiarPanelPartidos('curso');
+            setTimeout(() => {
+                document.getElementById('panel-partidos-curso')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 60);
+        }
+
+        function abrirModalAccionesJugador(nombre, contexto = 'partido') {
+            const jugador = String(nombre || '').trim();
+            if (!jugador || jugador === 'Libre') return;
+
+            const esUsuarioActual = jugador.toLowerCase() === getNombreCompleto().trim().toLowerCase();
+            if (esUsuarioActual) return;
+
+            jugadorAccionesActual = jugador;
+            contextoModalJugador = contexto === 'ranking' ? 'ranking' : 'partido';
+
+            document.getElementById('jugador-modal-nombre').textContent = jugador;
+            document.getElementById('jugador-modal-avatar').src = obtenerAvatarUrl(jugador);
+
+            const btnRanking = document.getElementById('btn-jugador-ranking');
+            const btnDenunciar = document.getElementById('btn-jugador-denunciar');
+
+            if (btnRanking) btnRanking.hidden = contextoModalJugador === 'ranking';
+            if (btnDenunciar) btnDenunciar.hidden = contextoModalJugador === 'ranking';
+
+            document.getElementById('modal-acciones-jugador').style.display = 'flex';
+        }
+
+        function cerrarModalAccionesJugador() {
+            jugadorAccionesActual = null;
+            const modal = document.getElementById('modal-acciones-jugador');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function enviarSolicitudAmistadJugador() {
+            const nombre = jugadorAccionesActual;
+            if (!nombre || nombre.trim().toLowerCase() === getNombreCompleto().trim().toLowerCase()) return;
+            if (!firebaseAPI || !usuarioActual) return alert('Iniciá sesión para enviar solicitudes.');
+
+            const jugador = rankingData.find(j => String(j.nombre || '').trim() === nombre);
+            const uidDestino = jugador?.uid || jugador?.userId || jugador?.id;
+            if (!uidDestino) return alert('No se encontró la cuenta de este jugador.');
+
+            if (amigosData.some(a => String(a.uid || a.id) === String(uidDestino) || String(a.nombre || '') === nombre)) {
+                return alert('Este jugador ya está en tu lista de amigos.');
+            }
+
+            const solicitudId = `${usuarioActual.uid}_${uidDestino}`;
+            await firebaseAPI.setDoc(
+                firebaseAPI.doc(firebaseAPI.db, 'users', String(uidDestino), 'solicitudesAmistad', solicitudId),
+                {
+                    id: solicitudId,
+                    deUid: usuarioActual.uid,
+                    deNombre: getNombreCompleto(),
+                    paraUid: String(uidDestino),
+                    paraNombre: nombre,
+                    estado: 'pendiente',
+                    creadoEn: firebaseAPI.serverTimestamp()
+                },
+                { merge: true }
+            ).catch(error => logFirebaseError('solicitud de amistad', error));
+
+            await firebaseAPI.setDoc(
+                firebaseAPI.doc(firebaseAPI.db, 'users', String(uidDestino), 'notificaciones', solicitudId),
+                {
+                    id: solicitudId,
+                    tipo: 'solicitud_amistad',
+                    titulo: 'Nueva solicitud de amistad',
+                    texto: `${getNombreCompleto()} quiere agregarte como amigo.`,
+                    deUid: usuarioActual.uid,
+                    deNombre: getNombreCompleto(),
+                    leida: false,
+                    creadoEn: firebaseAPI.serverTimestamp()
+                },
+                { merge: true }
+            ).catch(error => logFirebaseError('notificación de amistad', error));
+
+            cerrarModalAccionesJugador();
+            alert(`Solicitud enviada a ${nombre}.`);
+        }
+
+        function verPerfilJugadorSeleccionado() {
+            const nombre = jugadorAccionesActual;
+            cerrarModalAccionesJugador();
+            if (nombre) abrirPerfilRanking(nombre);
+        }
+
+        function verJugadorEnRanking() {
+            const nombre = jugadorAccionesActual;
+            cerrarModalAccionesJugador();
+            cambiarVistaPrincipal('ranking');
+            const input = document.getElementById('input-buscar-ranking');
+            if (input) {
+                input.value = nombre || '';
+                renderizarRanking();
+            }
+        }
+
+        function denunciarJugadorSeleccionado() {
+            const nombre = jugadorAccionesActual;
+            cerrarModalAccionesJugador();
+            abrirModalDenunciar();
+            const select = document.getElementById('denuncia-jugador');
+            if (select && nombre) {
+                if (!Array.from(select.options).some(o => o.value === nombre)) {
+                    select.insertAdjacentHTML('beforeend', `<option value="${escaparHtmlClub(nombre)}">${escaparHtmlClub(nombre)}</option>`);
+                }
+                select.value = nombre;
+            }
         }
 
         function renderizarBanner() {
             const bannerContainer = document.getElementById('banner-proximo-partido');
-            const user = getNombreCompleto(); const hoy = getHoyFormateado();
-            const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user));
-            const prox = misPartidos.filter(p => p.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha))[0];
-            const ult = misPartidos.filter(p => p.fecha < hoy).sort((a,b) => b.fecha.localeCompare(a.fecha))[0];
-            const proxT = torneosData.filter(t => t.fecha >= hoy).sort((a,b) => a.fecha.localeCompare(b.fecha))[0];
+            if (!bannerContainer) return;
 
-            let slidePartido = prox ? `
-                <div class="carousel-slide activo cancha-bg">
-                    <div style="font-size:0.8em; color:var(--primary); font-weight:bold; margin-bottom:5px;">TU PRÓXIMO PARTIDO</div>
-                    <div style="font-size:1.25em; font-weight:bold;">📅 ${prox.fecha} - ⌚ ${prox.hora}</div>
-                    <div style="font-size:0.95em; margin-top:5px;">📍 Jugás en <strong>${prox.club}</strong></div>
-                    <div style="margin-top:15px; padding-top:15px; border-top:1px dashed rgba(255,255,255,0.3); display:flex; justify-content:space-between; align-items:center;">
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start;">
-                            <strong style="font-size:0.85em; margin-bottom:10px;">Tu equipo</strong>
-                            <div style="display:inline-flex; flex-direction:column;">
-                                ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j1 : prox.j3)}
-                                ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j2 : prox.j4)}
+            const user = getNombreCompleto();
+            const hoy = getHoyFormateado();
+            const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user));
+            const prox = misPartidos
+                .filter(p => p.fecha >= hoy && p.estado !== 'Finalizado')
+                .sort((a,b) => `${a.fecha} ${a.hora || ''}`.localeCompare(`${b.fecha} ${b.hora || ''}`))[0];
+            const proxT = torneosData
+                .filter(t => t.fecha >= hoy)
+                .sort((a,b) => a.fecha.localeCompare(b.fecha))[0];
+
+            let slidePartido;
+            if (prox) {
+                const usuarioEquipoUno = [prox.j1, prox.j2].includes(user);
+                const equipoPropio = usuarioEquipoUno ? [prox.j1, prox.j2] : [prox.j3, prox.j4];
+                const equipoRival = usuarioEquipoUno ? [prox.j3, prox.j4] : [prox.j1, prox.j2];
+
+                slidePartido = `
+                    <div class="carousel-slide activo">
+                        <div class="banner-match-main">
+                            <div class="banner-eyebrow">Tu próximo partido</div>
+                            <div class="banner-match-date">
+                                <span>${escaparHtmlClub(prox.fecha || '')}</span>
+                                <span aria-hidden="true">·</span>
+                                <span>${escaparHtmlClub(prox.hora || '')}</span>
+                            </div>
+                            <div class="banner-match-club">Jugás en <strong>${escaparHtmlClub(prox.club || 'Club')}</strong></div>
+
+                            <div class="banner-teams banner-pendientes-link" onclick="irAPartidoPendienteDesdeBanner()">
+                                <div class="banner-team">
+                                    <div class="banner-team-label">Tu equipo</div>
+                                    <div class="banner-team-players">
+                                        ${equipoPropio.map(generarJugadorBanner).join('')}
+                                    </div>
+                                </div>
+
+                                <div class="banner-vs">VS</div>
+
+                                <div class="banner-team">
+                                    <div class="banner-team-label">Rival</div>
+                                    <div class="banner-team-players">
+                                        ${equipoRival.map(generarJugadorBanner).join('')}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div style="font-weight:bold; color:var(--warning); font-size:1.2em;">VS</div>
-                        <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start; padding-left:10px;">
-                            <strong style="font-size:0.85em; margin-bottom:10px;">Rival</strong>
-                            <div style="display:inline-flex; flex-direction:column;">
-                                ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j3 : prox.j1)}
-                                ${generarFilaJugador([prox.j1, prox.j2].includes(user) ? prox.j4 : prox.j2)}
-                            </div>
+                    </div>`;
+            } else {
+                slidePartido = `
+                    <div class="carousel-slide activo">
+                        <div class="banner-empty">
+                            <div class="banner-empty-icon">🎾</div>
+                            <h3>No tenés partidos próximos</h3>
+                            <p>Creá un partido o unite a uno disponible desde la sección Partidos.</p>
+                        </div>
+                    </div>`;
+            }
+
+            const slideTorneo = proxT ? `
+                <div class="carousel-slide" style="cursor:pointer;" onclick="cambiarVistaPrincipal('torneos')">
+                    <div class="banner-empty">
+                        <div class="banner-eyebrow">Próximo torneo</div>
+                        <div class="banner-tournament-title">${escaparHtmlClub(proxT.nombre || 'Torneo')}</div>
+                        <div class="banner-tournament-meta">
+                            <span class="banner-meta-chip">${escaparHtmlClub(proxT.fecha || '')}</span>
+                            <span class="banner-meta-chip">${escaparHtmlClub(proxT.club || 'Club')}</span>
                         </div>
                     </div>
-                </div>` : `<div class="carousel-slide activo cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">¡Bienvenido!</div><div style="margin-top:5px; text-align:center;">No tienes partidos programados.</div></div>`;
+                </div>` : `
+                <div class="carousel-slide">
+                    <div class="banner-empty">
+                        <div class="banner-empty-icon">🏆</div>
+                        <h3>Sin torneos próximos</h3>
+                        <p>Los torneos públicos de los clubes aparecerán acá.</p>
+                    </div>
+                </div>`;
 
-            let slideTorneo = proxT ? `
-                <div class="carousel-slide cancha-bg" style="cursor:pointer; align-items:center;" onclick="cambiarVistaPrincipal('torneos')">
-                    <div style="font-size:0.8em; color:var(--warning); font-weight:bold; margin-bottom:5px;">PRÓXIMO TORNEO</div>
-                    <div style="font-size:1.5em; font-weight:bold; text-align:center;">🏆 ${proxT.nombre}</div>
-                    <div style="margin-top:10px;">📅 ${proxT.fecha}</div><div style="margin-top:5px;">📍 ${proxT.club}</div>
-                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Sin torneos próximos</div></div>`;
+            const slideClub = `
+                <div class="carousel-slide banner-clubs-slide" onclick="cambiarVistaPrincipal('clubes')">
+                    ${generarClubCompletoBanner()}
+                </div>`;
 
-            let slideClub = ult ? `
-                <div class="carousel-slide cancha-bg" style="align-items:center;">
-                    <div style="font-size:0.8em; color:var(--success); font-weight:bold; margin-bottom:5px;">TU ÚLTIMO CLUB</div>
-                    <div style="font-size:1.5em; font-weight:bold; text-align:center;">${ult.club} te espera</div>
-                    <button class="btn btn-primario" style="margin-top:20px; width:auto;" onclick="irACrearPartidoEnClub('${ult.club}')">Reservar Cancha</button>
-                </div>` : `<div class="carousel-slide cancha-bg" style="align-items:center;"><div style="font-size:1.2em; font-weight:bold;">Explora los clubes</div></div>`;
+            bannerContainer.innerHTML = `
+                ${slidePartido}
+                ${slideTorneo}
+                ${slideClub}
+                <div class="carousel-indicators">
+                    <div class="indicator activo" onclick="event.stopPropagation();cambiarSlide(0)"></div>
+                    <div class="indicator" onclick="event.stopPropagation();cambiarSlide(1)"></div>
+                    <div class="indicator" onclick="event.stopPropagation();cambiarSlide(2)"></div>
+                </div>`;
 
-            bannerContainer.innerHTML = `${slidePartido}${slideTorneo}${slideClub}<div class="carousel-indicators"><div class="indicator activo" onclick="cambiarSlide(0)"></div><div class="indicator" onclick="cambiarSlide(1)"></div><div class="indicator" onclick="cambiarSlide(2)"></div></div>`;
+            currentSlide = 0;
             activarSwipeBanner();
 
             clearInterval(bannerInterval);
             bannerInterval = setInterval(() => cambiarSlide((currentSlide + 1) % 3), 5000);
+
+            clearInterval(clubesBannerInterval);
+            clubesBannerInterval = setInterval(actualizarClubRotativoBanner, 10000);
         }
 
         function cambiarSlide(index) {
@@ -1242,67 +2868,614 @@ tr:hover td{background:#f9fafb}
             banner.addEventListener('mouseleave', finalizar);
         }
 
-        function renderizarRanking() {
-            const busqueda = document.getElementById('input-buscar-ranking') ? document.getElementById('input-buscar-ranking').value.toLowerCase() : '';
-            const filtrados = rankingData.filter(r => {
-                // Solo aparecen jugadores que ya cargaron al menos un resultado.
-                const tienePartidosJugados = Number(r.pj || r.partidosJugados || 0) > 0;
-                let coincideModalidad = r.modalidad === catRankingActual;
-                let coincideBusqueda = true;
-                if (busqueda) {
-                    coincideBusqueda = r.nombre.toLowerCase().includes(busqueda) || (r.dni && r.dni.includes(busqueda));
-                }
-                return tienePartidosJugados && coincideModalidad && coincideBusqueda;
-            }).sort((a, b) => b.puntos - a.puntos);
+        function estadisticasNormalizadasJugador(jugador) {
+            const pj = Number(jugador.pj || jugador.partidosJugados || 0);
+            const pg = Number(jugador.victorias || jugador.partidosGanados || 0);
+            const pp = Number(jugador.derrotas || jugador.partidosPerdidos || 0);
+            const sg = Number(jugador.setsGanados || 0);
+            const sp = Number(jugador.setsPerdidos || 0);
+            const gg = Number(jugador.gamesGanados || 0);
+            const gp = Number(jugador.gamesPerdidos || 0);
 
-            document.getElementById('tabla-ranking').innerHTML = filtrados.length ? filtrados.map((j, i) => `
-                <tr style="cursor:pointer;" onclick="abrirPerfilRanking('${j.nombre}')">
-                    <td style="text-align:center; font-weight:bold;"><div style="display:flex; align-items:center; justify-content:center; gap:8px;"><img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${j.nombre}"><span>${i + 1}</span></div></td>
-                    <td style="${j.nombre === getNombreCompleto() ? 'color:var(--primary); font-weight:bold;' : ''}">${j.nombre}</td>
-                    <td style="text-align:center; color:var(--warning); font-weight:bold;">${j.puntos}</td>
-                    <td style="text-align:center;">${j.pj}</td>
-                </tr>`).join('') : `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Sin jugadores.</td></tr>`;
+            return {
+                pj, pg, pp, sg, sp, gg, gp,
+                diferenciaPartidos: pg - pp,
+                diferenciaSets: sg - sp,
+                diferenciaGames: gg - gp
+            };
+        }
+
+        function compararJugadoresRanking(a, b) {
+            const ea = estadisticasNormalizadasJugador(a);
+            const eb = estadisticasNormalizadasJugador(b);
+
+            return (
+                Number(b.puntos || 0) - Number(a.puntos || 0) ||
+                eb.diferenciaPartidos - ea.diferenciaPartidos ||
+                eb.diferenciaSets - ea.diferenciaSets ||
+                eb.diferenciaGames - ea.diferenciaGames ||
+                eb.pg - ea.pg ||
+                String(a.nombre || '').localeCompare(String(b.nombre || ''))
+            );
+        }
+
+        function renderizarRanking() {
+            const busqueda = document.getElementById('input-buscar-ranking')
+                ? document.getElementById('input-buscar-ranking').value.toLowerCase()
+                : '';
+
+            const filtrados = rankingData.filter(r => {
+                const stats = estadisticasNormalizadasJugador(r);
+                const tienePartidosJugados = stats.pj > 0;
+                const coincideModalidad = r.modalidad === catRankingActual;
+                const coincideBusqueda = !busqueda ||
+                    String(r.nombre || '').toLowerCase().includes(busqueda) ||
+                    (r.dni && String(r.dni).includes(busqueda));
+                return tienePartidosJugados && coincideModalidad && coincideBusqueda;
+            }).sort(compararJugadoresRanking);
+
+            document.getElementById('tabla-ranking').innerHTML = filtrados.length
+                ? filtrados.map((j, i) => {
+                    const s = estadisticasNormalizadasJugador(j);
+                    const esPropio = j.nombre.trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
+                    return `
+                        <tr
+                            style="cursor:${esPropio ? 'default' : 'pointer'};"
+                            ${esPropio ? '' : `onclick="abrirModalAccionesJugador('${escaparAtributoJs(j.nombre)}', 'ranking')"`}>
+                            <td style="text-align:center;font-weight:bold;">
+                                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                                    <img src="${obtenerAvatarUrl(j.nombre)}" class="avatar-circulo" alt="${escaparHtmlClub(j.nombre)}">
+                                    <span>${i + 1}</span>
+                                </div>
+                            </td>
+                            <td style="${esPropio ? 'color:var(--primary);font-weight:bold;' : ''}">${escaparHtmlClub(j.nombre)}</td>
+                            <td style="text-align:center;color:var(--warning);font-weight:bold;">${Number(j.puntos || 0)}</td>
+                            <td style="text-align:center;">${s.pj}</td>
+                            <td style="text-align:center;">${s.pg}</td>
+                            <td style="text-align:center;">${s.pp}</td>
+                            <td style="text-align:center;">${s.diferenciaPartidos > 0 ? '+' : ''}${s.diferenciaPartidos}</td>
+                            <td style="text-align:center;">${s.sg}</td>
+                            <td style="text-align:center;">${s.sp}</td>
+                            <td style="text-align:center;">${s.diferenciaSets > 0 ? '+' : ''}${s.diferenciaSets}</td>
+                            <td style="text-align:center;">${s.gg}</td>
+                            <td style="text-align:center;">${s.gp}</td>
+                            <td style="text-align:center;">${s.diferenciaGames > 0 ? '+' : ''}${s.diferenciaGames}</td>
+                        </tr>`;
+                }).join('')
+                : `<tr><td colspan="13" style="text-align:center;color:var(--text-muted);">Sin jugadores.</td></tr>`;
+        }
+
+        function obtenerInvitacionesPendientesPartido(partido) {
+            return Array.isArray(partido?.invitacionesPendientes)
+                ? partido.invitacionesPendientes.filter(inv => inv && inv.slot && inv.nombre)
+                : [];
+        }
+
+        function invitacionPendientePorSlot(partido, slot) {
+            return obtenerInvitacionesPendientesPartido(partido).find(inv => inv.slot === slot) || null;
+        }
+
+        function slotEstaReservado(partido, slot) {
+            return Boolean(invitacionPendientePorSlot(partido, slot));
+        }
+
+        function jugadorPartidoMinimal(nombre, partido = null, slot = '') {
+            const invitacion = partido && slot ? invitacionPendientePorSlot(partido, slot) : null;
+            if (invitacion) {
+                const puedeBorrar = String(invitacion.invitadoPor || '').trim().toLowerCase() ===
+                    getNombreCompleto().trim().toLowerCase();
+                return `
+                    <div class="invitacion-slot-card">
+                        <div class="invitacion-slot-info">
+                            <strong>${escaparHtmlClub(invitacion.nombre)}</strong>
+                            <small>Invitación pendiente</small>
+                        </div>
+                        ${puedeBorrar
+                            ? `<button class="invitacion-slot-remove"
+                                onclick="event.stopPropagation();cancelarInvitacionPartido('${escaparAtributoJs(partido.id)}','${slot}')"
+                                aria-label="Cancelar invitación">×</button>`
+                            : ''}
+                    </div>`;
+            }
+
+            const valor = String(nombre || 'Libre').trim() || 'Libre';
+            if (valor === 'Libre') {
+                return `<div class="partido-minimal-jugador libre"><span class="partido-minimal-nombre">Lugar libre</span></div>`;
+            }
+
+            return `
+                <div class="partido-minimal-jugador">
+                    <img src="${obtenerAvatarUrl(valor)}" class="avatar-circulo" alt="">
+                    <span class="partido-minimal-nombre" title="${escaparHtmlClub(valor)}">${escaparHtmlClub(valor)}</span>
+                </div>`;
+        }
+
+        function slotsEquipoUsuario(partido, usuario) {
+            if ([partido.j1, partido.j2].includes(usuario)) return ['j1', 'j2'];
+            if ([partido.j3, partido.j4].includes(usuario)) return ['j3', 'j4'];
+            return [];
+        }
+
+        function obtenerEquiposPartidoParaUsuario(partido, usuario) {
+            const estaEnEquipoUno = [partido.j1, partido.j2].includes(usuario);
+            const slotsPropios = estaEnEquipoUno ? ['j1', 'j2'] : ['j3', 'j4'];
+            const slotsRivales = estaEnEquipoUno ? ['j3', 'j4'] : ['j1', 'j2'];
+            const slotLibrePropio = slotsPropios.find(slot =>
+                partido[slot] === 'Libre' && !slotEstaReservado(partido, slot)
+            ) || null;
+
+            return {
+                propio: slotsPropios.map(slot => ({ slot, nombre: partido[slot] })),
+                rival: slotsRivales.map(slot => ({ slot, nombre: partido[slot] })),
+                slotsPropios,
+                slotsRivales,
+                slotLibrePropio
+            };
+        }
+
+        function tarjetaPartidoMinimal(partido, opciones = {}) {
+            const usuario = getNombreCompleto();
+            const equipos = obtenerEquiposPartidoParaUsuario(partido, usuario);
+            const puedeInvitar = opciones.invitar && equipos.slotLibrePropio;
+            const completo = ![partido.j1, partido.j2, partido.j3, partido.j4].includes('Libre');
+            const invitacionUsuario = obtenerInvitacionesPendientesPartido(partido).find(inv =>
+                String(inv.uid || '').toLowerCase() === String(usuarioActual?.uid || '').toLowerCase() ||
+                String(inv.nombre || '').trim().toLowerCase() === usuario.trim().toLowerCase()
+            );
+
+            let accion = '';
+            if (opciones.resultado) {
+                accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
+            } else if (invitacionUsuario) {
+                accion = `<span class="partido-invitacion-badge">Tenés una invitación pendiente</span>`;
+            } else if (puedeInvitar) {
+                accion = `<button class="btn partido-minimal-action" onclick='abrirModalInvitarAmigoPartido(${JSON.stringify(partido.id)})'>Invitar un amigo</button>`;
+            } else if (completo) {
+                accion = `<span class="partido-minimal-status">Partido completo</span>`;
+            }
+
+            const estadoHistorial = opciones.historial
+                ? `<span class="partido-minimal-status">${escaparHtmlClub(partido.resultado || 'Amistoso')}</span>`
+                : accion;
+
+            return `
+                <article class="partido-minimal-card">
+                    <div class="partido-minimal-meta-top">
+                        <span>${escaparHtmlClub(partido.fecha || '')}</span>
+                        <span>${escaparHtmlClub(partido.hora || '')}</span>
+                        <span>${escaparHtmlClub(partido.club || '')}</span>
+                    </div>
+
+                    <div class="partido-minimal-equipos">
+                        <div class="partido-minimal-equipo">
+                            <div class="partido-minimal-label">Tu equipo</div>
+                            <div class="partido-minimal-jugadores">
+                                ${equipos.propio.map(item => jugadorPartidoMinimal(item.nombre, partido, item.slot)).join('')}
+                            </div>
+                        </div>
+
+                        <div class="partido-minimal-vs">VS</div>
+
+                        <div class="partido-minimal-equipo">
+                            <div class="partido-minimal-label">Rival</div>
+                            <div class="partido-minimal-jugadores">
+                                ${equipos.rival.map(item => jugadorPartidoMinimal(item.nombre, partido, item.slot)).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="partido-minimal-footer">
+                        <span class="partido-minimal-detail">${escaparHtmlClub(partido.tipo || '')} · ${escaparHtmlClub(partido.modalidad || '')}${partido.cancha ? ` · Cancha ${escaparHtmlClub(partido.canchaNombre || partido.cancha)}` : ''}</span>
+                        ${estadoHistorial}
+                    </div>
+                </article>`;
+        }
+
+        async function cancelarInvitacionPartido(partidoId, slot) {
+            const partido = partidosData.find(p => String(p.id) === String(partidoId));
+            if (!partido) return;
+
+            const invitacion = invitacionPendientePorSlot(partido, slot);
+            if (!invitacion) return;
+
+            if (String(invitacion.invitadoPor || '').trim().toLowerCase() !==
+                getNombreCompleto().trim().toLowerCase()) return;
+
+            partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido)
+                .filter(inv => inv.slot !== slot);
+
+            await guardarPartidoEnFirebase(partido);
+
+            if (firebaseAPI && invitacion.uid) {
+                const notifId = `invitacion-cancelada-${partido.id}-${slot}`;
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', String(invitacion.uid), 'notificaciones', notifId),
+                    {
+                        id: notifId,
+                        tipo: 'invitacion_partido_cancelada',
+                        titulo: 'Invitación cancelada',
+                        texto: `${getNombreCompleto()} canceló la invitación al partido del ${partido.fecha} a las ${partido.hora}.`,
+                        partidoId: String(partido.id),
+                        leida: false,
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError('cancelación de invitación', error));
+            }
+
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+            renderizarBanner();
+        }
+
+        function abrirModalInvitarAmigoPartido(id) {
+            const partido = partidosData.find(p => String(p.id) === String(id));
+            if (!partido) return alert('No se encontró el partido.');
+
+            const equipos = obtenerEquiposPartidoParaUsuario(partido, getNombreCompleto());
+            if (!equipos.slotLibrePropio) {
+                return alert('Tu equipo ya está completo.');
+            }
+
+            partidoInvitacionActualId = partido.id;
+            const ocupantes = new Set([partido.j1, partido.j2, partido.j3, partido.j4].filter(j => j && j !== 'Libre'));
+            const amigosElegibles = amigosData.filter(amigo => {
+                const nombre = String(amigo.nombre || amigo.displayName || '').trim();
+                return nombre && nombre !== getNombreCompleto() && !ocupantes.has(nombre);
+            });
+
+            const lista = document.getElementById('lista-amigos-invitar-partido');
+            const resumen = document.getElementById('invitar-amigo-partido-resumen');
+            resumen.textContent = `El amigo seleccionado ocupará el lugar libre de tu equipo en ${partido.club}, el ${partido.fecha} a las ${partido.hora}.`;
+
+            lista.innerHTML = amigosElegibles.length ? amigosElegibles.map(amigo => {
+                const nombre = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
+                const amigoId = String(amigo.id || amigo.uid || amigo.usuarioUid || '').replace(/'/g, "\\'");
+                return `
+                    <div class="amigo-invitar-item">
+                        <img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="">
+                        <div class="amigo-invitar-info">
+                            <strong>${escaparHtmlClub(nombre)}</strong>
+                            <small>${amigo.dni ? `DNI ${escaparHtmlClub(amigo.dni)}` : 'Amigo agregado'}</small>
+                        </div>
+                        <button class="amigo-invitar-btn" onclick="confirmarInvitacionAmigoPartido('${amigoId}')">Invitar</button>
+                    </div>`;
+            }).join('') : `<div class="amigos-invitar-empty">No tenés amigos disponibles para invitar a este partido.</div>`;
+
+            document.getElementById('modal-invitar-amigo-partido').style.display = 'flex';
+        }
+
+        function cerrarModalInvitarAmigoPartido() {
+            partidoInvitacionActualId = null;
+            const modal = document.getElementById('modal-invitar-amigo-partido');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function confirmarInvitacionAmigoPartido(amigoId) {
+            const partido = partidosData.find(p => String(p.id) === String(partidoInvitacionActualId));
+            const amigo = amigosData.find(a =>
+                String(a.id || '') === String(amigoId) ||
+                String(a.uid || '') === String(amigoId) ||
+                String(a.usuarioUid || '') === String(amigoId)
+            );
+            if (!partido || !amigo) return alert('No se pudo completar la invitación.');
+
+            const equipos = obtenerEquiposPartidoParaUsuario(partido, getNombreCompleto());
+            if (!equipos.slotLibrePropio) {
+                cerrarModalInvitarAmigoPartido();
+                return alert('Tu equipo ya no tiene un lugar disponible.');
+            }
+
+            const nombreAmigo = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
+            const uidAmigo = amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || null;
+
+            const yaInvitado = obtenerInvitacionesPendientesPartido(partido).some(inv =>
+                String(inv.uid || '') === String(uidAmigo || '') ||
+                String(inv.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+            );
+            if (yaInvitado) return alert('Este amigo ya tiene una invitación pendiente.');
+
+            partido.invitacionesPendientes = [
+                ...obtenerInvitacionesPendientesPartido(partido),
+                {
+                    id: `${partido.id}-${equipos.slotLibrePropio}-${Date.now()}`,
+                    slot: equipos.slotLibrePropio,
+                    nombre: nombreAmigo,
+                    uid: uidAmigo ? String(uidAmigo) : '',
+                    invitadoPor: getNombreCompleto(),
+                    invitadoPorUid: usuarioActual?.uid || '',
+                    creadoEnCliente: new Date().toISOString()
+                }
+            ];
+
+            await guardarPartidoEnFirebase(partido);
+
+            if (firebaseAPI && uidAmigo) {
+                const notifId = `partido-${partido.id}-${equipos.slotLibrePropio}`;
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', String(uidAmigo), 'notificaciones', notifId),
+                    {
+                        id: notifId,
+                        tipo: 'invitacion_partido',
+                        accion: 'unirse',
+                        titulo: 'Invitación a un partido',
+                        texto: `Has sido invitado por ${getNombreCompleto()} para jugar en ${partido.club}, el ${partido.fecha} a las ${partido.hora}.`,
+                        partidoId: String(partido.id),
+                        slotReservado: equipos.slotLibrePropio,
+                        leida: false,
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError('notificación de invitación', error));
+            }
+
+            cerrarModalInvitarAmigoPartido();
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+            renderizarBanner();
+            alert(`El lugar quedó reservado para ${nombreAmigo}.`);
+        }
+
+        function fechaHoraPartidoMs(partido) {
+            const fecha = String(partido?.fecha || '').trim();
+            const hora = String(partido?.hora || '').trim();
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha) || !/^\d{1,2}:\d{2}$/.test(hora)) return NaN;
+            const [anio, mes, dia] = fecha.split('-').map(Number);
+            const [horas, minutos] = hora.split(':').map(Number);
+            return new Date(anio, mes - 1, dia, horas, minutos, 0, 0).getTime();
+        }
+
+        function partidoTieneCuatroJugadores(partido) {
+            return [partido?.j1, partido?.j2, partido?.j3, partido?.j4]
+                .every(nombre => nombre && String(nombre).trim() !== '' && String(nombre).trim() !== 'Libre');
+        }
+
+        function nombresJugadoresPartido(partido) {
+            return Array.from(new Set(
+                [partido?.j1, partido?.j2, partido?.j3, partido?.j4]
+                    .map(nombre => String(nombre || '').trim())
+                    .filter(nombre => nombre && nombre !== 'Libre')
+            ));
+        }
+
+        function resolverUsuariosPartido(partido) {
+            const usuarios = [];
+            const porUid = new Map(rankingData.map(u => [String(u.uid || u.id || ''), u]));
+            const porNombre = new Map(rankingData.map(u => [String(u.nombre || '').trim().toLowerCase(), u]));
+
+            (partido?.jugadoresUid || []).forEach(uid => {
+                const encontrado = porUid.get(String(uid));
+                usuarios.push(encontrado || { uid: String(uid), id: String(uid), nombre: '' });
+            });
+
+            nombresJugadoresPartido(partido).forEach(nombre => {
+                const encontrado = porNombre.get(nombre.toLowerCase());
+                if (encontrado) usuarios.push(encontrado);
+            });
+
+            return Array.from(new Map(
+                usuarios
+                    .filter(u => u?.uid || u?.id)
+                    .map(u => [String(u.uid || u.id), u])
+            ).values());
+        }
+
+        async function notificarJugadoresPartido(partido, datos) {
+            if (!firebaseAPI) return;
+            const usuarios = resolverUsuariosPartido(partido);
+
+            await Promise.all(usuarios.map(usuario => {
+                const uid = String(usuario.uid || usuario.id);
+                const notifId = `${datos.idBase}-${uid}`;
+                return firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', uid, 'notificaciones', notifId),
+                    {
+                        id: notifId,
+                        tipo: datos.tipo,
+                        titulo: datos.titulo,
+                        texto: datos.texto,
+                        partidoId: String(partido.id),
+                        club: partido.club || '',
+                        fecha: partido.fecha || '',
+                        hora: partido.hora || '',
+                        leida: false,
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError('notificación automática de partido', error));
+            }));
+        }
+
+        async function borrarRutaFirestore(ruta) {
+            const partes = String(ruta || '').split('/').filter(Boolean);
+            if (!firebaseAPI || partes.length < 2 || partes.length % 2 !== 0) return;
+            await firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, ...partes))
+                .catch(error => logFirebaseError(`borrado ${ruta}`, error));
+        }
+
+        async function cancelarPartidoCompetitivoIncompleto(partido) {
+            await notificarJugadoresPartido(partido, {
+                idBase: `cancelado-falta-jugadores-${partido.id}`,
+                tipo: 'partido_cancelado_falta_jugadores',
+                titulo: 'Partido cancelado',
+                texto: `El partido competitivo del ${partido.fecha} a las ${partido.hora} en ${partido.club} fue cancelado porque no se completaron los cuatro jugadores.`
+            });
+
+            const rutaPartido = partido._firestorePath ||
+                `clubs/${resolverClubDocId(partido.club || 'Club Central')}/partidos/${partido.id}`;
+            await borrarRutaFirestore(rutaPartido);
+
+            const reservaId = partido.reservaId || partido.reserva?.id || '';
+            if (reservaId) {
+                const rutaReserva = partido.reservaPath ||
+                    `clubs/${resolverClubDocId(partido.club || 'Club Central')}/reservas/${reservaId}`;
+                await borrarRutaFirestore(rutaReserva);
+            }
+
+            partidosData = partidosData.filter(p => String(p.id) !== String(partido.id));
+            reservasCompartidasCache = reservasCompartidasCache.filter(r =>
+                String(r.id) !== String(reservaId) &&
+                String(r.partidoId || '') !== String(partido.id)
+            );
+        }
+
+        async function moverPartidoCompetitivoAResultados(partido) {
+            partido.estado = 'Pendiente Resultado';
+            partido.pasoAResultadosEn = new Date().toISOString();
+            partido.notificacionResultadoEnviada = true;
+            await guardarPartidoEnFirebase(partido);
+
+            await notificarJugadoresPartido(partido, {
+                idBase: `recordatorio-resultado-${partido.id}`,
+                tipo: 'recordatorio_cargar_resultado',
+                titulo: 'Resultado pendiente',
+                texto: `No te olvides de cargar el resultado de tu último partido del ${partido.fecha} a las ${partido.hora} en ${partido.club}.`
+            });
+        }
+
+        async function procesarEstadosPartidosCompetitivos() {
+            if (!firebaseAPI || !partidosData.length) return;
+            const limiteAhora = Date.now();
+
+            const candidatos = partidosData.filter(partido => {
+                if (String(partido.tipo || '').toLowerCase() !== 'competitivo') return false;
+                if (!['Buscando Rival', 'Partido Confirmado'].includes(partido.estado)) return false;
+                const inicio = fechaHoraPartidoMs(partido);
+                return Number.isFinite(inicio) && limiteAhora >= inicio;
+            });
+
+            for (const partido of candidatos) {
+                const clave = String(partido.id);
+                if (partidosCompetitivosProcesando.has(clave)) continue;
+                partidosCompetitivosProcesando.add(clave);
+
+                try {
+                    if (partidoTieneCuatroJugadores(partido)) {
+                        await moverPartidoCompetitivoAResultados(partido);
+                    } else {
+                        await cancelarPartidoCompetitivoIncompleto(partido);
+                    }
+                } catch (error) {
+                    logFirebaseError('procesamiento automático de partidos competitivos', error);
+                } finally {
+                    partidosCompetitivosProcesando.delete(clave);
+                }
+            }
+
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+            renderizarBanner();
+            window.actualizarHorariosDisponibles?.();
+        }
+
+        function iniciarControlAutomaticoPartidosCompetitivos() {
+            clearInterval(controlPartidosInterval);
+            procesarEstadosPartidosCompetitivos();
+            controlPartidosInterval = setInterval(procesarEstadosPartidosCompetitivos, 60 * 1000);
         }
 
         function renderizarMisPartidos() {
             const user = getNombreCompleto();
             const hoyStr = getHoyFormateado();
-            const misPartidos = partidosData.filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user)).sort((a,b) => b.fecha.localeCompare(a.fecha));
-            
+            const misPartidos = partidosData
+                .filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user))
+                .sort((a,b) => `${b.fecha} ${b.hora || ''}`.localeCompare(`${a.fecha} ${a.hora || ''}`));
+
             misPartidos.forEach(p => {
-                if(p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
-                    p.estado = 'Finalizado'; p.resultado = 'Amistoso';
+                if (p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
+                    p.estado = 'Finalizado';
+                    p.resultado = 'Amistoso';
                 }
             });
 
-            const pendientes = misPartidos.filter(p => p.estado === 'Pendiente Resultado' && p.tipo === 'Competitivo');
-            const enCurso = misPartidos.filter(p => p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado');
+            const pendientesResultado = misPartidos.filter(p => p.estado === 'Pendiente Resultado' && p.tipo === 'Competitivo');
+            const pendientes = misPartidos.filter(p => p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado');
             const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
-            const renderHtml = (arr, isPend, isHistorial) => arr.length ? arr.map(p => `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
-                    <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
-                    <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                    ${isPend ? `<button class="btn btn-primario" style="padding:5px; margin-top:10px;" onclick="abrirModalResultado(${p.id})">Cargar Resultado</button>` : 
-                     (isHistorial ? `<span style="color:var(--success); font-size:0.85em; display:block; margin-top:10px;">✅ Finalizado: ${p.resultado || 'Amistoso'}</span>` : '')}
-                </div>`).join('') : `<p style="color:var(--text-muted); text-align:center; font-size:0.9em;">No hay partidos.</p>`;
+            document.getElementById('lista-mis-partidos').innerHTML = pendientesResultado.length
+                ? pendientesResultado.map(p => tarjetaPartidoMinimal(p, { resultado: true })).join('')
+                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay resultados pendientes.</p>`;
 
-            document.getElementById('lista-mis-partidos').innerHTML = renderHtml(pendientes, true, false);
-            document.getElementById('lista-historial-partidos').innerHTML = renderHtml(finalizados, false, true);
+            document.getElementById('lista-en-curso-partidos').innerHTML = pendientes.length
+                ? pendientes.map(p => tarjetaPartidoMinimal(p, { invitar: true })).join('')
+                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay partidos pendientes.</p>`;
 
-            document.getElementById('lista-en-curso-partidos').innerHTML = enCurso.length ? enCurso.map(p => {
-                let cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
-                let btnInvitar = cupos > 0 
-                    ? `<button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick="window.open('https://wa.me/?text=¡Faltan ${cupos} jugadores para mi partido de pádel el ${p.fecha} a las ${p.hora} en ${p.club}! ¿Te sumás?', '_blank')">💬 Invitar por WhatsApp</button>` 
-                    : `<span style="color:var(--success); font-size:0.85em; display:block; margin-top:10px;">✅ Partido Completo</span>`;
-                return `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
-                    <div style="display:flex; justify-content:space-between;"><strong style="color:var(--primary);">${p.j1} / ${p.j2}</strong><span style="color:var(--warning);">VS</span><strong style="color:var(--danger);">${p.j3} / ${p.j4}</strong></div>
-                    <div style="font-size:0.85em; color:var(--text-muted); margin-top:8px;">📅 ${p.fecha} | ⌚ ${p.hora} | 📍 ${p.club}</div>
-                    <div style="font-size:0.85em; color:var(--text-light); margin-top:4px;">Tipo: ${p.tipo} | Modalidad: ${p.modalidad}</div>
-                    ${btnInvitar}
+            document.getElementById('lista-historial-partidos').innerHTML = finalizados.length
+                ? finalizados.map(p => tarjetaPartidoMinimal(p, { historial: true })).join('')
+                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">Todavía no hay partidos finalizados.</p>`;
+        }
+
+        function slotsDisponiblesEquipo(partido, equipo) {
+            const slots = equipo === 'equipo1' ? ['j1', 'j2'] : ['j3', 'j4'];
+            return slots.filter(slot =>
+                partido[slot] === 'Libre' && !slotEstaReservado(partido, slot)
+            );
+        }
+
+        function partidoTieneAlgunCupoDisponible(partido) {
+            return slotsDisponiblesEquipo(partido, 'equipo1').length > 0 ||
+                   slotsDisponiblesEquipo(partido, 'equipo2').length > 0;
+        }
+
+        function invitacionUsuarioPartido(partido) {
+            const user = getNombreCompleto();
+            return obtenerInvitacionesPendientesPartido(partido).find(inv =>
+                String(inv.uid || '') === String(usuarioActual?.uid || '') ||
+                String(inv.nombre || '').trim().toLowerCase() === user.trim().toLowerCase()
+            ) || null;
+        }
+
+        function slotPartidoUnirseHtml(partido, slot) {
+            const invitacion = invitacionPendientePorSlot(partido, slot);
+            if (invitacion) {
+                const esInvitadoActual =
+                    String(invitacion.uid || '') === String(usuarioActual?.uid || '') ||
+                    String(invitacion.nombre || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
+
+                return `<div class="partido-unirse-slot reservado">${esInvitadoActual ? 'Reservado para vos' : 'Reservado'}</div>`;
+            }
+
+            const nombre = String(partido[slot] || 'Libre').trim();
+            return nombre === 'Libre'
+                ? `<div class="partido-unirse-slot libre">Libre</div>`
+                : `<div class="partido-unirse-slot">Ocupado</div>`;
+        }
+
+        function cuerpoPartidoUnirseHtml(p, invitacionUsuario) {
+            const idSeguro = escaparAtributoJs(p.id);
+            return `
+                <div class="partido-unirse-body">
+                    <div class="partido-unirse-equipos">
+                        <div class="partido-unirse-equipo">
+                            <span class="partido-unirse-label">Equipo 1</span>
+                            ${slotPartidoUnirseHtml(p, 'j1')}
+                            ${slotPartidoUnirseHtml(p, 'j2')}
+                        </div>
+
+                        <div class="partido-unirse-vs">VS</div>
+
+                        <div class="partido-unirse-equipo">
+                            <span class="partido-unirse-label">Equipo 2</span>
+                            ${slotPartidoUnirseHtml(p, 'j3')}
+                            ${slotPartidoUnirseHtml(p, 'j4')}
+                        </div>
+                    </div>
+
+                    <div class="partido-unirse-footer">
+                        <div class="partido-unirse-meta">
+                            ${escaparHtmlClub(p.tipo || '')} · ${escaparHtmlClub(p.modalidad || '')}
+                            ${p.cancha ? ` · Cancha ${escaparHtmlClub(p.canchaNombre || p.cancha)}` : ''}
+                        </div>
+                        <button
+                            type="button"
+                            class="partido-unirse-plus"
+                            title="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
+                            aria-label="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
+                            onclick="event.stopPropagation();${invitacionUsuario
+                                ? `unirsePartido('${idSeguro}')`
+                                : `abrirModalSeleccionarEquipo('${idSeguro}')`}">+</button>
+                    </div>
                 </div>`;
-            }).join('') : `<p style="color:var(--text-muted); text-align:center; font-size:0.9em;">No tienes partidos en curso.</p>`;
         }
 
         function renderizarPartidosAbiertos() {
@@ -1311,36 +3484,67 @@ tr:hover td{background:#f9fafb}
             const fMod = document.getElementById('filtro-mod-unirse').value;
             const fClub = document.getElementById('filtro-club-unirse')?.value || 'Todos';
 
-            const abiertos = partidosData.filter(p => {
-                if(p.estado !== 'Buscando Rival') return false;
-                if([p.j1, p.j2, p.j3, p.j4].includes(user)) return false;
-                if(p.visibilidad === 'Privado') return false; 
-                if(fClub !== 'Todos' && p.club !== fClub) return false;
-                if(fTipo !== 'Todos' && p.tipo !== fTipo) return false;
-                if(fMod !== 'Todos' && p.modalidad !== fMod) return false;
+            let abiertos = partidosData.filter(p => {
+                if (p.estado !== 'Buscando Rival') return false;
+                if ([p.j1, p.j2, p.j3, p.j4].includes(user)) return false;
+
+                const invitado = invitacionUsuarioPartido(p);
+
+                // Si no hay cupos públicos y tampoco invitación para este usuario, no aparece.
+                if (!invitado && !partidoTieneAlgunCupoDisponible(p)) return false;
+
+                if (p.visibilidad === 'Privado' && !invitado) return false;
+                if (fClub !== 'Todos' && p.club !== fClub && !invitado) return false;
+                if (fTipo !== 'Todos' && p.tipo !== fTipo && !invitado) return false;
+                if (fMod !== 'Todos' && p.modalidad !== fMod && !invitado) return false;
                 return true;
             });
 
-            document.getElementById('lista-partidos-abiertos').innerHTML = abiertos.length ? abiertos.map(p => {
-                const cupos = [p.j2, p.j3, p.j4].filter(j => j === 'Libre').length;
-                let badgeTipo = p.tipo === 'Competitivo' ? '🏅 Competitivo' : '🤝 Casual';
-                
-                let tagInvitado = (p.invitados && p.invitados.includes(user)) ? `<span style="color:var(--success); border: 1px solid white; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-left: 10px;">✅ Haz sido invitado</span>` : '';
-                
-                return `
-                <div class="tarjeta-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                        <div style="display:flex; align-items:center; flex-wrap:wrap;">
-                            <strong style="color:var(--text-light);">${p.j1} busca (${p.modalidad})</strong>
-                            ${tagInvitado}
+            abiertos.sort((a, b) => {
+                const aInvitado = invitacionUsuarioPartido(a) ? 1 : 0;
+                const bInvitado = invitacionUsuarioPartido(b) ? 1 : 0;
+                return bInvitado - aInvitado ||
+                    `${a.fecha || ''} ${a.hora || ''}`.localeCompare(`${b.fecha || ''} ${b.hora || ''}`);
+            });
+
+            const contenedor = document.getElementById('lista-partidos-abiertos');
+            if (!abiertos.length) {
+                contenedor.innerHTML = '<p style="color:var(--text-muted);text-align:center;">No hay partidos con lugares disponibles.</p>';
+                return;
+            }
+
+            contenedor.innerHTML = abiertos.map(p => {
+                const invitacionUsuario = invitacionUsuarioPartido(p);
+                const resumen = `
+                    <div class="partido-unirse-resumen">
+                        <div class="partido-unirse-club">${escaparHtmlClub(p.club || 'Club')}</div>
+                        <div class="partido-unirse-fecha">
+                            <span>${escaparHtmlClub(p.fecha || '')}</span>
+                            <span>·</span>
+                            <span>${escaparHtmlClub(p.hora || '')}</span>
                         </div>
-                        <span style="font-size: 0.8em; color:var(--primary); font-weight:bold;">${badgeTipo}</span>
-                    </div>
-                    <div style="font-size:0.85em; color:var(--text-muted);">📅 ${p.fecha} · ⌚ ${p.hora} · 📍 ${p.club}</div>
-                    <div class="partido-meta"><span class="partido-chip">${p.modalidad}</span><span class="partido-chip">${cupos} lugares libres</span></div>
-                    <button class="btn btn-secundario" style="padding:5px; margin-top:10px;" onclick='unirsePartido(${JSON.stringify(p.id)})'>Unirme</button>
-                </div>`;
-            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay partidos con estos filtros.</p>';
+                        ${invitacionUsuario ? '<span class="partido-unirse-invitado">Invitación para vos</span>' : ''}
+                    </div>`;
+
+                if (invitacionUsuario) {
+                    return `
+                        <section class="partido-unirse-destacado-fijo" data-partido-id="${escaparHtmlClub(String(p.id))}">
+                            <div class="partido-unirse-resumen-fijo">
+                                ${resumen}
+                            </div>
+                            ${cuerpoPartidoUnirseHtml(p, invitacionUsuario)}
+                        </section>`;
+                }
+
+                return `
+                    <details class="partido-unirse-acordeon" data-partido-id="${escaparHtmlClub(String(p.id))}">
+                        <summary>
+                            ${resumen}
+                            <span class="partido-unirse-chevron">⌄</span>
+                        </summary>
+                        ${cuerpoPartidoUnirseHtml(p, null)}
+                    </details>`;
+            }).join('');
         }
 
         function torneoEsPublico(torneo) {
@@ -1392,14 +3596,90 @@ tr:hover td{background:#f9fafb}
                 </div>`).join('') : '<p style="color:var(--text-muted); font-size:0.9em;">Aún no tienes amigos.</p>';
         }
 
+        function escaparHtmlClub(valor) {
+            return String(valor == null ? '' : valor)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function normalizarTelefonoWhatsApp(valor) {
+            return String(valor || '').replace(/\D/g, '');
+        }
+
+        function obtenerResumenCanchasClub(club) {
+            const cantidades = [
+                { cantidad: Number(club.canchasIndoor) || 0, nombre: 'Indoor' },
+                { cantidad: Number(club.canchasOutdoor) || 0, nombre: 'Outdoor' },
+                { cantidad: Number(club.canchasTenis) || 0, nombre: 'Tenis' }
+            ].filter(item => item.cantidad > 0);
+
+            if (!cantidades.length) {
+                return '<span class="club-modalidad-chip">Sin canchas configuradas</span>';
+            }
+
+            return cantidades.map(item => `
+                <span class="club-modalidad-chip">
+                    <strong>${item.cantidad}</strong> ${item.nombre}
+                </span>
+            `).join('');
+        }
+
         function renderizarClubes() {
-            document.getElementById('lista-clubes').innerHTML = clubesData.length ? clubesData.map(c => `
-                <div class="tarjeta-item">
-                    <div style="color:var(--primary); font-weight:bold; font-size:1.1em;">🎾 ${c.nombre}</div>
-                    <div style="color:var(--text-light); font-size:0.9em; margin:5px 0;">📍 ${c.ubicacion}</div>
-                    <div style="color:var(--success); font-size:0.85em; margin-bottom:10px;">Canchas: ${c.canchas || c.canchasTexto || "-"}</div>
-                    <button class="btn btn-secundario" style="padding:5px; font-size:0.85em;" onclick="window.open('https://wa.me/${c.contacto || ''}', '_blank')">💬 WhatsApp del Club</button>
-                </div>`).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay clubes.</p>';
+            const contenedor = document.getElementById('lista-clubes');
+            if (!contenedor) return;
+
+            if (!clubesData.length) {
+                contenedor.innerHTML = '<div class="clubes-empty">No hay clubes disponibles en el circuito.</div>';
+                return;
+            }
+
+            const whatsappIcon = `
+                <svg viewBox="0 0 32 32" aria-hidden="true">
+                    <path d="M19.11 17.35c-.27-.14-1.6-.79-1.85-.88-.25-.09-.43-.14-.61.14-.18.27-.7.88-.86 1.06-.16.18-.32.2-.59.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.36-1.61-1.52-1.88-.16-.27-.02-.42.12-.55.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.53-.45-.46-.61-.47h-.52c-.18 0-.48.07-.73.34-.25.27-.95.93-.95 2.26s.97 2.62 1.11 2.8c.14.18 1.91 2.91 4.62 4.08.65.28 1.15.45 1.54.58.65.21 1.24.18 1.71.11.52-.08 1.6-.65 1.83-1.29.23-.63.23-1.17.16-1.29-.07-.11-.25-.18-.52-.32z"/>
+                    <path d="M16.04 3.2c-6.99 0-12.67 5.68-12.67 12.67 0 2.23.58 4.41 1.68 6.33L3.27 28.8l6.77-1.78a12.61 12.61 0 0 0 6 1.53h.01c6.99 0 12.67-5.68 12.67-12.67S23.03 3.2 16.04 3.2zm0 23.21h-.01a10.5 10.5 0 0 1-5.36-1.47l-.39-.23-4.02 1.05 1.07-3.92-.25-.4a10.51 10.51 0 1 1 8.96 4.97z"/>
+                </svg>`;
+
+            contenedor.innerHTML = clubesData.filter(Boolean).map(club => {
+                const telefono = normalizarTelefonoWhatsApp(
+                    club.contacto || club.whatsapp || club.telefono || club.telefonoClub
+                );
+                const ubicacion = club.ubicacion || club.direccion || 'Ubicación no informada';
+                const accionWhatsapp = telefono
+                    ? `onclick="window.open('https://wa.me/${telefono}', '_blank', 'noopener,noreferrer')"`
+                    : 'disabled';
+
+                return `
+                    <article class="club-circuito-card">
+                        <div class="club-circuito-main">
+                            <h4 class="club-circuito-title">
+                                <span class="club-circuito-title-icon">🎾</span>
+                                <span>${escaparHtmlClub(club.nombre || 'Club')}</span>
+                            </h4>
+
+                            <p class="club-circuito-location">
+                                <span aria-hidden="true">⌖</span>
+                                <span>${escaparHtmlClub(ubicacion)}</span>
+                            </p>
+
+                            <div class="club-circuito-modalidades">
+                                ${obtenerResumenCanchasClub(club)}
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="club-whatsapp-btn"
+                            title="${telefono ? 'Contactar al club por WhatsApp' : 'WhatsApp no disponible'}"
+                            aria-label="${telefono ? 'Contactar al club por WhatsApp' : 'WhatsApp no disponible'}"
+                            ${accionWhatsapp}>
+                            ${whatsappIcon}
+                        </button>
+                    </article>
+                `;
+            }).join('');
         }
 
         // --- FUNCIONES ACADEMIA ---
@@ -1524,35 +3804,364 @@ tr:hover td{background:#f9fafb}
             renderizarMisPartidos();
         }
 
-        function unirsePartido(id) {
-            let p = partidosData.find(x => x.id === id); let user = getNombreCompleto(); if(!p) return;
-            if(p.j2 === 'Libre') p.j2 = user; else if(p.j3 === 'Libre') p.j3 = user; else if(p.j4 === 'Libre') p.j4 = user;
-            if(![p.j1, p.j2, p.j3, p.j4].includes('Libre')) { p.estado = 'Partido Confirmado'; alert("¡Partido completado!"); } else { alert("Te has unido."); }
-            renderizarMisPartidos(); renderizarPartidosAbiertos();
+        function abrirModalSeleccionarEquipo(partidoId) {
+            const partido = partidosData.find(p => String(p.id) === String(partidoId));
+            if (!partido) return;
+
+            seleccionEquipoPartidoId = partido.id;
+            const libres1 = slotsDisponiblesEquipo(partido, 'equipo1').length;
+            const libres2 = slotsDisponiblesEquipo(partido, 'equipo2').length;
+            const contenedor = document.getElementById('opciones-equipo-unirse');
+
+            contenedor.innerHTML = `
+                <button class="opcion-equipo-unirse" ${libres1 ? '' : 'disabled'}
+                    onclick="confirmarEquipoParaUnirse('equipo1')">
+                    <strong>Equipo 1</strong>
+                    <span>${libres1} lugar${libres1 === 1 ? '' : 'es'} libre${libres1 === 1 ? '' : 's'}</span>
+                </button>
+                <button class="opcion-equipo-unirse" ${libres2 ? '' : 'disabled'}
+                    onclick="confirmarEquipoParaUnirse('equipo2')">
+                    <strong>Equipo 2</strong>
+                    <span>${libres2} lugar${libres2 === 1 ? '' : 'es'} libre${libres2 === 1 ? '' : 's'}</span>
+                </button>`;
+
+            document.getElementById('modal-seleccionar-equipo').style.display = 'flex';
+        }
+
+        function cerrarModalSeleccionarEquipo() {
+            seleccionEquipoPartidoId = null;
+            const modal = document.getElementById('modal-seleccionar-equipo');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function confirmarEquipoParaUnirse(equipo) {
+            const partidoId = seleccionEquipoPartidoId;
+            cerrarModalSeleccionarEquipo();
+            await unirsePartido(partidoId, equipo);
+        }
+
+        async function unirsePartido(id, equipoElegido = '') {
+            const p = partidosData.find(x => String(x.id) === String(id));
+            const user = getNombreCompleto();
+            if (!p) return;
+            if ([p.j1, p.j2, p.j3, p.j4].includes(user)) return alert('Ya estás anotado en este partido.');
+
+            const invitaciones = obtenerInvitacionesPendientesPartido(p);
+            const invitacionUsuario = invitacionUsuarioPartido(p);
+
+            let slot = invitacionUsuario?.slot || null;
+
+            if (!slot) {
+                const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
+                slot = slotsDisponiblesEquipo(p, equipo)[0] || null;
+            }
+
+            if (!slot) return alert('Ese equipo ya no tiene lugares disponibles.');
+
+            p[slot] = user;
+            p.jugadoresUid = Array.from(new Set([
+                ...(p.jugadoresUid || []),
+                usuarioActual?.uid
+            ].filter(Boolean)));
+
+            if (invitacionUsuario) {
+                p.invitacionesPendientes = invitaciones.filter(inv => inv.id !== invitacionUsuario.id);
+                p.invitados = Array.from(new Set([...(p.invitados || []), user]));
+            }
+
+            if (![p.j1, p.j2, p.j3, p.j4].includes('Libre')) {
+                p.estado = 'Partido Confirmado';
+            }
+
+            await guardarPartidoEnFirebase(p);
+            if (String(partidoDestacadoUnirseId) === String(p.id)) partidoDestacadoUnirseId = null;
+
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+            renderizarBanner();
+
+            alert(invitacionUsuario
+                ? 'Aceptaste la invitación y te uniste al equipo.'
+                : (p.estado === 'Partido Confirmado' ? '¡Partido completado!' : 'Te uniste al equipo seleccionado.'));
+        }
+
+        function obtenerLadoUsuarioEnPartido(partido) {
+            const usuario = getNombreCompleto();
+            if ([partido.j1, partido.j2].includes(usuario)) return 'equipo1';
+            if ([partido.j3, partido.j4].includes(usuario)) return 'equipo2';
+            return null;
+        }
+
+        function esMarcadorSetValido(a, b) {
+            if (!Number.isInteger(a) || !Number.isInteger(b) || a < 0 || b < 0 || a > 7 || b > 7 || a === b) return false;
+            const ganador = Math.max(a, b);
+            const perdedor = Math.min(a, b);
+            return (ganador === 6 && perdedor <= 4) ||
+                   (ganador === 7 && (perdedor === 5 || perdedor === 6));
+        }
+
+        function leerSetResultado(numero) {
+            const izquierdaRaw = document.getElementById(`s${numero}-e1`).value.trim();
+            const derechaRaw = document.getElementById(`s${numero}-e2`).value.trim();
+            const vacio = izquierdaRaw === '' && derechaRaw === '';
+
+            if (vacio) return null;
+            if (izquierdaRaw === '' || derechaRaw === '') throw new Error(`Completá ambos valores del set ${numero}.`);
+
+            const izquierda = Number(izquierdaRaw);
+            const derecha = Number(derechaRaw);
+            if (!esMarcadorSetValido(izquierda, derecha)) {
+                throw new Error(`El marcador del set ${numero} no es válido.`);
+            }
+            return { izquierda, derecha, ganador: izquierda > derecha ? 'izquierda' : 'derecha' };
+        }
+
+        function calcularPosicionesRankingModalidad(modalidad) {
+            const jugadores = rankingData
+                .filter(j => String(j.modalidad || '').toLowerCase() === String(modalidad || '').toLowerCase())
+                .filter(j => Number(j.pj || j.partidosJugados || 0) > 0)
+                .sort(compararJugadoresRanking);
+
+            const posiciones = new Map();
+            jugadores.forEach((jugador, indice) => posiciones.set(String(jugador.nombre || '').trim().toLowerCase(), indice + 1));
+            return { posiciones, total: jugadores.length };
+        }
+
+        function mejorPosicionEquipo(nombres, modalidad) {
+            const { posiciones, total } = calcularPosicionesRankingModalidad(modalidad);
+            const fallback = total + 1 || 1;
+            return Math.min(...nombres.map(nombre =>
+                posiciones.get(String(nombre || '').trim().toLowerCase()) || fallback
+            ));
+        }
+
+        function redondearMultiplicadorHaciaArriba(valor) {
+            return Math.ceil(Number(valor || 1) * 10) / 10;
+        }
+
+        function calcularPuntosPartido(partido, equipoGanador) {
+            const equipo1 = [partido.j1, partido.j2];
+            const equipo2 = [partido.j3, partido.j4];
+            const posicion1 = mejorPosicionEquipo(equipo1, partido.modalidad);
+            const posicion2 = mejorPosicionEquipo(equipo2, partido.modalidad);
+
+            const posicionGanador = equipoGanador === 'equipo1' ? posicion1 : posicion2;
+            const posicionPerdedor = equipoGanador === 'equipo1' ? posicion2 : posicion1;
+
+            let multiplicadorVictoria = 1;
+            if (posicionGanador > posicionPerdedor) {
+                multiplicadorVictoria = redondearMultiplicadorHaciaArriba(
+                    1 + (posicionGanador - posicionPerdedor) / 100
+                );
+            }
+
+            let multiplicadorDerrota = 1;
+            if (posicionPerdedor < posicionGanador) {
+                multiplicadorDerrota = redondearMultiplicadorHaciaArriba(
+                    1 + (posicionGanador - posicionPerdedor) / 100
+                );
+            }
+
+            return {
+                puntosVictoria: Math.round(10 * multiplicadorVictoria),
+                puntosDerrota: Math.round(5 * multiplicadorDerrota),
+                multiplicadorVictoria,
+                multiplicadorDerrota,
+                posicionGanador,
+                posicionPerdedor
+            };
+        }
+
+        function estadisticasEquipoDesdeSets(setsCanonicos, equipo) {
+            const indicePropio = equipo === 'equipo1' ? 0 : 1;
+            const indiceRival = equipo === 'equipo1' ? 1 : 0;
+
+            let setsGanados = 0;
+            let setsPerdidos = 0;
+            let gamesGanados = 0;
+            let gamesPerdidos = 0;
+
+            setsCanonicos.forEach(set => {
+                const propios = Number(set[indicePropio] || 0);
+                const rivales = Number(set[indiceRival] || 0);
+                gamesGanados += propios;
+                gamesPerdidos += rivales;
+                if (propios > rivales) setsGanados++;
+                else setsPerdidos++;
+            });
+
+            return { setsGanados, setsPerdidos, gamesGanados, gamesPerdidos };
+        }
+
+        async function actualizarJugadorRankingResultado(nombre, modalidad, cambios) {
+            const jugador = rankingData.find(j =>
+                String(j.nombre || '').trim().toLowerCase() === String(nombre || '').trim().toLowerCase() &&
+                String(j.modalidad || '').toLowerCase() === String(modalidad || '').toLowerCase()
+            ) || rankingData.find(j =>
+                String(j.nombre || '').trim().toLowerCase() === String(nombre || '').trim().toLowerCase()
+            );
+
+            if (!jugador) {
+                console.warn('No se encontró usuario para actualizar ranking:', nombre);
+                return;
+            }
+
+            jugador.puntos = Math.max(0, Number(jugador.puntos || 0) + Number(cambios.puntos || 0));
+            jugador.pj = Number(jugador.pj || jugador.partidosJugados || 0) + 1;
+            jugador.partidosJugados = jugador.pj;
+            jugador.victorias = Number(jugador.victorias || jugador.partidosGanados || 0) + (cambios.gano ? 1 : 0);
+            jugador.partidosGanados = jugador.victorias;
+            jugador.derrotas = Number(jugador.derrotas || jugador.partidosPerdidos || 0) + (cambios.gano ? 0 : 1);
+            jugador.partidosPerdidos = jugador.derrotas;
+            jugador.setsGanados = Number(jugador.setsGanados || 0) + Number(cambios.setsGanados || 0);
+            jugador.setsPerdidos = Number(jugador.setsPerdidos || 0) + Number(cambios.setsPerdidos || 0);
+            jugador.gamesGanados = Number(jugador.gamesGanados || 0) + Number(cambios.gamesGanados || 0);
+            jugador.gamesPerdidos = Number(jugador.gamesPerdidos || 0) + Number(cambios.gamesPerdidos || 0);
+            jugador.diferenciaPartidos = jugador.victorias - jugador.derrotas;
+            jugador.diferenciaSets = jugador.setsGanados - jugador.setsPerdidos;
+            jugador.diferenciaGames = jugador.gamesGanados - jugador.gamesPerdidos;
+
+            if (firebaseAPI && (jugador.uid || jugador.id)) {
+                const uid = String(jugador.uid || jugador.id);
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', uid),
+                    {
+                        puntos: jugador.puntos,
+                        pj: jugador.pj,
+                        partidosJugados: jugador.pj,
+                        victorias: jugador.victorias,
+                        partidosGanados: jugador.victorias,
+                        derrotas: jugador.derrotas,
+                        partidosPerdidos: jugador.derrotas,
+                        setsGanados: jugador.setsGanados,
+                        setsPerdidos: jugador.setsPerdidos,
+                        diferenciaSets: jugador.diferenciaSets,
+                        gamesGanados: jugador.gamesGanados,
+                        gamesPerdidos: jugador.gamesPerdidos,
+                        diferenciaGames: jugador.diferenciaGames,
+                        diferenciaPartidos: jugador.diferenciaPartidos
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError('actualización de ranking', error));
+            }
         }
 
         function abrirModalResultado(id) {
-            partidoEnEdicion = partidosData.find(x => x.id === id); if(!partidoEnEdicion) return;
-            document.getElementById('res-eq1').innerText = `${partidoEnEdicion.j1} / ${partidoEnEdicion.j2}`;
-            document.getElementById('res-eq2').innerText = `${partidoEnEdicion.j3} / ${partidoEnEdicion.j4}`;
-            ['s1-e1','s1-e2','s2-e1','s2-e2'].forEach(id => document.getElementById(id).value = '');
+            partidoEnEdicion = partidosData.find(x => String(x.id) === String(id));
+            if (!partidoEnEdicion) return;
+
+            const lado = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
+            if (!lado) return alert('No formás parte de este partido.');
+
+            const propio = lado === 'equipo1'
+                ? [partidoEnEdicion.j1, partidoEnEdicion.j2]
+                : [partidoEnEdicion.j3, partidoEnEdicion.j4];
+            const rival = lado === 'equipo1'
+                ? [partidoEnEdicion.j3, partidoEnEdicion.j4]
+                : [partidoEnEdicion.j1, partidoEnEdicion.j2];
+
+            document.getElementById('res-eq1').innerText = propio.join(' / ');
+            document.getElementById('res-eq2').innerText = rival.join(' / ');
+            ['s1-e1','s1-e2','s2-e1','s2-e2','s3-e1','s3-e2'].forEach(inputId => {
+                document.getElementById(inputId).value = '';
+            });
             document.getElementById('modal-resultado').style.display = 'flex';
         }
 
-        function guardarResultado() {
-            if(['s1-e1','s1-e2','s2-e1','s2-e2'].some(id => isNaN(parseInt(document.getElementById(id).value)))) return alert("Carga sets obligatorios.");
-            partidoEnEdicion.estado = 'Finalizado'; 
-            partidoEnEdicion.resultado = `${document.getElementById('s1-e1').value}-${document.getElementById('s1-e2').value}, ${document.getElementById('s2-e1').value}-${document.getElementById('s2-e2').value}`;
-            
-            if(partidoEnEdicion.tipo === 'Competitivo') {
-                let user = getNombreCompleto(); let rank = rankingData.find(r => r.nombre === user && r.modalidad === partidoEnEdicion.modalidad);
-                if(!rank) rankingData.push({ id: Date.now(), nombre: user, puntos: 15, pj: 1, modalidad: partidoEnEdicion.modalidad }); else { rank.puntos+=15; rank.pj++; }
-                alert("Guardado. +15 Pts (Partido Competitivo).");
-            } else {
-                alert("Resultado guardado. (Partido Casual, no suma puntos).");
+        async function guardarResultado() {
+            if (!partidoEnEdicion) return;
+            if (partidoEnEdicion.puntosAplicados === true) {
+                return alert('Este resultado ya fue procesado.');
             }
-            
-            cerrarModales(); renderizarMisPartidos(); renderizarRanking();
+
+            try {
+                const set1 = leerSetResultado(1);
+                const set2 = leerSetResultado(2);
+                const set3 = leerSetResultado(3);
+
+                if (!set1 || !set2) throw new Error('Los dos primeros sets son obligatorios.');
+
+                let setsIzquierda = [set1, set2].filter(s => s.ganador === 'izquierda').length;
+                let setsDerecha = [set1, set2].filter(s => s.ganador === 'derecha').length;
+
+                if (setsIzquierda === 1 && setsDerecha === 1) {
+                    if (!set3) throw new Error('El tercer set es obligatorio porque el partido está 1-1.');
+                    if (set3.ganador === 'izquierda') setsIzquierda++;
+                    else setsDerecha++;
+                } else if (set3) {
+                    throw new Error('No corresponde cargar un tercer set cuando el partido terminó 2-0.');
+                }
+
+                if (setsIzquierda !== 2 && setsDerecha !== 2) {
+                    throw new Error('El resultado debe terminar 2-0 o 2-1.');
+                }
+
+                const ladoUsuario = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
+                const ganoLadoIzquierdo = setsIzquierda === 2;
+                const equipoGanadorCanonico = ladoUsuario === 'equipo1'
+                    ? (ganoLadoIzquierdo ? 'equipo1' : 'equipo2')
+                    : (ganoLadoIzquierdo ? 'equipo2' : 'equipo1');
+
+                const setsDesdeUsuario = [set1, set2, set3].filter(Boolean);
+                const setsCanonicos = setsDesdeUsuario.map(set => {
+                    if (ladoUsuario === 'equipo1') return [set.izquierda, set.derecha];
+                    return [set.derecha, set.izquierda];
+                });
+
+                partidoEnEdicion.estado = 'Finalizado';
+                partidoEnEdicion.resultadoSets = setsCanonicos;
+                partidoEnEdicion.resultado = setsCanonicos.map(set => `${set[0]}-${set[1]}`).join(', ');
+                partidoEnEdicion.equipoGanador = equipoGanadorCanonico;
+                partidoEnEdicion.cargadoPor = getNombreCompleto();
+                partidoEnEdicion.resultadoCargadoEn = new Date().toISOString();
+
+                if (partidoEnEdicion.tipo === 'Competitivo') {
+                    const calculo = calcularPuntosPartido(partidoEnEdicion, equipoGanadorCanonico);
+                    const equipo1Nombres = [partidoEnEdicion.j1, partidoEnEdicion.j2];
+                    const equipo2Nombres = [partidoEnEdicion.j3, partidoEnEdicion.j4];
+                    const ganadores = equipoGanadorCanonico === 'equipo1' ? equipo1Nombres : equipo2Nombres;
+                    const perdedores = equipoGanadorCanonico === 'equipo1' ? equipo2Nombres : equipo1Nombres;
+                    const statsEquipo1 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo1');
+                    const statsEquipo2 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo2');
+                    const statsGanadores = equipoGanadorCanonico === 'equipo1' ? statsEquipo1 : statsEquipo2;
+                    const statsPerdedores = equipoGanadorCanonico === 'equipo1' ? statsEquipo2 : statsEquipo1;
+
+                    partidoEnEdicion.puntosAplicados = true;
+                    partidoEnEdicion.puntosOtorgados = calculo.puntosVictoria;
+                    partidoEnEdicion.puntosDescontados = calculo.puntosDerrota;
+                    partidoEnEdicion.multiplicadorVictoria = calculo.multiplicadorVictoria;
+                    partidoEnEdicion.multiplicadorDerrota = calculo.multiplicadorDerrota;
+                    partidoEnEdicion.estadisticasEquipo1 = statsEquipo1;
+                    partidoEnEdicion.estadisticasEquipo2 = statsEquipo2;
+                    await guardarPartidoEnFirebase(partidoEnEdicion);
+
+                    await Promise.all([
+                        ...ganadores.map(nombre => actualizarJugadorRankingResultado(nombre, partidoEnEdicion.modalidad, {
+                            puntos: calculo.puntosVictoria,
+                            gano: true,
+                            ...statsGanadores
+                        })),
+                        ...perdedores.map(nombre => actualizarJugadorRankingResultado(nombre, partidoEnEdicion.modalidad, {
+                            puntos: -calculo.puntosDerrota,
+                            gano: false,
+                            ...statsPerdedores
+                        }))
+                    ]);
+
+                    alert(`Resultado guardado. Cada ganador suma ${calculo.puntosVictoria} puntos y cada perdedor pierde ${calculo.puntosDerrota}.`);
+                } else {
+                    partidoEnEdicion.puntosAplicados = true;
+                    await guardarPartidoEnFirebase(partidoEnEdicion);
+                    alert('Resultado guardado. Los partidos casuales no modifican el ranking.');
+                }
+
+                cerrarModales();
+                renderizarMisPartidos();
+                renderizarRanking();
+                renderizarBanner();
+            } catch (error) {
+                alert(error.message || 'No se pudo guardar el resultado.');
+            }
         }
 
         function abrirModalDenunciar() {
@@ -1639,6 +4248,7 @@ tr:hover td{background:#f9fafb}
                         await cargarOCrearPerfilUsuario(user);
                         mostrarAppAutenticada();
                         iniciarEscuchasFirebase();
+                    iniciarControlAutomaticoPartidosCompetitivos();
                         renderizarTodo();
                         window.actualizarHorariosDisponibles();
                     });
@@ -1822,6 +4432,7 @@ tr:hover td{background:#f9fafb}
 
             window.cerrarSesionUsuario = async function() {
                 if (!firebaseAPI) return;
+                clearInterval(controlPartidosInterval);
                 await firebaseAPI.signOut(firebaseAPI.auth);
                 cambiarVistaPrincipal("inicio");
             };
@@ -1898,6 +4509,8 @@ tr:hover td{background:#f9fafb}
                             nombre,
                             ubicacion: data.ubicacion || data.direccion || "",
                             contacto: data.contacto || data.whatsapp || data.telefono || "",
+                            fotoClub: data.fotoClub || "",
+                            imagen: data.fotoClub || data.imagen || data.imagenUrl || data.foto || data.imagenClub || data.portada || data.logo || data.logoUrl || "",
                             apertura,
                             cierre,
                             canchasIndoor,
@@ -1952,6 +4565,7 @@ tr:hover td{background:#f9fafb}
                     }));
                     renderizarTodo();
                     window.actualizarHorariosDisponibles();
+                    procesarEstadosPartidosCompetitivos();
                 }, (error) => logFirebaseError("lectura de partidos", error));
 
                 const unsubUsuarios = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users"), (snapshot) => {
