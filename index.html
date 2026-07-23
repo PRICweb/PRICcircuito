@@ -3972,7 +3972,7 @@ tr:hover td{background:#f9fafb}
             ) || null;
         }
 
-        function slotPartidoUnirseHtml(partido, slot) {
+        function slotPartidoUnirseHtml(partido, slot, invitacionUsuario = null) {
             const invitacion = invitacionPendientePorSlot(partido, slot);
             if (invitacion) {
                 const esInvitadoActual =
@@ -3983,9 +3983,25 @@ tr:hover td{background:#f9fafb}
             }
 
             const nombre = String(partido[slot] || 'Libre').trim();
-            return nombre === 'Libre'
-                ? `<div class="partido-unirse-slot libre">Libre</div>`
-                : `<div class="partido-unirse-slot">Ocupado</div>`;
+            if (nombre === 'Libre') {
+                return `<div class="partido-unirse-slot libre">Libre</div>`;
+            }
+
+            // Si el usuario fue invitado, en su mismo equipo mostramos el nombre
+            // real del jugador ya anotado en vez de "Ocupado".
+            if (invitacionUsuario) {
+                const slotReservado = String(invitacionUsuario.slot || '');
+                const equipoReservado = ['j1', 'j2'].includes(slotReservado) ? 'equipo1' : 'equipo2';
+                const slotMismoEquipo = equipoReservado === 'equipo1'
+                    ? ['j1', 'j2'].includes(slot)
+                    : ['j3', 'j4'].includes(slot);
+
+                if (slotMismoEquipo) {
+                    return `<div class="partido-unirse-slot">${escaparHtmlClub(nombre)}</div>`;
+                }
+            }
+
+            return `<div class="partido-unirse-slot">Ocupado</div>`;
         }
 
         function cuerpoPartidoUnirseHtml(p, invitacionUsuario) {
@@ -3995,16 +4011,16 @@ tr:hover td{background:#f9fafb}
                     <div class="partido-unirse-equipos">
                         <div class="partido-unirse-equipo">
                             <span class="partido-unirse-label">Equipo 1</span>
-                            ${slotPartidoUnirseHtml(p, 'j1')}
-                            ${slotPartidoUnirseHtml(p, 'j2')}
+                            ${slotPartidoUnirseHtml(p, 'j1', invitacionUsuario)}
+                            ${slotPartidoUnirseHtml(p, 'j2', invitacionUsuario)}
                         </div>
 
                         <div class="partido-unirse-vs">VS</div>
 
                         <div class="partido-unirse-equipo">
                             <span class="partido-unirse-label">Equipo 2</span>
-                            ${slotPartidoUnirseHtml(p, 'j3')}
-                            ${slotPartidoUnirseHtml(p, 'j4')}
+                            ${slotPartidoUnirseHtml(p, 'j3', invitacionUsuario)}
+                            ${slotPartidoUnirseHtml(p, 'j4', invitacionUsuario)}
                         </div>
                     </div>
 
