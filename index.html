@@ -1721,6 +1721,192 @@ tr:hover td{background:#f9fafb}
 }
 </style>
 
+
+<style id="notificaciones-amigos-salir-css">
+.notif-header-btn{position:relative!important}
+.notif-header-emoji{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  font-size:18px!important;
+  line-height:1!important;
+  filter:grayscale(1) brightness(0);
+}
+.notif-header-badge{
+  position:absolute;
+  top:-5px;
+  right:-5px;
+  min-width:19px;
+  height:19px;
+  padding:0 5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid var(--surface);
+  border-radius:999px;
+  background:var(--danger);
+  color:#fff;
+  font-size:.63rem!important;
+  font-weight:900;
+  line-height:1;
+}
+.notif-marcar-todas{
+  width:30px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--surface);
+  color:#000;
+  cursor:pointer;
+  font-weight:900;
+}
+.notificaciones-vista-lista{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.notificacion-vista-item{
+  position:relative;
+  padding:13px 14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  color:var(--text);
+  cursor:default;
+}
+.notificacion-vista-item.clickeable{cursor:pointer}
+.notificacion-vista-item.no-leida{
+  border-color:#98a2b3;
+  background:var(--surface-2);
+}
+.notificacion-vista-item h4{
+  margin:0 0 4px;
+  font-size:.83rem;
+}
+.notificacion-vista-item p{
+  margin:0;
+  color:var(--muted);
+  font-size:.76rem;
+  line-height:1.42;
+}
+.notificacion-punto{
+  position:absolute;
+  top:11px;
+  right:11px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--primary);
+}
+.amigos-acordeon{
+  overflow:hidden;
+  margin-bottom:10px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--surface);
+}
+.amigos-acordeon>summary{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:54px;
+  padding:12px 14px;
+  color:var(--text);
+  font-size:.82rem;
+  font-weight:850;
+  cursor:pointer;
+}
+.amigos-acordeon>summary::-webkit-details-marker{display:none}
+.amigos-summary-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.amigos-contador{
+  min-width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:850;
+}
+.amigos-acordeon-flecha{
+  color:var(--muted);
+  transition:transform .16s ease;
+}
+.amigos-acordeon[open] .amigos-acordeon-flecha{transform:rotate(180deg)}
+.amigos-acordeon-body{
+  padding:12px 13px 13px;
+  border-top:1px solid var(--line);
+}
+.amigos-acordeon-body .input-form{margin:0!important}
+.partido-salir-btn{
+  min-height:36px;
+  padding:7px 11px;
+  border:1px solid #fecdca;
+  border-radius:10px;
+  background:#fffafa;
+  color:var(--danger);
+  font-size:.72rem;
+  font-weight:850;
+  cursor:pointer;
+}
+.partido-salir-btn:hover{background:#fff1f0}
+.partido-minimal-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:7px;
+}
+</style>
+
+
+<style id="invitacion-pendiente-refuerzo-css">
+.invitacion-slot-card{
+  border:1px solid #98a2b3!important;
+  background:#f9fafb!important;
+}
+.invitacion-slot-remove{
+  border:1px solid var(--line)!important;
+  color:#000!important;
+  font-weight:900!important;
+}
+</style>
+
+<style id="campana-outline-fix-css">
+.notif-header-btn .notif-header-svg{
+  width:16px!important;height:16px!important;display:block!important;
+  fill:none!important;stroke:#000!important;stroke-width:1.85!important;
+  stroke-linecap:round!important;stroke-linejoin:round!important;
+}
+.notif-header-btn .notif-header-emoji{display:none!important}
+</style>
+<style id="invitacion-visual-fix-css">
+.invitacion-slot-card{
+  width:100%!important;max-width:none!important;min-height:42px!important;
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:8px!important;padding:7px 7px 7px 11px!important;
+  border:1px solid #667085!important;border-radius:12px!important;background:#f9fafb!important;
+}
+.invitacion-slot-info{flex:1!important;min-width:0!important}
+.invitacion-slot-remove{
+  margin-left:auto!important;width:27px!important;height:27px!important;min-width:27px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  border:1px solid #d0d5dd!important;border-radius:999px!important;background:#fff!important;
+  color:#101828!important;font-size:1rem!important;font-weight:900!important;cursor:pointer!important;
+}
+</style>
 </head>
 <body>
 
@@ -1804,11 +1990,12 @@ tr:hover td{background:#f9fafb}
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                     </button>
-                    <button class="icon-btn" onclick="cambiarVistaPrincipal('perfil')" title="Mi Perfil" aria-label="Mi Perfil">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M4 21a8 8 0 0 1 16 0"/>
+                    <button class="icon-btn notif-header-btn" onclick="cambiarVistaPrincipal('notificaciones')" title="Notificaciones" aria-label="Notificaciones">
+                        <svg class="notif-header-svg" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
+                            <path d="M10 21h4"/>
                         </svg>
+                        <span id="badge-notif" class="notif-header-badge" style="display:none;">0</span>
                     </button>
                     <button class="icon-btn header-menu-icon" onclick="cambiarVistaPrincipal('menu')" title="Opciones" aria-label="Opciones">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1820,13 +2007,6 @@ tr:hover td{background:#f9fafb}
                 </div>
             </div>
 
-            <details id="notificaciones-container" class="cancha-bg">
-                <summary>
-                    <div style="display:flex; align-items:center; gap:8px;">🔔 Notificaciones <span id="badge-notif" style="background:var(--danger); color:white; border-radius:50%; padding:2px 8px; font-size:0.8em; display:none;">0</span></div>
-                </summary>
-                <div class="details-content scrollable" id="lista-notificaciones"></div>
-            </details>
-
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
 
             <h4 style="color: var(--text-muted); margin-bottom: 10px; text-align: center;">Accesos rápidos</h4>
@@ -1837,6 +2017,16 @@ tr:hover td{background:#f9fafb}
                 <div class="tarjeta-menu cancha-bg card-academia" onclick="cambiarVistaPrincipal('academia')"><span style="font-size: 2.2em;">🎓</span> Academia</div>
                 <div class="tarjeta-menu cancha-bg card-torneos" onclick="cambiarVistaPrincipal('torneos')"><span style="font-size: 2.2em;">🏅</span> Torneos</div>
             </div>
+        </div>
+
+        <!-- VISTA NOTIFICACIONES -->
+        <div id="vista-notificaciones" class="vista-interna">
+            <div class="header-vista">
+                <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
+                <h3 style="margin:0;">🔔 Notificaciones</h3>
+                <button type="button" class="notif-marcar-todas" onclick="marcarNotificacionesLeidas()" title="Marcar todas como leídas">✓</button>
+            </div>
+            <div id="lista-notificaciones" class="notificaciones-vista-lista"></div>
         </div>
 
         <!-- VISTA RANKING -->
@@ -2056,39 +2246,67 @@ tr:hover td{background:#f9fafb}
                 <div style="width:30px;"></div>
             </div>
 
-            <section class="amigos-buscador-card">
-                <label for="input-buscar-amigo">Buscar personas</label>
-                <input
-                    type="text"
-                    id="input-buscar-amigo"
-                    class="input-form"
-                    placeholder="Escribí un DNI o nombre"
-                    autocomplete="off"
-                    oninput="renderizarResultadosBusquedaAmigos()">
-                <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
-            </section>
-
-            <section id="seccion-solicitudes-amistad" class="amigos-seccion">
-                <div class="amigos-seccion-titulo">
-                    <h4>Solicitudes recibidas</h4>
-                    <span id="contador-solicitudes-amistad">0</span>
+            <details class="amigos-acordeon" open>
+                <summary>
+                    <span>Buscar personas</span>
+                    <span class="amigos-acordeon-flecha">⌄</span>
+                </summary>
+                <div class="amigos-acordeon-body">
+                    <input
+                        type="text"
+                        id="input-buscar-amigo"
+                        class="input-form"
+                        placeholder="Escribí un DNI o nombre"
+                        autocomplete="off"
+                        oninput="renderizarResultadosBusquedaAmigos()">
+                    <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
                 </div>
-                <div id="lista-solicitudes-amistad" class="amigos-lista"></div>
-            </section>
+            </details>
 
-            <section class="amigos-seccion">
-                <div class="amigos-seccion-titulo">
-                    <h4>Mis amigos</h4>
-                    <span id="contador-amigos">0</span>
+            <details class="amigos-acordeon" id="acordeon-solicitudes-recibidas">
+                <summary>
+                    <span>Solicitudes recibidas</span>
+                    <span class="amigos-summary-right">
+                        <span id="contador-solicitudes-amistad" class="amigos-contador">0</span>
+                        <span class="amigos-acordeon-flecha">⌄</span>
+                    </span>
+                </summary>
+                <div class="amigos-acordeon-body">
+                    <div id="lista-solicitudes-amistad" class="amigos-lista"></div>
                 </div>
-                <div id="lista-amigos" class="amigos-lista"></div>
-            </section>
+            </details>
+
+            <details class="amigos-acordeon" id="acordeon-solicitudes-enviadas">
+                <summary>
+                    <span>Solicitudes enviadas</span>
+                    <span class="amigos-summary-right">
+                        <span id="contador-solicitudes-enviadas" class="amigos-contador">0</span>
+                        <span class="amigos-acordeon-flecha">⌄</span>
+                    </span>
+                </summary>
+                <div class="amigos-acordeon-body">
+                    <div id="lista-solicitudes-enviadas" class="amigos-lista"></div>
+                </div>
+            </details>
+
+            <details class="amigos-acordeon" id="acordeon-mis-amigos" open>
+                <summary>
+                    <span>Mis amigos</span>
+                    <span class="amigos-summary-right">
+                        <span id="contador-amigos" class="amigos-contador">0</span>
+                        <span class="amigos-acordeon-flecha">⌄</span>
+                    </span>
+                </summary>
+                <div class="amigos-acordeon-body">
+                    <div id="lista-amigos" class="amigos-lista"></div>
+                </div>
+            </details>
         </div>
 
         <!-- VISTA PERFIL -->
         <div id="vista-perfil" class="vista-interna">
             <div class="header-vista">
-                <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
+                <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">⬅</button>
                 <h3 style="margin: 0;">👤 Mi Perfil</h3>
                 <div style="width: 30px;"></div>
             </div>
@@ -2133,6 +2351,7 @@ tr:hover td{background:#f9fafb}
                 <div style="width: 30px;"></div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('perfil')">👤 Mi perfil</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
                 <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
@@ -2303,6 +2522,7 @@ tr:hover td{background:#f9fafb}
         let notificacionesData = [];
         let amigosData = [];
         let solicitudesAmistadData = [];
+        let solicitudesAmistadEnviadasData = [];
         let clubesData = [];
         let rankingData = [];
         let partidosData = [];
@@ -2388,24 +2608,50 @@ tr:hover td{background:#f9fafb}
 
         function renderizarNotificaciones() {
             const container = document.getElementById('lista-notificaciones');
+            const badge = document.getElementById('badge-notif');
             const noLeidas = notificacionesData.filter(n => !n.leida).length;
-            document.getElementById('badge-notif').style.display = noLeidas > 0 ? 'inline-block' : 'none';
-            document.getElementById('badge-notif').innerText = noLeidas;
 
-            container.innerHTML = notificacionesData.length ? notificacionesData.map(n => {
-                let mark = n.leida ? '' : '<span style="color:#fca5a5; font-size:1.5em; line-height:0.5; vertical-align:middle; margin-right:5px;">•</span>';
-                const esInvitacionPartido = n.tipo === 'invitacion_partido';
-                const accion = n.accion || (esInvitacionPartido ? 'unirse' : '');
-                const clickeable = Boolean(accion);
-                let actionAttr = clickeable ? `cursor:pointer;` : '';
-                const idSeguro = String(n.id || '').replace(/'/g, "\\'");
-                const partidoSeguro = String(n.partidoId || '').replace(/'/g, "\\'");
-                let clickEvt = clickeable
-                    ? `onclick="ejecutarAccionNotificacion('${accion}', '${idSeguro}', '${partidoSeguro}')"`
-                    : '';
-                return `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.2); font-size:0.9em; color:${n.leida ? 'var(--text-light)' : 'white'}; ${actionAttr}" ${clickEvt}>${mark}${n.texto}</div>`;
-            }).join('') + (noLeidas > 0 ? `<button style="width:100%; background:none; border:none; color:white; font-size:0.85em; padding:10px; cursor:pointer; font-weight:bold;" onclick="marcarNotificacionesLeidas()">Marcar leídas</button>` : '') 
-            : '<p style="color:var(--text-light); font-size:0.9em; text-align:center;">Sin notificaciones.</p>';
+            if (badge) {
+                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
+                badge.innerText = noLeidas > 99 ? '99+' : noLeidas;
+            }
+
+            if (!container) return;
+
+            container.innerHTML = notificacionesData.length
+                ? notificacionesData.map(n => {
+                    const esInvitacionPartido = n.tipo === 'invitacion_partido';
+                    const accion = n.accion || (esInvitacionPartido ? 'unirse' : '');
+                    const clickeable = Boolean(accion);
+                    const idSeguro = String(n.id || '').replace(/'/g, "\\'");
+                    const partidoSeguro = String(n.partidoId || '').replace(/'/g, "\\'");
+                    const clickEvt = clickeable
+                        ? `onclick="ejecutarAccionNotificacion('${accion}', '${idSeguro}', '${partidoSeguro}')"`
+                        : `onclick="marcarNotificacionIndividualLeida('${idSeguro}')"`;
+
+                    return `
+                        <article class="notificacion-vista-item ${n.leida ? '' : 'no-leida'} ${clickeable ? 'clickeable' : ''}" ${clickEvt}>
+                            ${n.leida ? '' : '<span class="notificacion-punto"></span>'}
+                            <h4>${escaparHtmlClub(n.titulo || 'Notificación')}</h4>
+                            <p>${escaparHtmlClub(n.texto || '')}</p>
+                        </article>`;
+                }).join('')
+                : '<p style="color:var(--muted);font-size:.85rem;text-align:center;">No tenés notificaciones.</p>';
+        }
+
+        async function marcarNotificacionIndividualLeida(notifId) {
+            const notif = notificacionesData.find(n => String(n.id) === String(notifId));
+            if (!notif || notif.leida) return;
+            notif.leida = true;
+            renderizarNotificaciones();
+
+            if (firebaseAPI && usuarioActual?.uid) {
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, 'users', usuarioActual.uid, 'notificaciones', String(notifId)),
+                    { leida: true, actualizadoEn: firebaseAPI.serverTimestamp() },
+                    { merge: true }
+                ).catch(error => logFirebaseError('marcar notificación como leída', error));
+            }
         }
 
         function marcarNotificacionesLeidas() {
@@ -2526,6 +2772,7 @@ tr:hover td{background:#f9fafb}
             document.getElementById(`vista-${vista}`).style.display = 'block';
             window.scrollTo(0, 0); 
             if (vista === 'inicio') { renderizarNotificaciones(); renderizarBanner(); }
+            else if (vista === 'notificaciones') renderizarNotificaciones();
             else if (vista === 'ranking') renderizarRanking();
             else if (vista === 'partidos') { renderizarMisPartidos(); renderizarPartidosAbiertos(); }
             else if (vista === 'torneos') renderizarTorneos();
@@ -3113,7 +3360,10 @@ tr:hover td{background:#f9fafb}
         }
 
         function jugadorPartidoMinimal(nombre, partido = null, slot = '') {
-            const invitacion = partido && slot ? invitacionPendientePorSlot(partido, slot) : null;
+            const valorActual = String(nombre || 'Libre').trim() || 'Libre';
+            const invitacion = partido && slot && valorActual === 'Libre'
+                ? invitacionPendientePorSlot(partido, slot)
+                : null;
             if (invitacion) {
                 const puedeBorrar = String(invitacion.invitadoPor || '').trim().toLowerCase() ===
                     getNombreCompleto().trim().toLowerCase();
@@ -3131,7 +3381,7 @@ tr:hover td{background:#f9fafb}
                     </div>`;
             }
 
-            const valor = String(nombre || 'Libre').trim() || 'Libre';
+            const valor = valorActual;
             if (valor === 'Libre') {
                 return `<div class="partido-minimal-jugador libre"><span class="partido-minimal-nombre">Lugar libre</span></div>`;
             }
@@ -3180,7 +3430,7 @@ tr:hover td{background:#f9fafb}
             if (opciones.resultado) {
                 accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
             } else if (invitacionUsuario) {
-                accion = `<span class="partido-invitacion-badge">Tenés una invitación pendiente</span>`;
+                accion = `<span class="partido-invitacion-badge">Te han invitado</span>`;
             } else if (puedeInvitar) {
                 accion = `<button class="btn partido-minimal-action" onclick='abrirModalInvitarAmigoPartido(${JSON.stringify(partido.id)})'>Invitar un amigo</button>`;
             } else if (completo) {
@@ -3189,7 +3439,12 @@ tr:hover td{background:#f9fafb}
 
             const estadoHistorial = opciones.historial
                 ? `<span class="partido-minimal-status">${escaparHtmlClub(partido.resultado || 'Amistoso')}</span>`
-                : accion;
+                : (opciones.invitar
+                    ? `<div class="partido-minimal-actions">
+                        ${accion}
+                        <button class="partido-salir-btn" onclick="window.salirDePartidoPendiente('${escaparAtributoJs(partido.id)}')">Salir del partido</button>
+                       </div>`
+                    : accion);
 
             return `
                 <article class="partido-minimal-card">
@@ -3224,41 +3479,162 @@ tr:hover td{background:#f9fafb}
                 </article>`;
         }
 
-        async function cancelarInvitacionPartido(partidoId, slot) {
+        async function salirDePartidoPendiente(partidoId) {
+            const api = window.firebaseAPI;
+            const guardar = window.guardarPartidoEnFirebase;
             const partido = partidosData.find(p => String(p.id) === String(partidoId));
-            if (!partido) return;
+            const usuario = getNombreCompleto();
+
+            if (!partido) return alert('No se encontró el partido.');
+            if (!['Buscando Rival', 'Partido Confirmado'].includes(partido.estado)) {
+                return alert('Este partido ya no permite salir desde Pendientes.');
+            }
+            if (!api || typeof guardar !== 'function') {
+                return alert('Firebase todavía no está listo. Probá nuevamente.');
+            }
+
+            const slotUsuario = ['j1','j2','j3','j4'].find(slot =>
+                String(partido[slot] || '').trim().toLowerCase() === usuario.trim().toLowerCase()
+            );
+            if (!slotUsuario) return alert('No figurás como jugador de este partido.');
+            if (!confirm('¿Querés salir de este partido?')) return;
+
+            const original = {
+                j1: partido.j1,
+                j2: partido.j2,
+                j3: partido.j3,
+                j4: partido.j4,
+                estado: partido.estado,
+                jugadoresUid: [...(partido.jugadoresUid || [])],
+                invitacionesPendientes: [...obtenerInvitacionesPendientesPartido(partido)]
+            };
+
+            const invitacionesACancelar = obtenerInvitacionesPendientesPartido(partido).filter(inv =>
+                String(inv.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
+                String(inv.invitadoPor || '').trim().toLowerCase() === usuario.trim().toLowerCase()
+            );
+
+            // Quitar al jugador y liberar sus invitaciones antes de persistir.
+            partido[slotUsuario] = 'Libre';
+            partido.jugadoresUid = (partido.jugadoresUid || []).filter(uid =>
+                String(uid) !== String(usuarioActual?.uid || '')
+            );
+            partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido).filter(inv =>
+                !invitacionesACancelar.some(cancelada => String(cancelada.id) === String(inv.id))
+            );
+            partido.estado = 'Buscando Rival';
+
+            const quedanJugadores = [partido.j1, partido.j2, partido.j3, partido.j4]
+                .some(nombre => nombre && nombre !== 'Libre');
+
+            // Actualización visual inmediata.
+            renderizarMisPartidos();
+            renderizarPartidosAbiertos();
+            renderizarBanner();
+
+            try {
+                if (quedanJugadores) {
+                    // Usa la _firestorePath real del documento.
+                    await guardar(partido);
+                } else {
+                    // Si no queda nadie se elimina el partido completo.
+                    if (!partido._firestorePath) throw new Error('No se encontró la ruta real del partido.');
+                    const partes = String(partido._firestorePath).split('/').filter(Boolean);
+                    await api.deleteDoc(api.doc(api.db, ...partes));
+
+                    const reservaId = partido.reservaId || partido.reserva?.id || '';
+                    if (partido.reservaPath) {
+                        const partesReserva = String(partido.reservaPath).split('/').filter(Boolean);
+                        await api.deleteDoc(api.doc(api.db, ...partesReserva));
+                    } else if (reservaId) {
+                        const partesPartido = String(partido._firestorePath).split('/').filter(Boolean);
+                        const clubDocId = partesPartido[1] || '';
+                        if (clubDocId) {
+                            await api.deleteDoc(
+                                api.doc(api.db, 'clubs', clubDocId, 'reservas', String(reservaId))
+                            ).catch(() => {});
+                        }
+                    }
+
+                    partidosData = partidosData.filter(p => String(p.id) !== String(partido.id));
+                }
+
+                // Avisar a los amigos cuyas invitaciones se cancelaron al salir.
+                await Promise.all(invitacionesACancelar.filter(inv => inv.uid).map(inv => {
+                    const notifId = `invitacion-cancelada-salida-${partido.id}-${inv.slot}`;
+                    return api.setDoc(
+                        api.doc(api.db, 'users', String(inv.uid), 'notificaciones', notifId),
+                        {
+                            id: notifId,
+                            tipo: 'invitacion_partido_cancelada',
+                            titulo: 'Invitación cancelada',
+                            texto: `${usuario} salió del partido y la invitación quedó cancelada.`,
+                            partidoId: String(partido.id),
+                            leida: false,
+                            creadoEn: api.serverTimestamp()
+                        },
+                        { merge: true }
+                    );
+                }));
+
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+                renderizarBanner();
+            } catch (error) {
+                Object.assign(partido, original);
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+                renderizarBanner();
+                console.error('Error al salir del partido:', error);
+                alert('No se pudo salir del partido. Revisá la conexión o las reglas de Firestore.');
+            }
+        }
+
+        window.salirDePartidoPendiente = salirDePartidoPendiente;
+
+        async function cancelarInvitacionPartido(partidoId, slot) {
+            const api = window.firebaseAPI;
+            const guardar = window.guardarPartidoEnFirebase;
+            const partido = partidosData.find(p => String(p.id) === String(partidoId));
+            if (!partido || !api || typeof guardar !== 'function') return;
 
             const invitacion = invitacionPendientePorSlot(partido, slot);
             if (!invitacion) return;
 
-            if (String(invitacion.invitadoPor || '').trim().toLowerCase() !==
-                getNombreCompleto().trim().toLowerCase()) return;
+            const puedeBorrar = String(invitacion.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
+                String(invitacion.invitadoPor || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
+            if (!puedeBorrar) return;
 
-            partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido)
-                .filter(inv => inv.slot !== slot);
-
-            await guardarPartidoEnFirebase(partido);
-
-            if (firebaseAPI && invitacion.uid) {
-                const notifId = `invitacion-cancelada-${partido.id}-${slot}`;
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, 'users', String(invitacion.uid), 'notificaciones', notifId),
-                    {
-                        id: notifId,
-                        tipo: 'invitacion_partido_cancelada',
-                        titulo: 'Invitación cancelada',
-                        texto: `${getNombreCompleto()} canceló la invitación al partido del ${partido.fecha} a las ${partido.hora}.`,
-                        partidoId: String(partido.id),
-                        leida: false,
-                        creadoEn: firebaseAPI.serverTimestamp()
-                    },
-                    { merge: true }
-                ).catch(error => logFirebaseError('cancelación de invitación', error));
-            }
-
+            const anteriores = [...obtenerInvitacionesPendientesPartido(partido)];
+            partido.invitacionesPendientes = anteriores.filter(inv => inv.id !== invitacion.id);
             renderizarMisPartidos();
             renderizarPartidosAbiertos();
             renderizarBanner();
+
+            try {
+                await guardar(partido);
+                if (invitacion.uid) {
+                    const notifId = `invitacion-cancelada-${partido.id}-${slot}`;
+                    await api.setDoc(
+                        api.doc(api.db, 'users', String(invitacion.uid), 'notificaciones', notifId),
+                        {
+                            id: notifId,
+                            tipo: 'invitacion_partido_cancelada',
+                            titulo: 'Invitación cancelada',
+                            texto: `${getNombreCompleto()} canceló la invitación al partido del ${partido.fecha} a las ${partido.hora}.`,
+                            partidoId: String(partido.id),
+                            leida: false,
+                            creadoEn: api.serverTimestamp()
+                        }, { merge: true }
+                    );
+                }
+            } catch (error) {
+                partido.invitacionesPendientes = anteriores;
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+                console.error(error);
+                alert('No se pudo cancelar la invitación.');
+            }
         }
 
         function abrirModalInvitarAmigoPartido(id) {
@@ -3305,68 +3681,85 @@ tr:hover td{background:#f9fafb}
         }
 
         async function confirmarInvitacionAmigoPartido(amigoId) {
+            const api = window.firebaseAPI;
+            const guardar = window.guardarPartidoEnFirebase;
             const partido = partidosData.find(p => String(p.id) === String(partidoInvitacionActualId));
             const amigo = amigosData.find(a =>
                 String(a.id || '') === String(amigoId) ||
                 String(a.uid || '') === String(amigoId) ||
                 String(a.usuarioUid || '') === String(amigoId)
             );
+
             if (!partido || !amigo) return alert('No se pudo completar la invitación.');
+            if (!api || typeof guardar !== 'function') return alert('Firebase todavía no está listo. Probá nuevamente.');
 
             const equipos = obtenerEquiposPartidoParaUsuario(partido, getNombreCompleto());
-            if (!equipos.slotLibrePropio) {
+            const slotReservado = equipos.slotLibrePropio;
+            if (!slotReservado) {
                 cerrarModalInvitarAmigoPartido();
                 return alert('Tu equipo ya no tiene un lugar disponible.');
             }
 
             const nombreAmigo = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
-            const uidAmigo = amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || null;
+            const uidAmigo = amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || '';
 
-            const yaInvitado = obtenerInvitacionesPendientesPartido(partido).some(inv =>
-                String(inv.uid || '') === String(uidAmigo || '') ||
-                String(inv.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
-            );
-            if (yaInvitado) return alert('Este amigo ya tiene una invitación pendiente.');
-
-            partido.invitacionesPendientes = [
-                ...obtenerInvitacionesPendientesPartido(partido),
-                {
-                    id: `${partido.id}-${equipos.slotLibrePropio}-${Date.now()}`,
-                    slot: equipos.slotLibrePropio,
-                    nombre: nombreAmigo,
-                    uid: uidAmigo ? String(uidAmigo) : '',
-                    invitadoPor: getNombreCompleto(),
-                    invitadoPorUid: usuarioActual?.uid || '',
-                    creadoEnCliente: new Date().toISOString()
-                }
-            ];
-
-            await guardarPartidoEnFirebase(partido);
-
-            if (firebaseAPI && uidAmigo) {
-                const notifId = `partido-${partido.id}-${equipos.slotLibrePropio}`;
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, 'users', String(uidAmigo), 'notificaciones', notifId),
-                    {
-                        id: notifId,
-                        tipo: 'invitacion_partido',
-                        accion: 'unirse',
-                        titulo: 'Invitación a un partido',
-                        texto: `Has sido invitado por ${getNombreCompleto()} para jugar en ${partido.club}, el ${partido.fecha} a las ${partido.hora}.`,
-                        partidoId: String(partido.id),
-                        slotReservado: equipos.slotLibrePropio,
-                        leida: false,
-                        creadoEn: firebaseAPI.serverTimestamp()
-                    },
-                    { merge: true }
-                ).catch(error => logFirebaseError('notificación de invitación', error));
+            if ([partido.j1, partido.j2, partido.j3, partido.j4].some(n => String(n || '').trim().toLowerCase() === nombreAmigo.toLowerCase())) {
+                return alert('Este amigo ya forma parte del partido.');
             }
 
+            if (obtenerInvitacionesPendientesPartido(partido).some(inv =>
+                (uidAmigo && String(inv.uid || '') === String(uidAmigo)) ||
+                String(inv.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+            )) return alert('Este amigo ya tiene una invitación pendiente.');
+
+            const invitacion = {
+                id: `${partido.id}-${slotReservado}-${Date.now()}`,
+                slot: slotReservado,
+                nombre: nombreAmigo,
+                uid: uidAmigo ? String(uidAmigo) : '',
+                invitadoPor: getNombreCompleto(),
+                invitadoPorUid: usuarioActual?.uid || '',
+                estado: 'pendiente',
+                creadoEnCliente: new Date().toISOString()
+            };
+
+            partido.invitacionesPendientes = [...obtenerInvitacionesPendientesPartido(partido), invitacion];
+
+            // Se ve inmediatamente en Pendientes como rectángulo con X.
             cerrarModalInvitarAmigoPartido();
             renderizarMisPartidos();
             renderizarPartidosAbiertos();
             renderizarBanner();
-            alert(`El lugar quedó reservado para ${nombreAmigo}.`);
+
+            try {
+                await guardar(partido);
+                if (uidAmigo) {
+                    const notifId = `partido-${partido.id}-${slotReservado}`;
+                    await api.setDoc(
+                        api.doc(api.db, 'users', String(uidAmigo), 'notificaciones', notifId),
+                        {
+                            id: notifId,
+                            tipo: 'invitacion_partido',
+                            accion: 'unirse',
+                            titulo: 'Invitación a un partido',
+                            texto: `Has sido invitado por ${getNombreCompleto()} para jugar en ${partido.club}, el ${partido.fecha} a las ${partido.hora}.`,
+                            partidoId: String(partido.id),
+                            slotReservado,
+                            leida: false,
+                            creadoEn: api.serverTimestamp()
+                        },
+                        { merge: true }
+                    );
+                }
+                alert(`El lugar quedó reservado para ${nombreAmigo}.`);
+            } catch (error) {
+                partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido).filter(inv => inv.id !== invitacion.id);
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+                renderizarBanner();
+                console.error(error);
+                alert('No se pudo guardar la invitación.');
+            }
         }
 
         function fechaHoraPartidoMs(partido) {
@@ -3440,9 +3833,10 @@ tr:hover td{background:#f9fafb}
         }
 
         async function borrarRutaFirestore(ruta) {
+            const api = window.firebaseAPI;
             const partes = String(ruta || '').split('/').filter(Boolean);
-            if (!firebaseAPI || partes.length < 2 || partes.length % 2 !== 0) return;
-            await firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, ...partes))
+            if (!api || partes.length < 2 || partes.length % 2 !== 0) return;
+            await api.deleteDoc(api.doc(api.db, ...partes))
                 .catch(error => logFirebaseError(`borrado ${ruta}`, error));
         }
 
@@ -3625,7 +4019,7 @@ tr:hover td{background:#f9fafb}
                             title="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
                             aria-label="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
                             onclick="event.stopPropagation();${invitacionUsuario
-                                ? `unirsePartido('${idSeguro}')`
+                                ? `window.unirsePartido('${idSeguro}')`
                                 : `abrirModalSeleccionarEquipo('${idSeguro}')`}">+</button>
                     </div>
                 </div>`;
@@ -3676,7 +4070,7 @@ tr:hover td{background:#f9fafb}
                             <span>·</span>
                             <span>${escaparHtmlClub(p.hora || '')}</span>
                         </div>
-                        ${invitacionUsuario ? '<span class="partido-unirse-invitado">Invitación para vos</span>' : ''}
+                        ${invitacionUsuario ? '<span class="partido-unirse-invitado">Te han invitado</span>' : ''}
                     </div>`;
 
                 if (invitacionUsuario) {
@@ -3751,6 +4145,9 @@ tr:hover td{background:#f9fafb}
 
         function solicitudPendienteConUsuario(uid) {
             return solicitudesAmistadData.some(s =>
+                String(s.deUid || '') === String(uid) ||
+                String(s.paraUid || '') === String(uid)
+            ) || solicitudesAmistadEnviadasData.some(s =>
                 String(s.deUid || '') === String(uid) ||
                 String(s.paraUid || '') === String(uid)
             );
@@ -3828,6 +4225,30 @@ tr:hover td{background:#f9fafb}
                 : `<p class="amigos-vacio">No tenés solicitudes pendientes.</p>`;
         }
 
+        function renderizarSolicitudesEnviadas() {
+            const lista = document.getElementById('lista-solicitudes-enviadas');
+            const contador = document.getElementById('contador-solicitudes-enviadas');
+            if (!lista || !contador) return;
+
+            contador.textContent = solicitudesAmistadEnviadasData.length;
+            lista.innerHTML = solicitudesAmistadEnviadasData.length
+                ? solicitudesAmistadEnviadasData.map(s => `
+                    <div class="amigo-persona-row">
+                        <div class="amigo-persona-identidad">
+                            <img src="${obtenerAvatarUrl(s.paraNombre || 'Jugador')}" alt="">
+                            <div class="amigo-persona-texto">
+                                <strong>${escaparHtmlClub(s.paraNombre || 'Jugador')}</strong>
+                                <small>Solicitud pendiente de aceptación</small>
+                            </div>
+                        </div>
+                        <div class="amigo-persona-acciones">
+                            <span class="amigo-estado-pendiente">Pendiente</span>
+                            <button class="amigo-mini-btn peligro" onclick="cancelarSolicitudAmistadEnviada('${escaparAtributoJs(s.id)}')">Cancelar</button>
+                        </div>
+                    </div>`).join('')
+                : `<p class="amigos-vacio">No tenés solicitudes enviadas pendientes.</p>`;
+        }
+
         function renderizarAmigos() {
             const lista = document.getElementById('lista-amigos');
             const contador = document.getElementById('contador-amigos');
@@ -3851,6 +4272,7 @@ tr:hover td{background:#f9fafb}
                 : `<p class="amigos-vacio">Todavía no tenés amigos agregados.</p>`;
 
             renderizarSolicitudesAmistad();
+            renderizarSolicitudesEnviadas();
             renderizarResultadosBusquedaAmigos();
         }
 
@@ -4095,7 +4517,7 @@ tr:hover td{background:#f9fafb}
         async function confirmarEquipoParaUnirse(equipo) {
             const partidoId = seleccionEquipoPartidoId;
             cerrarModalSeleccionarEquipo();
-            await unirsePartido(partidoId, equipo);
+            await window.unirsePartido(partidoId, equipo);
         }
 
         async function unirsePartido(id, equipoElegido = '') {
@@ -4493,6 +4915,7 @@ tr:hover td{background:#f9fafb}
                     }
 
                     firebaseAPI = { app, db, auth, ...firestoreMod, ...authMod };
+                    window.firebaseAPI = firebaseAPI;
 
                     firebaseAPI.onAuthStateChanged(auth, async (user) => {
                         if (!user) {
@@ -4891,6 +5314,17 @@ tr:hover td{background:#f9fafb}
                     (error) => logFirebaseError("lectura de solicitudes de amistad", error)
                 );
 
+                const unsubSolicitudesAmistadEnviadas = firebaseAPI.onSnapshot(
+                    firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas"),
+                    (snapshot) => {
+                        solicitudesAmistadEnviadasData = docsToArray(snapshot)
+                            .filter(s => (s.estado || "pendiente") === "pendiente");
+                        renderizarSolicitudesEnviadas();
+                        renderizarResultadosBusquedaAmigos();
+                    },
+                    (error) => logFirebaseError("lectura de solicitudes de amistad enviadas", error)
+                );
+
                 const unsubClases = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "clases"), (snapshot) => {
                     clasesUsuario = docsToArray(snapshot);
                     renderizarMisClases();
@@ -4906,6 +5340,7 @@ tr:hover td{background:#f9fafb}
                     unsubNotificaciones,
                     unsubAmigos,
                     unsubSolicitudesAmistad,
+                    unsubSolicitudesAmistadEnviadas,
                     unsubClases
                 ];
             }
@@ -4979,17 +5414,32 @@ tr:hover td{background:#f9fafb}
 
             async function guardarPartidoEnFirebase(partido) {
                 if (!firebaseAPI || !partido?.id) return;
-                const clubDocId = resolverClubDocId(partido.club || "Club Central");
+
+                let referencia;
+                if (partido._firestorePath) {
+                    const partes = String(partido._firestorePath).split('/').filter(Boolean);
+                    referencia = firebaseAPI.doc(firebaseAPI.db, ...partes);
+                } else {
+                    const clubDocId = resolverClubDocId(partido.club || "Club Central");
+                    referencia = firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "partidos", String(partido.id));
+                }
+
+                const datosGuardar = { ...partido };
+                delete datosGuardar._firestorePath;
+
                 await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "clubs", clubDocId, "partidos", String(partido.id)),
+                    referencia,
                     {
-                        ...partido,
+                        ...datosGuardar,
                         guardadoEnFirebase: true,
                         actualizadoEn: firebaseAPI.serverTimestamp()
                     },
                     { merge: true }
                 );
             }
+
+            window.guardarPartidoEnFirebase = guardarPartidoEnFirebase;
+            window.resolverClubDocId = resolverClubDocId;
 
             window.obtenerFechaHoy = function() {
                 const h = new Date();
@@ -5425,31 +5875,75 @@ tr:hover td{background:#f9fafb}
                 renderizarTodo();
             };
 
-            window.unirsePartido = async function(id) {
-                let p = partidosData.find(x => String(x.id) === String(id));
-                let user = getNombreCompleto();
+            window.unirsePartido = async function(id, equipoElegido = '') {
+                const p = partidosData.find(x => String(x.id) === String(id));
+                const user = getNombreCompleto();
                 if (!p) return;
-                if ([p.j1, p.j2, p.j3, p.j4].includes(user)) return alert("Ya estás anotado en este partido.");
+                if ([p.j1, p.j2, p.j3, p.j4].includes(user)) {
+                    return alert("Ya estás anotado en este partido.");
+                }
 
-                if (p.j2 === "Libre") p.j2 = user;
-                else if (p.j3 === "Libre") p.j3 = user;
-                else if (p.j4 === "Libre") p.j4 = user;
-                else return alert("Ese partido ya está completo.");
+                const invitaciones = obtenerInvitacionesPendientesPartido(p);
+                const invitacionUsuario = invitacionUsuarioPartido(p);
 
-                p.jugadoresUid = Array.from(new Set([...(p.jugadoresUid || []), usuarioActual?.uid].filter(Boolean)));
+                let slot = invitacionUsuario?.slot || null;
+
+                if (slot && (p[slot] !== 'Libre' || !slotEstaReservado(p, slot))) {
+                    slot = null;
+                }
+
+                if (!slot) {
+                    const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
+                    slot = slotsDisponiblesEquipo(p, equipo)[0] || null;
+                }
+
+                if (!slot) return alert("Ese equipo ya no tiene lugares disponibles.");
+
+                p[slot] = user;
+                p.jugadoresUid = Array.from(new Set([
+                    ...(p.jugadoresUid || []),
+                    usuarioActual?.uid
+                ].filter(Boolean)));
+
+                // Clave del arreglo: al aceptar se elimina definitivamente la invitación pendiente.
+                if (invitacionUsuario) {
+                    p.invitacionesPendientes = invitaciones.filter(inv =>
+                        String(inv.id) !== String(invitacionUsuario.id)
+                    );
+                    p.invitados = Array.from(new Set([
+                        ...(p.invitados || []),
+                        user
+                    ]));
+                }
 
                 if (![p.j1, p.j2, p.j3, p.j4].includes("Libre")) {
                     p.estado = "Partido Confirmado";
-                    alert("¡Partido completado!");
                 } else {
-                    alert("Te has unido.");
+                    p.estado = "Buscando Rival";
                 }
 
-                await guardarPartidoEnFirebase(p).catch(error => logFirebaseError("actualización de partido", error));
-                renderizarMisPartidos();
-                renderizarPartidosAbiertos();
-            };
+                try {
+                    await guardarPartidoEnFirebase(p);
 
+                    if (String(partidoDestacadoUnirseId) === String(p.id)) {
+                        partidoDestacadoUnirseId = null;
+                    }
+
+                    // Al re-renderizar, el slot ya no tiene invitación:
+                    // jugadorPartidoMinimal muestra avatar + nombre normal.
+                    renderizarMisPartidos();
+                    renderizarPartidosAbiertos();
+                    renderizarBanner();
+
+                    alert(invitacionUsuario
+                        ? "Aceptaste la invitación y te uniste al equipo."
+                        : (p.estado === "Partido Confirmado"
+                            ? "¡Partido completado!"
+                            : "Te uniste al equipo seleccionado."));
+                } catch (error) {
+                    logFirebaseError("actualización de partido", error);
+                }
+            };
 
 
             window.marcarNotificacionesLeidas = async function() {
@@ -5467,23 +5961,35 @@ tr:hover td{background:#f9fafb}
                 })).catch(error => logFirebaseError("marcar notificaciones", error));
             };
 
-            window.ejecutarAccionNotificacion = async function(accion, notifId) {
+            window.ejecutarAccionNotificacion = async function(accion, notifId, partidoId = '') {
                 const notif = notificacionesData.find(n => String(n.id) === String(notifId));
-                if (notif) {
-                    notif.leida = true;
-                    if (firebaseAPI && usuarioActual && notif.id) {
-                        await firebaseAPI.setDoc(
-                            firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones", String(notif.id)),
-                            { leida: true, actualizadoEn: firebaseAPI.serverTimestamp() },
-                            { merge: true }
-                        ).catch(error => logFirebaseError("actualización de notificación", error));
-                    }
+                if (notif) notif.leida = true;
+
+                if (firebaseAPI && usuarioActual?.uid && notifId) {
+                    await firebaseAPI.setDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones", String(notifId)),
+                        { leida: true, actualizadoEn: firebaseAPI.serverTimestamp() },
+                        { merge: true }
+                    ).catch(error => logFirebaseError("actualización de notificación", error));
                 }
 
-                if (accion === "unirse") {
+                const destinoPartido = String(partidoId || notif?.partidoId || '');
+                if (accion === "unirse" || notif?.tipo === "invitacion_partido") {
+                    partidoDestacadoUnirseId = destinoPartido || null;
                     cambiarVistaPrincipal("partidos");
-                    cambiarAccionPartido("unirse");
+                    cambiarPanelPartidos("unirse");
+                    renderizarPartidosAbiertos();
+
+                    setTimeout(() => {
+                        const selectorId = CSS.escape(destinoPartido);
+                        const elemento = document.querySelector(`[data-partido-id="${selectorId}"]`);
+                        if (elemento) {
+                            if (elemento.tagName === "DETAILS") elemento.open = true;
+                            elemento.scrollIntoView({behavior:"smooth", block:"center"});
+                        }
+                    }, 80);
                 }
+
                 renderizarNotificaciones();
             };
 
@@ -5542,6 +6048,21 @@ tr:hover td{background:#f9fafb}
                     },
                     { merge: true }
                 ).catch(error => logFirebaseError("envío de solicitud de amistad", error));
+
+                await firebaseAPI.setDoc(
+                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas", solicitudId),
+                    {
+                        id: solicitudId,
+                        deUid: usuarioActual.uid,
+                        deNombre: getNombreCompleto(),
+                        paraUid: String(uidDestino),
+                        paraNombre: jugador.nombre,
+                        paraDni: jugador.dni || "",
+                        estado: "pendiente",
+                        creadoEn: firebaseAPI.serverTimestamp()
+                    },
+                    { merge: true }
+                ).catch(error => logFirebaseError("registro de solicitud enviada", error));
 
                 await firebaseAPI.setDoc(
                     firebaseAPI.doc(firebaseAPI.db, "users", String(uidDestino), "notificaciones", solicitudId),
@@ -5610,6 +6131,9 @@ tr:hover td{background:#f9fafb}
                     firebaseAPI.deleteDoc(
                         firebaseAPI.doc(firebaseAPI.db, "users", miUid, "solicitudesAmistad", String(solicitudId))
                     ),
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "solicitudesAmistadEnviadas", String(solicitudId))
+                    ),
                     firebaseAPI.setDoc(
                         firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "notificaciones", `amistad-aceptada-${miUid}`),
                         {
@@ -5627,9 +6151,33 @@ tr:hover td{background:#f9fafb}
 
             window.rechazarSolicitudAmistad = async function(solicitudId) {
                 if (!firebaseAPI || !usuarioActual) return;
-                await firebaseAPI.deleteDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad", String(solicitudId))
-                ).catch(error => logFirebaseError("rechazo de solicitud", error));
+                const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
+                if (!solicitud) return;
+
+                await Promise.all([
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad", String(solicitudId))
+                    ),
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", String(solicitud.deUid), "solicitudesAmistadEnviadas", String(solicitudId))
+                    )
+                ]).catch(error => logFirebaseError("rechazo de solicitud", error));
+            };
+
+            window.cancelarSolicitudAmistadEnviada = async function(solicitudId) {
+                if (!firebaseAPI || !usuarioActual) return;
+                const solicitud = solicitudesAmistadEnviadasData.find(s => String(s.id) === String(solicitudId));
+                if (!solicitud) return;
+                if (!confirm("¿Querés cancelar esta solicitud de amistad?")) return;
+
+                await Promise.all([
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas", String(solicitudId))
+                    ),
+                    firebaseAPI.deleteDoc(
+                        firebaseAPI.doc(firebaseAPI.db, "users", String(solicitud.paraUid), "solicitudesAmistad", String(solicitudId))
+                    )
+                ]).catch(error => logFirebaseError("cancelación de solicitud enviada", error));
             };
 
             window.eliminarAmigo = async function(uidAmigo) {
