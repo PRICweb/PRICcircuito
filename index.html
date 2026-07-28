@@ -3755,15 +3755,24 @@ tr:hover td{background:#f9fafb}
             const grupos = new Map();
 
             cargas.forEach(c => {
-                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
+                const clave = String(c.clave || claveResultadoCanonico(c.setsCanonicos));
                 if (!grupos.has(clave)) grupos.set(clave, []);
                 grupos.get(clave).push(c);
             });
 
             for (const [clave, grupo] of grupos.entries()) {
-                const equipos = new Set(grupo.map(c => c.equipo));
-                if (grupo.length >= 2 && equipos.has('equipo1') && equipos.has('equipo2')) {
-                    return { clave, grupo, setsCanonicos: grupo[0].setsCanonicos };
+                const equipos = new Set(
+                    grupo.map(c => String(c.equipo || '').trim().toLowerCase())
+                );
+
+                if (grupo.length >= 2 &&
+                    equipos.has('equipo1') &&
+                    equipos.has('equipo2')) {
+                    return {
+                        clave,
+                        grupo,
+                        setsCanonicos: grupo[0].setsCanonicos.map(normalizarSetCanonico)
+                    };
                 }
             }
 
@@ -5359,7 +5368,10 @@ tr:hover td{background:#f9fafb}
             const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
             await guardar(partido);
 
-            await Promise.all([
+            // El estado definitivo ya quedó persistido. Las estadísticas se
+            // actualizan después para que un error secundario no impida que
+            // el partido pase a Historial.
+            const actualizaciones = [
                 ...ganadores.map(nombre => actualizarJugadorRankingResultado(
                     nombre,
                     categoriaPartido(partido),
@@ -5378,7 +5390,72 @@ tr:hover td{background:#f9fafb}
                         ...statsPerdedores
                     }
                 ))
-            ]);
+            ];
+
+            const resultadosActualizacion = await Promise.allSettled(actualizaciones);
+            resultadosActualizacion
+                .filter(r => r.status === 'rejected')
+                .forEach(r => console.error('Error actualizando estadísticas:', r.reason));
+        }
+
+        async function agregarCargaResultadoAtomica(partido, nuevaCarga) {
+            const api = window.firebaseAPI;
+            if (!api) throw new Error('Firebase todavía no está listo.');
+            if (!partido?._firestorePath) throw new Error('No se encontró la ruta del partido.');
+
+            const partes = String(partido._firestorePath).split('/').filter(Boolean);
+            const ref = api.doc(api.db, ...partes);
+
+            let cargasFusionadas = [];
+
+            await api.runTransaction(api.db, async transaction => {
+                const snap = await transaction.get(ref);
+                if (!snap.exists()) throw new Error('El partido ya no existe.');
+
+                const remoto = snap.data() || {};
+                const cargasRemotas = Array.isArray(remoto.resultadosCargados)
+                    ? remoto.resultadosCargados
+                    : [];
+
+                const normalizadas = cargasRemotas.map(c => {
+                    const setsCanonicos = deserializarSetsCarga(c);
+                    return {
+                        usuario: c.usuario || '',
+                        uid: c.uid || '',
+                        equipo: c.equipo || '',
+                        sets: serializarSetsFirestore(setsCanonicos),
+                        clave: c.clave || claveResultadoCanonico(setsCanonicos),
+                        cargadoEn: c.cargadoEn || ''
+                    };
+                });
+
+                const uidNuevo = String(nuevaCarga.uid || '');
+                const nombreNuevo = String(nuevaCarga.usuario || '').trim().toLowerCase();
+
+                const yaExiste = normalizadas.some(c => {
+                    if (uidNuevo && c.uid && String(c.uid) === uidNuevo) return true;
+                    return String(c.usuario || '').trim().toLowerCase() === nombreNuevo;
+                });
+
+                if (yaExiste) {
+                    throw new Error('Ya cargaste tu resultado. Debés esperar la verificación de los demás jugadores.');
+                }
+
+                cargasFusionadas = [...normalizadas, nuevaCarga];
+
+                transaction.set(ref, {
+                    resultadosCargados: cargasFusionadas,
+                    estado: 'Pendiente Resultado',
+                    actualizadoEn: api.serverTimestamp()
+                }, { merge: true });
+            });
+
+            // Sin esperar al snapshot: actualizar inmediatamente el objeto local
+            // con TODAS las cargas obtenidas dentro de la transacción.
+            partido.resultadosCargados = cargasFusionadas;
+            partido.estado = 'Pendiente Resultado';
+
+            return cargasFusionadas;
         }
 
         async function guardarResultado() {
@@ -5414,32 +5491,9 @@ tr:hover td{background:#f9fafb}
                     cargadoEn: new Date().toISOString()
                 };
 
-                const anteriores = resultadosCargadosPartido(partidoEnEdicion);
-
-                // Blindaje adicional: no permitir dos cargas del mismo perfil.
-                const yaExiste = anteriores.some(c => {
-                    if (nuevaCarga.uid && c.uid && String(c.uid) === String(nuevaCarga.uid)) return true;
-                    return String(c.usuario || '').trim().toLowerCase() === nuevaCarga.usuario.trim().toLowerCase();
-                });
-                if (yaExiste) {
-                    throw new Error('Ya cargaste tu resultado. Debés esperar la verificación de los demás jugadores.');
-                }
-
-                partidoEnEdicion.resultadosCargados = [
-                    ...anteriores.map(c => ({
-                        usuario: c.usuario,
-                        uid: c.uid || '',
-                        equipo: c.equipo,
-                        sets: serializarSetsFirestore(c.setsCanonicos),
-                        clave: c.clave || claveResultadoCanonico(c.setsCanonicos),
-                        cargadoEn: c.cargadoEn || ''
-                    })),
-                    nuevaCarga
-                ];
-                partidoEnEdicion.estado = 'Pendiente Resultado';
-
-                const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
-                await guardar(partidoEnEdicion);
+                // Se fusiona contra el documento más reciente de Firestore.
+                // Así dos perfiles que cargan casi al mismo tiempo no se pisan.
+                await agregarCargaResultadoAtomica(partidoEnEdicion, nuevaCarga);
 
                 // Re-render inmediato: el usuario ya no ve el botón de cargar.
                 cerrarModales();
@@ -5449,6 +5503,7 @@ tr:hover td{background:#f9fafb}
                 cambiarPanelPartidos('pendientes');
 
                 // 1) Coincidencia entre al menos una carga de cada equipo.
+                // partidoEnEdicion ya contiene la fusión atómica de Firestore.
                 let verificado = resultadoCoincidenteEntreEquipos(partidoEnEdicion);
 
                 // 2) Si hubo conflicto, esperar las cuatro cargas y verificar mayoría.
@@ -5458,10 +5513,22 @@ tr:hover td{background:#f9fafb}
 
                 if (verificado) {
                     await aplicarResultadoConfirmadoPartido(partidoEnEdicion, verificado.setsCanonicos);
+
+                    // Quitar inmediatamente de Resultados y mostrar Historial,
+                    // sin depender de que llegue primero el snapshot.
                     renderizarMisPartidos();
                     renderizarRanking();
                     renderizarBanner();
+                    cambiarVistaPrincipal('partidos');
                     cambiarPanelPartidos('historial');
+
+                    setTimeout(() => {
+                        document.getElementById('panel-partidos-historial')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 50);
+
                     alert('El resultado coincide con el cargado por el equipo rival. El partido pasó al historial.');
                     return;
                 }
