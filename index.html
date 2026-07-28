@@ -1907,6 +1907,135 @@ tr:hover td{background:#f9fafb}
   color:#101828!important;font-size:1rem!important;font-weight:900!important;cursor:pointer!important;
 }
 </style>
+
+<style id="solo-competitivo-categorias-css">
+.banner-empty .banner-meta-chip{margin-top:12px}
+</style>
+
+<style id="resultado-confirmacion-final-css">
+.resultado-equipos-simple strong{
+  display:block!important;
+  color:var(--text)!important;
+  font-size:.82rem!important;
+  font-weight:850!important;
+  text-align:center!important;
+}
+.confirmacion-final-resultado{
+  max-width:390px!important;
+  text-align:center!important;
+}
+.confirmacion-final-icono{
+  width:42px;
+  height:42px;
+  margin:0 auto 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#b54708;
+  font-size:1.25rem;
+  font-weight:900;
+}
+.confirmacion-final-resultado h3{
+  margin:0 0 10px!important;
+  color:var(--text)!important;
+}
+.confirmacion-final-resultado p{
+  margin:0 0 11px;
+  color:var(--muted);
+  font-size:.82rem;
+  line-height:1.5;
+}
+.confirmacion-final-resumen{
+  margin:14px 0 16px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface-2);
+  color:var(--text);
+  font-size:.86rem;
+  font-weight:850;
+}
+</style>
+
+
+<style id="historial-puntos-css">
+.historial-puntos{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:31px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:.75rem;
+  font-weight:900;
+  white-space:nowrap;
+}
+.historial-puntos.ganado{
+  color:#067647;
+  background:#ecfdf3;
+  border:1px solid #abefc6;
+}
+.historial-puntos.perdido{
+  color:#b42318;
+  background:#fef3f2;
+  border:1px solid #fecdca;
+}
+.historial-puntos.neutro{
+  color:var(--muted);
+  background:var(--surface-2);
+  border:1px solid var(--line);
+}
+</style>
+
+
+<style id="resultado-verificacion-equipos-css">
+.resultado-verificacion-pendiente{
+  display:inline-flex;
+  align-items:center;
+  min-height:31px;
+  padding:6px 10px;
+  border:1px solid #fecdca;
+  border-radius:999px;
+  background:#fef3f2;
+  color:#b42318;
+  font-size:.72rem;
+  font-weight:850;
+  line-height:1.2;
+}
+.resultado-verificacion-conflicto{
+  display:block;
+  margin-top:8px;
+  padding:8px 10px;
+  border:1px solid #fecdca;
+  border-radius:11px;
+  background:#fffafa;
+  color:#b42318;
+  font-size:.72rem;
+  font-weight:800;
+  text-align:center;
+}
+</style>
+
+<style id="historial-revision-incongruente-css">
+.historial-revision-incongruente{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+  padding:7px 10px;
+  border:1px solid #fecdca;
+  border-radius:999px;
+  background:#fef3f2;
+  color:#b42318;
+  font-size:.72rem;
+  font-weight:900;
+  line-height:1.2;
+  text-align:center;
+}
+</style>
 </head>
 <body>
 
@@ -2088,20 +2217,14 @@ tr:hover td{background:#f9fafb}
 
             <section id="panel-partidos-crear" class="panel-partidos activo partidos-panel-card">
                 <h4 class="partidos-panel-title">Crear un partido</h4>
-                <p class="partidos-panel-help">Elegí el club, la modalidad disponible y un horario libre.</p>
+                <p class="partidos-panel-help">Elegí categoría, club, modalidad y un horario libre. Todos los partidos son competitivos.</p>
 
-                <label>Tipo de partido</label>
-                <select id="input-tipo-crear" class="input-form" onchange="toggleVisibilidadPartido()">
-                    <option value="Competitivo">Competitivo (suma puntos)</option>
-                    <option value="Casual">Casual (amistoso)</option>
+                <label>Categoría</label>
+                <select id="input-categoria-crear" class="input-form">
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Mixto">Mixto</option>
                 </select>
-                <div id="div-visibilidad-crear" style="display:none;">
-                    <label>Visibilidad</label>
-                    <select id="input-visibilidad-crear" class="input-form">
-                        <option value="Publico">Público</option>
-                        <option value="Privado">Privado, solo con invitación</option>
-                    </select>
-                </div>
 
                 <label>Club</label>
                 <select id="input-club-crear" class="input-form" onchange="actualizarModalidadesCrear(); actualizarHorariosDisponibles();"></select>
@@ -2125,12 +2248,12 @@ tr:hover td{background:#f9fafb}
 
             <section id="panel-partidos-unirse" class="panel-partidos partidos-panel-card">
                 <h4 class="partidos-panel-title">Unirse a un partido</h4>
-                <p class="partidos-panel-help">Filtrá primero por club y luego por una modalidad que ese club ofrezca.</p>
+                <p class="partidos-panel-help">Filtrá por club, modalidad y categoría. Solo se muestran partidos competitivos con lugares disponibles.</p>
                 <label>Club</label>
                 <select id="filtro-club-unirse" class="input-form" onchange="actualizarModalidadesUnirse(); renderizarPartidosAbiertos();"></select>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
                     <div><label>Modalidad</label><select id="filtro-mod-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"></select></div>
-                    <div><label>Tipo</label><select id="filtro-tipo-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"><option value="Todos">Todos</option><option value="Competitivo">Competitivo</option><option value="Casual">Casual</option></select></div>
+                    <div><label>Categoría</label><select id="filtro-categoria-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"><option value="Todos">Todas</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="Mixto">Mixto</option></select></div>
                 </div>
                 <div id="lista-partidos-abiertos" class="scrollable"></div>
             </section>
@@ -2143,7 +2266,7 @@ tr:hover td{background:#f9fafb}
 
             <section id="panel-partidos-pendientes" class="panel-partidos partidos-panel-card">
                 <h4 class="partidos-panel-title">Resultados pendientes</h4>
-                <p class="partidos-panel-help">Partidos competitivos jugados cuyo resultado todavía debe cargarse.</p>
+                <p class="partidos-panel-help">Partidos jugados que esperan carga o verificación del resultado por ambos equipos.</p>
                 <div id="lista-mis-partidos" class="scrollable"></div>
             </section>
 
@@ -2427,15 +2550,13 @@ tr:hover td{background:#f9fafb}
             <p class="resultado-perspectiva">Tu equipo siempre aparece a la izquierda. Cargá el marcador desde tu perspectiva.</p>
             <input type="hidden" id="res-id-partido">
 
-            <div class="resultado-equipos-head">
+            <div class="resultado-equipos-head resultado-equipos-simple">
                 <div>
-                    <span>Tu equipo</span>
-                    <strong id="res-eq1">Equipo propio</strong>
+                    <strong>Tu equipo</strong>
                 </div>
                 <b>VS</b>
                 <div>
-                    <span>Rival</span>
-                    <strong id="res-eq2">Equipo rival</strong>
+                    <strong>Equipo rival</strong>
                 </div>
             </div>
 
@@ -2468,10 +2589,28 @@ tr:hover td{background:#f9fafb}
                 </div>
             </div>
 
-            <p class="resultado-ayuda">Marcadores válidos: 6-0 a 6-4, 7-5 o 7-6. El tercer set solo se completa si cada equipo ganó uno de los dos primeros.</p>
-
-            <button class="btn btn-primario" onclick="guardarResultado()">Confirmar resultado</button>
+            <button class="btn btn-primario" onclick="abrirConfirmacionFinalResultado()">Confirmar resultado</button>
             <button class="btn btn-cerrar" onclick="cerrarModales()">Cancelar</button>
+        </div>
+    </div>
+
+
+    <!-- MODAL CONFIRMACION FINAL RESULTADO -->
+    <div id="modal-confirmacion-final-resultado" class="modal-overlay">
+        <div class="modal-content confirmacion-final-resultado">
+            <div class="confirmacion-final-icono">!</div>
+            <h3>Confirmar resultado</h3>
+            <p>
+                Revisá el marcador antes de continuar. Una vez confirmado,
+                <strong>el resultado no podrá modificarse desde la aplicación.</strong>
+            </p>
+            <p>
+                Si otro jugador reporta que cargaste un resultado incorrecto, falso o intencionalmente alterado,
+                la situación podrá ser revisada y <strong>podría derivar en sanciones dentro de la aplicación.</strong>
+            </p>
+            <div class="confirmacion-final-resumen" id="confirmacion-final-resumen"></div>
+            <button class="btn btn-primario" onclick="confirmarGuardadoDefinitivoResultado()">Sí, confirmar resultado</button>
+            <button class="btn btn-cerrar" onclick="cerrarConfirmacionFinalResultado()">Volver y revisar</button>
         </div>
     </div>
 
@@ -2660,10 +2799,7 @@ tr:hover td{background:#f9fafb}
         }
 
         // --- SISTEMA DE PARTIDOS ---
-        function toggleVisibilidadPartido() {
-            const tipo = document.getElementById('input-tipo-crear').value;
-            document.getElementById('div-visibilidad-crear').style.display = (tipo === 'Casual') ? 'block' : 'none';
-        }
+        function toggleVisibilidadPartido() {}
 
         function cambiarFechaCrear(delta) {
             let hoy = new Date(); hoy.setHours(0,0,0,0);
@@ -2782,7 +2918,10 @@ tr:hover td{background:#f9fafb}
             else if (vista === 'academia') renderizarAcademia();
         }
 
-        function cerrarModales() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); partidoEnEdicion = null; }
+        function cerrarModales() {
+            const confirmacionFinal = document.getElementById('modal-confirmacion-final-resultado');
+            if (confirmacionFinal) confirmacionFinal.style.display = 'none';
+ document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); partidoEnEdicion = null; }
 
         function cambiarCategoriaRanking(cat) {
             catRankingActual = cat;
@@ -3102,6 +3241,97 @@ tr:hover td{background:#f9fafb}
             }
         }
 
+        function normalizarGeneroCompetitivo(valor) {
+            const genero = String(valor || '').trim().toLowerCase();
+            if (genero === 'masculino' || genero === 'hombre' || genero === 'masculino/hombre') return 'Masculino';
+            if (genero === 'femenino' || genero === 'mujer' || genero === 'femenino/mujer') return 'Femenino';
+            return 'Otro';
+        }
+
+        function generoJugadorPorNombre(nombre) {
+            const limpio = String(nombre || '').trim().toLowerCase();
+            if (!limpio || limpio === 'libre') return '';
+            if (limpio === getNombreCompleto().trim().toLowerCase()) {
+                return normalizarGeneroCompetitivo(perfilUsuario.genero);
+            }
+            const jugador = rankingData.find(j => String(j.nombre || '').trim().toLowerCase() === limpio);
+            return normalizarGeneroCompetitivo(jugador?.genero || jugador?.modalidad || '');
+        }
+
+        function categoriaPartido(partido) {
+            const categoria = String(partido?.categoria || '').trim();
+            return ['Masculino','Femenino','Mixto'].includes(categoria) ? categoria : 'Masculino';
+        }
+
+        function usuarioPuedeParticiparCategoria(categoria, genero = normalizarGeneroCompetitivo(perfilUsuario.genero)) {
+            if (categoria === 'Masculino') return genero === 'Masculino';
+            if (categoria === 'Femenino') return genero === 'Femenino';
+            if (categoria === 'Mixto') return genero === 'Masculino' || genero === 'Femenino';
+            return false;
+        }
+
+        function slotsEquipoPorNombre(equipo) {
+            return equipo === 'equipo2' ? ['j3','j4'] : ['j1','j2'];
+        }
+
+        function equipoDelSlot(slot) {
+            return ['j1','j2'].includes(slot) ? 'equipo1' : 'equipo2';
+        }
+
+        function slotCompatibleConGenero(partido, slot, genero) {
+            const categoria = categoriaPartido(partido);
+            if (!usuarioPuedeParticiparCategoria(categoria, genero)) return false;
+            if (partido[slot] !== 'Libre' || slotEstaReservado(partido, slot)) return false;
+
+            if (categoria !== 'Mixto') return true;
+
+            // Mixto: cada pareja debe quedar formada por un jugador masculino y uno femenino.
+            const equipo = equipoDelSlot(slot);
+            const otrosSlots = slotsEquipoPorNombre(equipo).filter(s => s !== slot);
+            const otroConfirmado = otrosSlots
+                .map(s => partido[s])
+                .find(nombre => nombre && nombre !== 'Libre');
+            const otraInvitacion = otrosSlots
+                .map(s => invitacionPendientePorSlot(partido, s))
+                .find(Boolean);
+
+            const generoOtro = otroConfirmado
+                ? generoJugadorPorNombre(otroConfirmado)
+                : (otraInvitacion ? generoJugadorPorNombre(otraInvitacion.nombre) : '');
+
+            if (!generoOtro) return true;
+            return generoOtro !== genero;
+        }
+
+        function slotsDisponiblesEquipoParaGenero(partido, equipo, genero) {
+            return slotsEquipoPorNombre(equipo).filter(slot => slotCompatibleConGenero(partido, slot, genero));
+        }
+
+        function partidoTieneCupoParaUsuario(partido) {
+            const genero = normalizarGeneroCompetitivo(perfilUsuario.genero);
+            if (!usuarioPuedeParticiparCategoria(categoriaPartido(partido), genero)) return false;
+            return slotsDisponiblesEquipoParaGenero(partido, 'equipo1', genero).length > 0 ||
+                   slotsDisponiblesEquipoParaGenero(partido, 'equipo2', genero).length > 0;
+        }
+
+        function cantidadPartidosAbiertosDisponibles() {
+            const usuario = getNombreCompleto();
+            return partidosData.filter(p => {
+                if (String(p.tipo || 'Competitivo') !== 'Competitivo') return false;
+                if (p.estado !== 'Buscando Rival') return false;
+                if ([p.j1,p.j2,p.j3,p.j4].includes(usuario)) return false;
+                return partidoTieneCupoParaUsuario(p);
+            }).length;
+        }
+
+        function irAUnirseDesdeBanner() {
+            cambiarVistaPrincipal('partidos');
+            cambiarPanelPartidos('unirse');
+            setTimeout(() => {
+                document.getElementById('panel-partidos-unirse')?.scrollIntoView({behavior:'smooth', block:'start'});
+            }, 60);
+        }
+
         function renderizarBanner() {
             const bannerContainer = document.getElementById('banner-proximo-partido');
             if (!bannerContainer) return;
@@ -3153,12 +3383,14 @@ tr:hover td{background:#f9fafb}
                         </div>
                     </div>`;
             } else {
+                const abiertosDisponibles = cantidadPartidosAbiertosDisponibles();
                 slidePartido = `
-                    <div class="carousel-slide activo">
+                    <div class="carousel-slide activo" style="cursor:pointer;" onclick="irAUnirseDesdeBanner()">
                         <div class="banner-empty">
                             <div class="banner-empty-icon">🎾</div>
                             <h3>No tenés partidos próximos</h3>
-                            <p>Creá un partido o unite a uno disponible desde la sección Partidos.</p>
+                            <p>Presioná acá para unirte a un partido.</p>
+                            <span class="banner-meta-chip" style="margin-top:12px;">${abiertosDisponibles} partido${abiertosDisponibles === 1 ? '' : 's'} con lugares disponibles</span>
                         </div>
                     </div>`;
             }
@@ -3416,6 +3648,183 @@ tr:hover td{background:#f9fafb}
             };
         }
 
+        function resultadosCargadosPartido(partido) {
+            return Array.isArray(partido?.resultadosCargados)
+                ? partido.resultadosCargados.filter(r => r && r.usuario && Array.isArray(r.setsCanonicos))
+                : [];
+        }
+
+        function claveResultadoCanonico(setsCanonicos) {
+            return (setsCanonicos || []).map(set => `${Number(set[0])}-${Number(set[1])}`).join('|');
+        }
+
+        function equipoUsuarioEnPartido(partido, usuario = getNombreCompleto()) {
+            if ([partido.j1, partido.j2].includes(usuario)) return 'equipo1';
+            if ([partido.j3, partido.j4].includes(usuario)) return 'equipo2';
+            return '';
+        }
+
+        function cargaResultadoUsuario(partido, usuario = getNombreCompleto()) {
+            return resultadosCargadosPartido(partido).find(r =>
+                String(r.usuario || '').trim().toLowerCase() === String(usuario || '').trim().toLowerCase()
+            ) || null;
+        }
+
+        function estadoVerificacionResultado(partido) {
+            const cargas = resultadosCargadosPartido(partido);
+            if (!cargas.length) return { estado:'sin_cargas', texto:'' };
+
+            const propia = cargaResultadoUsuario(partido);
+            const equipoPropio = equipoUsuarioEnPartido(partido);
+            const equipoRival = equipoPropio === 'equipo1' ? 'equipo2' : 'equipo1';
+            const hayRival = cargas.some(c => c.equipo === equipoRival);
+
+            if (propia && !hayRival) {
+                return {
+                    estado:'esperando_rival',
+                    texto:'Los rivales tienen que cargar el resultado'
+                };
+            }
+
+            const grupos = new Map();
+            cargas.forEach(c => {
+                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
+                if (!grupos.has(clave)) grupos.set(clave, []);
+                grupos.get(clave).push(c);
+            });
+
+            const hayConflicto = grupos.size > 1;
+            if (propia && hayConflicto) {
+                return {
+                    estado:'conflicto',
+                    texto:'Los resultados no coinciden. Faltan cargas para verificar'
+                };
+            }
+
+            if (propia) {
+                return {
+                    estado:'esperando',
+                    texto:'Los rivales tienen que cargar el resultado'
+                };
+            }
+
+            return { estado:'puede_cargar', texto:'' };
+        }
+
+        function resultadoCoincidenteEntreEquipos(partido) {
+            const cargas = resultadosCargadosPartido(partido);
+            const grupos = new Map();
+
+            cargas.forEach(c => {
+                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
+                if (!grupos.has(clave)) grupos.set(clave, []);
+                grupos.get(clave).push(c);
+            });
+
+            for (const [clave, grupo] of grupos.entries()) {
+                const equipos = new Set(grupo.map(c => c.equipo));
+                if (grupo.length >= 2 && equipos.has('equipo1') && equipos.has('equipo2')) {
+                    return { clave, grupo, setsCanonicos: grupo[0].setsCanonicos };
+                }
+            }
+
+            return null;
+        }
+
+        function hayEmpateIncongruenteTrasCuatroCargas(partido) {
+            const cargas = resultadosCargadosPartido(partido);
+            if (cargas.length < 4) return false;
+
+            const grupos = new Map();
+            cargas.forEach(c => {
+                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
+                if (!grupos.has(clave)) grupos.set(clave, []);
+                grupos.get(clave).push(c);
+            });
+
+            const cantidades = [...grupos.values()]
+                .map(grupo => grupo.length)
+                .sort((a,b) => b-a);
+
+            return cantidades.length >= 2 &&
+                   cantidades[0] === cantidades[1] &&
+                   cantidades[0] === 2;
+        }
+
+        async function marcarPartidoResultadoIncongruente(partido) {
+            partido.estado = 'Finalizado';
+            partido.resultadoIncongruente = true;
+            partido.pendienteRevision = true;
+            partido.resultado = 'Resultados incongruentes';
+            partido.puntosAplicados = false;
+            partido.resultadoConfirmadoEn = null;
+            partido.cambiosPuntos = {};
+            partido.revisionSolicitadaEn = new Date().toISOString();
+
+            const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
+            await guardar(partido);
+        }
+
+        function resultadoVerificableTrasCuatroCargas(partido) {
+            const cargas = resultadosCargadosPartido(partido);
+            if (cargas.length < 4) return null;
+
+            const grupos = new Map();
+            cargas.forEach(c => {
+                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
+                if (!grupos.has(clave)) grupos.set(clave, []);
+                grupos.get(clave).push(c);
+            });
+
+            const ordenados = [...grupos.entries()].sort((a,b) => b[1].length - a[1].length);
+            if (!ordenados.length || ordenados[0][1].length < 2) return null;
+
+            // Debe existir una única versión con mayoría clara.
+            if (ordenados[1] && ordenados[0][1].length === ordenados[1][1].length) return null;
+
+            const [clave, grupo] = ordenados[0];
+            return { clave, grupo, setsCanonicos: grupo[0].setsCanonicos };
+        }
+
+        function cambioPuntosUsuarioEnPartido(partido) {
+            const usuario = getNombreCompleto();
+            if (!partido || !usuario) return null;
+            if (partido.resultadoIncongruente || partido.pendienteRevision) return null;
+
+            if (partido.cambiosPuntos && Object.prototype.hasOwnProperty.call(partido.cambiosPuntos, usuario)) {
+                return Number(partido.cambiosPuntos[usuario]);
+            }
+
+            // Compatibilidad con partidos guardados antes de existir cambiosPuntos.
+            if (partido.estado === 'Finalizado' && partido.equipoGanador) {
+                const equipoUsuario = [partido.j1, partido.j2].includes(usuario)
+                    ? 'equipo1'
+                    : ([partido.j3, partido.j4].includes(usuario) ? 'equipo2' : '');
+
+                if (!equipoUsuario) return null;
+
+                if (equipoUsuario === partido.equipoGanador) {
+                    return Number(partido.puntosOtorgados || 0);
+                }
+                return -Number(partido.puntosDescontados || 0);
+            }
+
+            return null;
+        }
+
+        function badgeCambioPuntosHistorial(partido) {
+            const cambio = cambioPuntosUsuarioEnPartido(partido);
+            if (cambio === null || Number.isNaN(cambio)) return '';
+
+            if (cambio > 0) {
+                return `<span class="historial-puntos ganado">+${cambio} pts</span>`;
+            }
+            if (cambio < 0) {
+                return `<span class="historial-puntos perdido">${cambio} pts</span>`;
+            }
+            return `<span class="historial-puntos neutro">0 pts</span>`;
+        }
+
         function tarjetaPartidoMinimal(partido, opciones = {}) {
             const usuario = getNombreCompleto();
             const equipos = obtenerEquiposPartidoParaUsuario(partido, usuario);
@@ -3428,7 +3837,14 @@ tr:hover td{background:#f9fafb}
 
             let accion = '';
             if (opciones.resultado) {
-                accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
+                const cargaPropia = cargaResultadoUsuario(partido);
+                const verificacion = estadoVerificacionResultado(partido);
+
+                if (!cargaPropia) {
+                    accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
+                } else {
+                    accion = `<span class="resultado-verificacion-pendiente">${escaparHtmlClub(verificacion.texto || 'Esperando verificación del resultado')}</span>`;
+                }
             } else if (invitacionUsuario) {
                 accion = `<span class="partido-invitacion-badge">Te han invitado</span>`;
             } else if (puedeInvitar) {
@@ -3438,7 +3854,14 @@ tr:hover td{background:#f9fafb}
             }
 
             const estadoHistorial = opciones.historial
-                ? `<span class="partido-minimal-status">${escaparHtmlClub(partido.resultado || 'Amistoso')}</span>`
+                ? (partido.resultadoIncongruente || partido.pendienteRevision
+                    ? `<div class="partido-minimal-actions">
+                        <span class="historial-revision-incongruente">Partido con resultados incongruentes · Pendiente de revisión</span>
+                       </div>`
+                    : `<div class="partido-minimal-actions">
+                        <span class="partido-minimal-status">${escaparHtmlClub(partido.resultado || 'Finalizado')}</span>
+                        ${badgeCambioPuntosHistorial(partido)}
+                       </div>`)
                 : (opciones.invitar
                     ? `<div class="partido-minimal-actions">
                         ${accion}
@@ -3473,9 +3896,12 @@ tr:hover td{background:#f9fafb}
                     </div>
 
                     <div class="partido-minimal-footer">
-                        <span class="partido-minimal-detail">${escaparHtmlClub(partido.tipo || '')} · ${escaparHtmlClub(partido.modalidad || '')}${partido.cancha ? ` · Cancha ${escaparHtmlClub(partido.canchaNombre || partido.cancha)}` : ''}</span>
+                        <span class="partido-minimal-detail">${escaparHtmlClub(categoriaPartido(partido))} · ${escaparHtmlClub(partido.modalidad || '')}${partido.cancha ? ` · Cancha ${escaparHtmlClub(partido.canchaNombre || partido.cancha)}` : ''}</span>
                         ${estadoHistorial}
                     </div>
+                    ${opciones.resultado && estadoVerificacionResultado(partido).estado === 'conflicto'
+                        ? `<div class="resultado-verificacion-conflicto">Hay resultados diferentes cargados. Los demás jugadores deben cargar su versión para verificar el marcador.</div>`
+                        : ''}
                 </article>`;
         }
 
@@ -3702,6 +4128,16 @@ tr:hover td{background:#f9fafb}
 
             const nombreAmigo = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
             const uidAmigo = amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || '';
+            const jugadorAmigo = rankingData.find(j =>
+                String(j.uid || j.id) === String(uidAmigo) ||
+                String(j.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+            );
+            const generoAmigo = normalizarGeneroCompetitivo(jugadorAmigo?.genero || jugadorAmigo?.modalidad || amigo.genero || '');
+            if (!slotCompatibleConGenero(partido, slotReservado, generoAmigo)) {
+                return alert(categoriaPartido(partido) === 'Mixto'
+                    ? 'En categoría Mixto cada equipo debe quedar formado por un jugador masculino y uno femenino.'
+                    : `Este jugador no puede participar en categoría ${categoriaPartido(partido)}.`);
+            }
 
             if ([partido.j1, partido.j2, partido.j3, partido.j4].some(n => String(n || '').trim().toLowerCase() === nombreAmigo.toLowerCase())) {
                 return alert('Este amigo ya forma parte del partido.');
@@ -3807,6 +4243,7 @@ tr:hover td{background:#f9fafb}
         }
 
         async function notificarJugadoresPartido(partido, datos) {
+            const firebaseAPI = window.firebaseAPI;
             if (!firebaseAPI) return;
             const usuarios = resolverUsuariosPartido(partido);
 
@@ -3848,15 +4285,18 @@ tr:hover td{background:#f9fafb}
                 texto: `El partido competitivo del ${partido.fecha} a las ${partido.hora} en ${partido.club} fue cancelado porque no se completaron los cuatro jugadores.`
             });
 
-            const rutaPartido = partido._firestorePath ||
-                `clubs/${resolverClubDocId(partido.club || 'Club Central')}/partidos/${partido.id}`;
-            await borrarRutaFirestore(rutaPartido);
+            const rutaPartido = partido._firestorePath || '';
+            if (rutaPartido) await borrarRutaFirestore(rutaPartido);
 
             const reservaId = partido.reservaId || partido.reserva?.id || '';
             if (reservaId) {
-                const rutaReserva = partido.reservaPath ||
-                    `clubs/${resolverClubDocId(partido.club || 'Club Central')}/reservas/${reservaId}`;
-                await borrarRutaFirestore(rutaReserva);
+                if (partido.reservaPath) {
+                    await borrarRutaFirestore(partido.reservaPath);
+                } else if (rutaPartido) {
+                    const partes = String(rutaPartido).split('/').filter(Boolean);
+                    const clubDocId = partes[1] || '';
+                    if (clubDocId) await borrarRutaFirestore(`clubs/${clubDocId}/reservas/${reservaId}`);
+                }
             }
 
             partidosData = partidosData.filter(p => String(p.id) !== String(partido.id));
@@ -3867,10 +4307,12 @@ tr:hover td{background:#f9fafb}
         }
 
         async function moverPartidoCompetitivoAResultados(partido) {
+            const guardar = window.guardarPartidoEnFirebase;
+            if (typeof guardar !== 'function') return;
             partido.estado = 'Pendiente Resultado';
             partido.pasoAResultadosEn = new Date().toISOString();
             partido.notificacionResultadoEnviada = true;
-            await guardarPartidoEnFirebase(partido);
+            await guardar(partido);
 
             await notificarJugadoresPartido(partido, {
                 idBase: `recordatorio-resultado-${partido.id}`,
@@ -3881,7 +4323,7 @@ tr:hover td{background:#f9fafb}
         }
 
         async function procesarEstadosPartidosCompetitivos() {
-            if (!firebaseAPI || !partidosData.length) return;
+            if (!window.firebaseAPI || !partidosData.length) return;
             const limiteAhora = Date.now();
 
             const candidatos = partidosData.filter(partido => {
@@ -3918,7 +4360,7 @@ tr:hover td{background:#f9fafb}
         function iniciarControlAutomaticoPartidosCompetitivos() {
             clearInterval(controlPartidosInterval);
             procesarEstadosPartidosCompetitivos();
-            controlPartidosInterval = setInterval(procesarEstadosPartidosCompetitivos, 60 * 1000);
+            controlPartidosInterval = setInterval(procesarEstadosPartidosCompetitivos, 15 * 1000);
         }
 
         function renderizarMisPartidos() {
@@ -4026,7 +4468,7 @@ tr:hover td{background:#f9fafb}
 
                     <div class="partido-unirse-footer">
                         <div class="partido-unirse-meta">
-                            ${escaparHtmlClub(p.tipo || '')} · ${escaparHtmlClub(p.modalidad || '')}
+                            ${escaparHtmlClub(categoriaPartido(p))} · ${escaparHtmlClub(p.modalidad || '')}
                             ${p.cancha ? ` · Cancha ${escaparHtmlClub(p.canchaNombre || p.cancha)}` : ''}
                         </div>
                         <button
@@ -4043,7 +4485,7 @@ tr:hover td{background:#f9fafb}
 
         function renderizarPartidosAbiertos() {
             const user = getNombreCompleto();
-            const fTipo = document.getElementById('filtro-tipo-unirse').value;
+            const fCategoria = document.getElementById('filtro-categoria-unirse').value;
             const fMod = document.getElementById('filtro-mod-unirse').value;
             const fClub = document.getElementById('filtro-club-unirse')?.value || 'Todos';
 
@@ -4058,7 +4500,8 @@ tr:hover td{background:#f9fafb}
 
                 if (p.visibilidad === 'Privado' && !invitado) return false;
                 if (fClub !== 'Todos' && p.club !== fClub && !invitado) return false;
-                if (fTipo !== 'Todos' && p.tipo !== fTipo && !invitado) return false;
+                if (fCategoria !== 'Todos' && categoriaPartido(p) !== fCategoria && !invitado) return false;
+                if (!invitado && !partidoTieneCupoParaUsuario(p)) return false;
                 if (fMod !== 'Todos' && p.modalidad !== fMod && !invitado) return false;
                 return true;
             });
@@ -4483,14 +4926,15 @@ tr:hover td{background:#f9fafb}
             let h = horaSeleccionadaCrear;
             let c = document.getElementById('input-club-crear').value; 
             let m = document.getElementById('input-mod-crear').value;
-            let tipo = document.getElementById('input-tipo-crear').value;
-            let vis = tipo === 'Casual' ? document.getElementById('input-visibilidad-crear').value : 'Publico';
+            let categoria = document.getElementById('input-categoria-crear').value;
+            let tipo = 'Competitivo';
+            let vis = 'Publico';
 
             if(!f || !h) return alert("Selecciona un horario disponible.");
             
             partidosData.push({ 
                 id: Date.now(), fecha: f, hora: h, club: c, modalidad: m, 
-                tipo: tipo, visibilidad: vis, estado: "Buscando Rival", 
+                tipo: tipo, categoria: categoria, visibilidad: vis, estado: "Buscando Rival", 
                 j1: getNombreCompleto(), j2: "Libre", j3: "Libre", j4: "Libre" 
             });
             
@@ -4505,8 +4949,12 @@ tr:hover td{background:#f9fafb}
             if (!partido) return;
 
             seleccionEquipoPartidoId = partido.id;
-            const libres1 = slotsDisponiblesEquipo(partido, 'equipo1').length;
-            const libres2 = slotsDisponiblesEquipo(partido, 'equipo2').length;
+            const genero = normalizarGeneroCompetitivo(perfilUsuario.genero);
+            if (!usuarioPuedeParticiparCategoria(categoriaPartido(partido), genero)) {
+                return alert("Tu género no es compatible con la categoría de este partido.");
+            }
+            const libres1 = slotsDisponiblesEquipoParaGenero(partido, 'equipo1', genero).length;
+            const libres2 = slotsDisponiblesEquipoParaGenero(partido, 'equipo2', genero).length;
             const contenedor = document.getElementById('opciones-equipo-unirse');
 
             contenedor.innerHTML = `
@@ -4746,6 +5194,10 @@ tr:hover td{background:#f9fafb}
             partidoEnEdicion = partidosData.find(x => String(x.id) === String(id));
             if (!partidoEnEdicion) return;
 
+            if (cargaResultadoUsuario(partidoEnEdicion)) {
+                return alert('Ya cargaste tu resultado. Ahora debe ser verificado por los demás jugadores.');
+            }
+
             const lado = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
             if (!lado) return alert('No formás parte de este partido.');
 
@@ -4755,106 +5207,226 @@ tr:hover td{background:#f9fafb}
             const rival = lado === 'equipo1'
                 ? [partidoEnEdicion.j3, partidoEnEdicion.j4]
                 : [partidoEnEdicion.j1, partidoEnEdicion.j2];
-
-            document.getElementById('res-eq1').innerText = propio.join(' / ');
-            document.getElementById('res-eq2').innerText = rival.join(' / ');
             ['s1-e1','s1-e2','s2-e1','s2-e2','s3-e1','s3-e2'].forEach(inputId => {
                 document.getElementById(inputId).value = '';
             });
             document.getElementById('modal-resultado').style.display = 'flex';
         }
 
+        function obtenerResultadoTemporalDesdeFormulario() {
+            const set1 = leerSetResultado(1);
+            const set2 = leerSetResultado(2);
+            const set3 = leerSetResultado(3);
+
+            if (!set1 || !set2) throw new Error('Los dos primeros sets son obligatorios.');
+
+            let setsIzquierda = [set1, set2].filter(s => s.ganador === 'izquierda').length;
+            let setsDerecha = [set1, set2].filter(s => s.ganador === 'derecha').length;
+
+            if (setsIzquierda === 1 && setsDerecha === 1) {
+                if (!set3) throw new Error('El tercer set es obligatorio porque el partido está 1-1.');
+                if (set3.ganador === 'izquierda') setsIzquierda++;
+                else setsDerecha++;
+            } else if (set3) {
+                throw new Error('No corresponde cargar un tercer set cuando el partido terminó 2-0.');
+            }
+
+            if (setsIzquierda !== 2 && setsDerecha !== 2) {
+                throw new Error('El resultado debe terminar 2-0 o 2-1.');
+            }
+
+            return {
+                sets: [set1, set2, set3].filter(Boolean),
+                setsIzquierda,
+                setsDerecha
+            };
+        }
+
+        function abrirConfirmacionFinalResultado() {
+            try {
+                const temporal = obtenerResultadoTemporalDesdeFormulario();
+                const resumen = temporal.sets
+                    .map((set, indice) => `Set ${indice + 1}: ${set.izquierda}-${set.derecha}`)
+                    .join(' · ');
+
+                document.getElementById('confirmacion-final-resumen').textContent = resumen;
+                document.getElementById('modal-confirmacion-final-resultado').style.display = 'flex';
+            } catch (error) {
+                alert(error.message || 'Revisá el resultado cargado.');
+            }
+        }
+
+        function cerrarConfirmacionFinalResultado() {
+            const modal = document.getElementById('modal-confirmacion-final-resultado');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function confirmarGuardadoDefinitivoResultado() {
+            cerrarConfirmacionFinalResultado();
+            await guardarResultado();
+        }
+
+        async function aplicarResultadoConfirmadoPartido(partido, setsCanonicos) {
+            if (partido.puntosAplicados === true) return;
+
+            const setsEquipo1 = setsCanonicos.filter(set => Number(set[0]) > Number(set[1])).length;
+            const setsEquipo2 = setsCanonicos.filter(set => Number(set[1]) > Number(set[0])).length;
+            const equipoGanadorCanonico = setsEquipo1 > setsEquipo2 ? 'equipo1' : 'equipo2';
+
+            partido.estado = 'Finalizado';
+            partido.resultadoSets = setsCanonicos;
+            partido.resultado = setsCanonicos.map(set => `${set[0]}-${set[1]}`).join(', ');
+            partido.equipoGanador = equipoGanadorCanonico;
+            partido.resultadoConfirmadoEn = new Date().toISOString();
+
+            const calculo = calcularPuntosPartido(
+                {...partido, modalidad: categoriaPartido(partido)},
+                equipoGanadorCanonico
+            );
+
+            const equipo1Nombres = [partido.j1, partido.j2];
+            const equipo2Nombres = [partido.j3, partido.j4];
+            const ganadores = equipoGanadorCanonico === 'equipo1' ? equipo1Nombres : equipo2Nombres;
+            const perdedores = equipoGanadorCanonico === 'equipo1' ? equipo2Nombres : equipo1Nombres;
+
+            const statsEquipo1 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo1');
+            const statsEquipo2 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo2');
+            const statsGanadores = equipoGanadorCanonico === 'equipo1' ? statsEquipo1 : statsEquipo2;
+            const statsPerdedores = equipoGanadorCanonico === 'equipo1' ? statsEquipo2 : statsEquipo1;
+
+            partido.puntosAplicados = true;
+            partido.puntosOtorgados = calculo.puntosVictoria;
+            partido.puntosDescontados = calculo.puntosDerrota;
+            partido.multiplicadorVictoria = calculo.multiplicadorVictoria;
+            partido.multiplicadorDerrota = calculo.multiplicadorDerrota;
+            partido.estadisticasEquipo1 = statsEquipo1;
+            partido.estadisticasEquipo2 = statsEquipo2;
+            partido.cambiosPuntos = {};
+
+            ganadores.forEach(nombre => {
+                partido.cambiosPuntos[nombre] = calculo.puntosVictoria;
+            });
+            perdedores.forEach(nombre => {
+                partido.cambiosPuntos[nombre] = -calculo.puntosDerrota;
+            });
+
+            const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
+            await guardar(partido);
+
+            await Promise.all([
+                ...ganadores.map(nombre => actualizarJugadorRankingResultado(
+                    nombre,
+                    categoriaPartido(partido),
+                    {
+                        puntos: calculo.puntosVictoria,
+                        gano: true,
+                        ...statsGanadores
+                    }
+                )),
+                ...perdedores.map(nombre => actualizarJugadorRankingResultado(
+                    nombre,
+                    categoriaPartido(partido),
+                    {
+                        puntos: -calculo.puntosDerrota,
+                        gano: false,
+                        ...statsPerdedores
+                    }
+                ))
+            ]);
+        }
+
         async function guardarResultado() {
             if (!partidoEnEdicion) return;
-            if (partidoEnEdicion.puntosAplicados === true) {
-                return alert('Este resultado ya fue procesado.');
+            if (partidoEnEdicion.estado === 'Finalizado' || partidoEnEdicion.puntosAplicados === true) {
+                return alert('Este resultado ya fue confirmado.');
+            }
+            if (cargaResultadoUsuario(partidoEnEdicion)) {
+                return alert('Ya cargaste tu resultado. Debés esperar la verificación de los demás jugadores.');
             }
 
             try {
-                const set1 = leerSetResultado(1);
-                const set2 = leerSetResultado(2);
-                const set3 = leerSetResultado(3);
-
-                if (!set1 || !set2) throw new Error('Los dos primeros sets son obligatorios.');
-
-                let setsIzquierda = [set1, set2].filter(s => s.ganador === 'izquierda').length;
-                let setsDerecha = [set1, set2].filter(s => s.ganador === 'derecha').length;
-
-                if (setsIzquierda === 1 && setsDerecha === 1) {
-                    if (!set3) throw new Error('El tercer set es obligatorio porque el partido está 1-1.');
-                    if (set3.ganador === 'izquierda') setsIzquierda++;
-                    else setsDerecha++;
-                } else if (set3) {
-                    throw new Error('No corresponde cargar un tercer set cuando el partido terminó 2-0.');
-                }
-
-                if (setsIzquierda !== 2 && setsDerecha !== 2) {
-                    throw new Error('El resultado debe terminar 2-0 o 2-1.');
-                }
-
+                const temporal = obtenerResultadoTemporalDesdeFormulario();
                 const ladoUsuario = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
-                const ganoLadoIzquierdo = setsIzquierda === 2;
-                const equipoGanadorCanonico = ladoUsuario === 'equipo1'
-                    ? (ganoLadoIzquierdo ? 'equipo1' : 'equipo2')
-                    : (ganoLadoIzquierdo ? 'equipo2' : 'equipo1');
+                if (!ladoUsuario) throw new Error('No formás parte de este partido.');
 
-                const setsDesdeUsuario = [set1, set2, set3].filter(Boolean);
-                const setsCanonicos = setsDesdeUsuario.map(set => {
+                const setsCanonicos = temporal.sets.map(set => {
                     if (ladoUsuario === 'equipo1') return [set.izquierda, set.derecha];
                     return [set.derecha, set.izquierda];
                 });
 
-                partidoEnEdicion.estado = 'Finalizado';
-                partidoEnEdicion.resultadoSets = setsCanonicos;
-                partidoEnEdicion.resultado = setsCanonicos.map(set => `${set[0]}-${set[1]}`).join(', ');
-                partidoEnEdicion.equipoGanador = equipoGanadorCanonico;
-                partidoEnEdicion.cargadoPor = getNombreCompleto();
-                partidoEnEdicion.resultadoCargadoEn = new Date().toISOString();
+                const nuevaCarga = {
+                    usuario: getNombreCompleto(),
+                    uid: usuarioActual?.uid || '',
+                    equipo: ladoUsuario,
+                    setsCanonicos,
+                    clave: claveResultadoCanonico(setsCanonicos),
+                    cargadoEn: new Date().toISOString()
+                };
 
-                if (partidoEnEdicion.tipo === 'Competitivo') {
-                    const calculo = calcularPuntosPartido(partidoEnEdicion, equipoGanadorCanonico);
-                    const equipo1Nombres = [partidoEnEdicion.j1, partidoEnEdicion.j2];
-                    const equipo2Nombres = [partidoEnEdicion.j3, partidoEnEdicion.j4];
-                    const ganadores = equipoGanadorCanonico === 'equipo1' ? equipo1Nombres : equipo2Nombres;
-                    const perdedores = equipoGanadorCanonico === 'equipo1' ? equipo2Nombres : equipo1Nombres;
-                    const statsEquipo1 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo1');
-                    const statsEquipo2 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo2');
-                    const statsGanadores = equipoGanadorCanonico === 'equipo1' ? statsEquipo1 : statsEquipo2;
-                    const statsPerdedores = equipoGanadorCanonico === 'equipo1' ? statsEquipo2 : statsEquipo1;
+                partidoEnEdicion.resultadosCargados = [
+                    ...resultadosCargadosPartido(partidoEnEdicion),
+                    nuevaCarga
+                ];
+                partidoEnEdicion.estado = 'Pendiente Resultado';
 
-                    partidoEnEdicion.puntosAplicados = true;
-                    partidoEnEdicion.puntosOtorgados = calculo.puntosVictoria;
-                    partidoEnEdicion.puntosDescontados = calculo.puntosDerrota;
-                    partidoEnEdicion.multiplicadorVictoria = calculo.multiplicadorVictoria;
-                    partidoEnEdicion.multiplicadorDerrota = calculo.multiplicadorDerrota;
-                    partidoEnEdicion.estadisticasEquipo1 = statsEquipo1;
-                    partidoEnEdicion.estadisticasEquipo2 = statsEquipo2;
-                    await guardarPartidoEnFirebase(partidoEnEdicion);
+                const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
+                await guardar(partidoEnEdicion);
 
-                    await Promise.all([
-                        ...ganadores.map(nombre => actualizarJugadorRankingResultado(nombre, partidoEnEdicion.modalidad, {
-                            puntos: calculo.puntosVictoria,
-                            gano: true,
-                            ...statsGanadores
-                        })),
-                        ...perdedores.map(nombre => actualizarJugadorRankingResultado(nombre, partidoEnEdicion.modalidad, {
-                            puntos: -calculo.puntosDerrota,
-                            gano: false,
-                            ...statsPerdedores
-                        }))
-                    ]);
+                // 1) Si ya hay la misma versión cargada por ambos equipos, confirmar.
+                let verificado = resultadoCoincidenteEntreEquipos(partidoEnEdicion);
 
-                    alert(`Resultado guardado. Cada ganador suma ${calculo.puntosVictoria} puntos y cada perdedor pierde ${calculo.puntosDerrota}.`);
+                // 2) Si hubo conflicto, esperar las cuatro cargas.
+                //    Con cuatro cargas, una mayoría clara permite verificar.
+                if (!verificado) {
+                    verificado = resultadoVerificableTrasCuatroCargas(partidoEnEdicion);
+                }
+
+                let enviadoAHistorialPorRevision = false;
+
+                if (verificado) {
+                    await aplicarResultadoConfirmadoPartido(partidoEnEdicion, verificado.setsCanonicos);
+                    alert('Resultado confirmado por los jugadores. El partido pasó al historial.');
+                } else if (hayEmpateIncongruenteTrasCuatroCargas(partidoEnEdicion)) {
+                    // Cuatro jugadores cargaron y quedaron dos versiones empatadas 2-2.
+                    // Se envía a historial SIN tocar ranking ni estadísticas.
+                    await marcarPartidoResultadoIncongruente(partidoEnEdicion);
+                    enviadoAHistorialPorRevision = true;
+                    alert('Los resultados cargados son incongruentes. El partido pasó al historial y quedó pendiente de revisión.');
                 } else {
-                    partidoEnEdicion.puntosAplicados = true;
-                    await guardarPartidoEnFirebase(partidoEnEdicion);
-                    alert('Resultado guardado. Los partidos casuales no modifican el ranking.');
+                    const cargas = resultadosCargadosPartido(partidoEnEdicion);
+                    const claves = new Set(cargas.map(c => c.clave || claveResultadoCanonico(c.setsCanonicos)));
+
+                    if (claves.size > 1) {
+                        alert('Tu resultado fue cargado, pero no coincide con otra carga. Los demás jugadores deberán cargar su resultado para verificarlo.');
+                    } else {
+                        alert('Resultado cargado. Los rivales tienen que cargar el resultado para confirmarlo.');
+                    }
                 }
 
                 cerrarModales();
                 renderizarMisPartidos();
                 renderizarRanking();
                 renderizarBanner();
+
+                cambiarVistaPrincipal('partidos');
+
+                if (enviadoAHistorialPorRevision || partidoEnEdicion.estado === 'Finalizado') {
+                    cambiarPanelPartidos('historial');
+                    setTimeout(() => {
+                        document.getElementById('panel-partidos-historial')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 60);
+                } else {
+                    cambiarPanelPartidos('pendientes');
+                    setTimeout(() => {
+                        document.getElementById('panel-partidos-pendientes')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 60);
+                }
             } catch (error) {
                 alert(error.message || 'No se pudo guardar el resultado.');
             }
@@ -5249,17 +5821,33 @@ tr:hover td{background:#f9fafb}
                 }, (error) => logFirebaseError("lectura de clubes", error));
 
                 const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
-                    partidosData = docsToArray(snapshot).map(p => ({
+                    const todosPartidos = docsToArray(snapshot).map(p => ({
                         ...p,
                         j1: p.j1 || p.jugador1 || p.creador || "Libre",
                         j2: p.j2 || p.jugador2 || "Libre",
                         j3: p.j3 || p.jugador3 || "Libre",
                         j4: p.j4 || p.jugador4 || "Libre",
                         estado: p.estado || "Buscando Rival",
-                        tipo: p.tipo || "Competitivo",
-                        visibilidad: p.visibilidad || "Publico",
-                        modalidad: p.modalidad || "Masculino"
+                        tipo: "Competitivo",
+                        categoria: ["Masculino","Femenino","Mixto"].includes(p.categoria) ? p.categoria : "Masculino",
+                        visibilidad: "Publico",
+                        modalidad: p.modalidad || "Outdoor"
                     }));
+
+                    // La aplicación queda exclusivamente competitiva.
+                    // Los documentos casuales heredados se eliminan de Firestore y no se muestran.
+                    const casualesLegados = docsToArray(snapshot).filter(p => String(p.tipo || '').toLowerCase() === 'casual');
+                    casualesLegados.forEach(p => {
+                        if (!p._firestorePath) return;
+                        const partes = String(p._firestorePath).split('/').filter(Boolean);
+                        firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, ...partes)).catch(() => {});
+                        const reservaId = p.reservaId || p.reserva?.id || '';
+                        if (reservaId && partes[1]) {
+                            firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, 'clubs', partes[1], 'reservas', String(reservaId))).catch(() => {});
+                        }
+                    });
+
+                    partidosData = todosPartidos.filter(p => String(p.tipo || '').toLowerCase() !== 'casual');
                     renderizarTodo();
                     window.actualizarHorariosDisponibles();
                     procesarEstadosPartidosCompetitivos();
@@ -5809,8 +6397,18 @@ tr:hover td{background:#f9fafb}
                 const hora = horaSeleccionadaCrear;
                 const club = document.getElementById("input-club-crear").value;
                 const modalidad = document.getElementById("input-mod-crear").value;
-                const tipo = document.getElementById("input-tipo-crear").value;
-                const visibilidad = tipo === "Casual" ? document.getElementById("input-visibilidad-crear").value : "Publico";
+                const categoria = document.getElementById("input-categoria-crear").value;
+                const tipo = "Competitivo";
+                const visibilidad = "Publico";
+
+                const generoCreador = normalizarGeneroCompetitivo(perfilUsuario.genero);
+                if (!usuarioPuedeParticiparCategoria(categoria, generoCreador)) {
+                    return alert(categoria === "Masculino"
+                        ? "La categoría Masculino admite únicamente jugadores masculinos."
+                        : categoria === "Femenino"
+                            ? "La categoría Femenino admite únicamente jugadoras femeninas."
+                            : "La categoría Mixto admite jugadores con género Masculino o Femenino.");
+                }
 
                 if (!fecha || !hora) return alert("Selecciona un horario disponible.");
 
@@ -5827,7 +6425,7 @@ tr:hover td{background:#f9fafb}
                     jugador: getNombreCompleto(),
                     jugadorUid: usuarioActual?.uid || null,
                     telefono: perfilUsuario.telefono,
-                    tipoEvento: `Partido ${tipo}`,
+                    tipoEvento: `Partido competitivo ${categoria}`,
                     origen: "circuito",
                     partidoId
                 });
@@ -5843,6 +6441,7 @@ tr:hover td{background:#f9fafb}
                     club,
                     modalidad,
                     tipo,
+                    categoria,
                     visibilidad,
                     estado: "Buscando Rival",
                     duracion: duracionPartido,
@@ -5858,7 +6457,7 @@ tr:hover td{background:#f9fafb}
                 partidosData.push(partidoNuevo);
                 guardarPartidoEnFirebase(partidoNuevo).catch(error => logFirebaseError("creación de partido", error));
 
-                alert(`Partido ${tipo} creado y turno reservado en ${club}, cancha ${reserva.reserva.cancha}.`);
+                alert(`Partido competitivo ${categoria} creado y turno reservado en ${club}, cancha ${reserva.reserva.cancha}.`);
                 cambiarPanelPartidos("curso");
                 renderizarPartidosAbiertos();
                 renderizarMisPartidos();
@@ -5908,12 +6507,23 @@ tr:hover td{background:#f9fafb}
                     slot = null;
                 }
 
-                if (!slot) {
-                    const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
-                    slot = slotsDisponiblesEquipo(p, equipo)[0] || null;
+                const generoUsuario = normalizarGeneroCompetitivo(perfilUsuario.genero);
+                if (!usuarioPuedeParticiparCategoria(categoriaPartido(p), generoUsuario)) {
+                    return alert("Tu género no es compatible con la categoría de este partido.");
                 }
 
-                if (!slot) return alert("Ese equipo ya no tiene lugares disponibles.");
+                if (slot && !slotCompatibleConGenero(p, slot, generoUsuario)) {
+                    return alert("La invitación ya no es compatible con la composición de este equipo.");
+                }
+
+                if (!slot) {
+                    const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
+                    slot = slotsDisponiblesEquipoParaGenero(p, equipo, generoUsuario)[0] || null;
+                }
+
+                if (!slot) return alert(categoriaPartido(p) === "Mixto"
+                    ? "Ese equipo no tiene un lugar compatible con tu género. En Mixto cada pareja debe tener un jugador masculino y uno femenino."
+                    : "Ese equipo ya no tiene lugares disponibles.");
 
                 p[slot] = user;
                 p.jugadoresUid = Array.from(new Set([
