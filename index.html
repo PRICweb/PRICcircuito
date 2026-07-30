@@ -2672,6 +2672,9 @@ tr:hover td{background:#f9fafb}
         // Variables Globales
         let bannerInterval, clubesBannerInterval, controlPartidosInterval, currentSlide = 0, clubBannerIndex = 0, partidoEnEdicion = null, catRankingActual = 'Masculino';
         let guardandoResultadoEnCurso = false;
+        const operacionesPartidosEnCurso = new Set();
+        const operacionesAmigosEnCurso = new Set();
+
         let fechaSeleccionadaCrear = new Date(); 
         let horaSeleccionadaCrear = '';
         let partidoInvitacionActualId = null;
@@ -3168,48 +3171,15 @@ tr:hover td{background:#f9fafb}
         async function enviarSolicitudAmistadJugador() {
             const nombre = jugadorAccionesActual;
             if (!nombre || nombre.trim().toLowerCase() === getNombreCompleto().trim().toLowerCase()) return;
-            if (!firebaseAPI || !usuarioActual) return alert('Iniciá sesión para enviar solicitudes.');
 
-            const jugador = rankingData.find(j => String(j.nombre || '').trim() === nombre);
-            const uidDestino = jugador?.uid || jugador?.userId || jugador?.id;
-            if (!uidDestino) return alert('No se encontró la cuenta de este jugador.');
-
-            if (amigosData.some(a => String(a.uid || a.id) === String(uidDestino) || String(a.nombre || '') === nombre)) {
-                return alert('Este jugador ya está en tu lista de amigos.');
-            }
-
-            const solicitudId = `${usuarioActual.uid}_${uidDestino}`;
-            await firebaseAPI.setDoc(
-                firebaseAPI.doc(firebaseAPI.db, 'users', String(uidDestino), 'solicitudesAmistad', solicitudId),
-                {
-                    id: solicitudId,
-                    deUid: usuarioActual.uid,
-                    deNombre: getNombreCompleto(),
-                    paraUid: String(uidDestino),
-                    paraNombre: nombre,
-                    estado: 'pendiente',
-                    creadoEn: firebaseAPI.serverTimestamp()
-                },
-                { merge: true }
-            ).catch(error => logFirebaseError('solicitud de amistad', error));
-
-            await firebaseAPI.setDoc(
-                firebaseAPI.doc(firebaseAPI.db, 'users', String(uidDestino), 'notificaciones', solicitudId),
-                {
-                    id: solicitudId,
-                    tipo: 'solicitud_amistad',
-                    titulo: 'Nueva solicitud de amistad',
-                    texto: `${getNombreCompleto()} quiere agregarte como amigo.`,
-                    deUid: usuarioActual.uid,
-                    deNombre: getNombreCompleto(),
-                    leida: false,
-                    creadoEn: firebaseAPI.serverTimestamp()
-                },
-                { merge: true }
-            ).catch(error => logFirebaseError('notificación de amistad', error));
+            const jugador = rankingData.find(j =>
+                String(j.nombre || '').trim().toLowerCase() === nombre.trim().toLowerCase()
+            );
+            const uid = jugador?.uid || jugador?.id;
+            if (!uid) return alert('No se encontró la cuenta de este jugador.');
 
             cerrarModalAccionesJugador();
-            alert(`Solicitud enviada a ${nombre}.`);
+            await window.enviarSolicitudAmistadDesdeBusqueda(String(uid));
         }
 
         function verPerfilJugadorSeleccionado() {
@@ -3953,162 +3923,212 @@ tr:hover td{background:#f9fafb}
                 </article>`;
         }
 
-        async function salirDePartidoPendiente(partidoId) {
+        function obtenerReferenciaPartidoFirestore(partido) {
             const api = window.firebaseAPI;
-            const guardar = window.guardarPartidoEnFirebase;
-            const partido = partidosData.find(p => String(p.id) === String(partidoId));
-            const usuario = getNombreCompleto();
+            if (!api || !partido) return null;
 
-            if (!partido) return alert('No se encontró el partido.');
-            if (!['Buscando Rival', 'Partido Confirmado'].includes(partido.estado)) {
-                return alert('Este partido ya no permite salir desde Pendientes.');
-            }
-            if (!api || typeof guardar !== 'function') {
-                return alert('Firebase todavía no está listo. Probá nuevamente.');
+            if (partido._firestorePath) {
+                const partes = String(partido._firestorePath).split('/').filter(Boolean);
+                if (partes.length % 2 === 0) return api.doc(api.db, ...partes);
             }
 
-            const slotUsuario = ['j1','j2','j3','j4'].find(slot =>
-                String(partido[slot] || '').trim().toLowerCase() === usuario.trim().toLowerCase()
-            );
-            if (!slotUsuario) return alert('No figurás como jugador de este partido.');
-            if (!confirm('¿Querés salir de este partido?')) return;
+            const resolver = window.resolverClubDocId;
+            const clubDocId = typeof resolver === 'function'
+                ? resolver(partido.club || 'Club Central')
+                : String(partido.club || 'Club Central');
+            return api.doc(api.db, 'clubs', String(clubDocId), 'partidos', String(partido.id));
+        }
 
-            const original = {
-                j1: partido.j1,
-                j2: partido.j2,
-                j3: partido.j3,
-                j4: partido.j4,
-                estado: partido.estado,
-                jugadoresUid: [...(partido.jugadoresUid || [])],
-                invitacionesPendientes: [...obtenerInvitacionesPendientesPartido(partido)]
+        function normalizarPartidoRemoto(data, local = {}) {
+            return {
+                ...local,
+                ...(data || {}),
+                id: local.id || data?.id,
+                _firestorePath: local._firestorePath || data?._firestorePath,
+                j1: data?.j1 || local.j1 || 'Libre',
+                j2: data?.j2 || local.j2 || 'Libre',
+                j3: data?.j3 || local.j3 || 'Libre',
+                j4: data?.j4 || local.j4 || 'Libre',
+                tipo: 'Competitivo',
+                estado: data?.estado || local.estado || 'Buscando Rival',
+                invitacionesPendientes: Array.isArray(data?.invitacionesPendientes)
+                    ? data.invitacionesPendientes
+                    : (Array.isArray(local.invitacionesPendientes) ? local.invitacionesPendientes : []),
+                jugadoresUid: Array.isArray(data?.jugadoresUid)
+                    ? data.jugadoresUid
+                    : (Array.isArray(local.jugadoresUid) ? local.jugadoresUid : [])
             };
+        }
 
-            const invitacionesACancelar = obtenerInvitacionesPendientesPartido(partido).filter(inv =>
-                String(inv.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
-                String(inv.invitadoPor || '').trim().toLowerCase() === usuario.trim().toLowerCase()
-            );
-
-            // Quitar al jugador y liberar sus invitaciones antes de persistir.
-            partido[slotUsuario] = 'Libre';
-            partido.jugadoresUid = (partido.jugadoresUid || []).filter(uid =>
-                String(uid) !== String(usuarioActual?.uid || '')
-            );
-            partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido).filter(inv =>
-                !invitacionesACancelar.some(cancelada => String(cancelada.id) === String(inv.id))
-            );
-            partido.estado = 'Buscando Rival';
-
-            const quedanJugadores = [partido.j1, partido.j2, partido.j3, partido.j4]
-                .some(nombre => nombre && nombre !== 'Libre');
-
-            // Actualización visual inmediata.
-            renderizarMisPartidos();
-            renderizarPartidosAbiertos();
-            renderizarBanner();
-
+        async function ejecutarOperacionPartido(clave, operacion) {
+            if (operacionesPartidosEnCurso.has(clave)) return null;
+            operacionesPartidosEnCurso.add(clave);
             try {
-                if (quedanJugadores) {
-                    // Usa la _firestorePath real del documento.
-                    await guardar(partido);
-                } else {
-                    // Si no queda nadie se elimina el partido completo.
-                    if (!partido._firestorePath) throw new Error('No se encontró la ruta real del partido.');
-                    const partes = String(partido._firestorePath).split('/').filter(Boolean);
-                    await api.deleteDoc(api.doc(api.db, ...partes));
+                return await operacion();
+            } finally {
+                operacionesPartidosEnCurso.delete(clave);
+            }
+        }
 
-                    const reservaId = partido.reservaId || partido.reserva?.id || '';
-                    if (partido.reservaPath) {
-                        const partesReserva = String(partido.reservaPath).split('/').filter(Boolean);
-                        await api.deleteDoc(api.doc(api.db, ...partesReserva));
-                    } else if (reservaId) {
-                        const partesPartido = String(partido._firestorePath).split('/').filter(Boolean);
-                        const clubDocId = partesPartido[1] || '';
-                        if (clubDocId) {
-                            await api.deleteDoc(
-                                api.doc(api.db, 'clubs', clubDocId, 'reservas', String(reservaId))
-                            ).catch(() => {});
-                        }
+        async function ejecutarOperacionAmistad(clave, operacion) {
+            if (operacionesAmigosEnCurso.has(clave)) return null;
+            operacionesAmigosEnCurso.add(clave);
+            try {
+                return await operacion();
+            } finally {
+                operacionesAmigosEnCurso.delete(clave);
+            }
+        }
+
+        async function salirDePartidoPendiente(partidoId) {
+            const claveOperacion = `salir-${partidoId}-${usuarioActual?.uid || getNombreCompleto()}`;
+
+            return ejecutarOperacionPartido(claveOperacion, async () => {
+                const api = window.firebaseAPI;
+                const partidoLocal = partidosData.find(p => String(p.id) === String(partidoId));
+                const usuario = getNombreCompleto();
+
+                if (!api || !partidoLocal) return alert('No se encontró el partido o Firebase no está listo.');
+                if (!confirm('¿Querés salir de este partido?')) return;
+
+                const ref = obtenerReferenciaPartidoFirestore(partidoLocal);
+                if (!ref) return alert('No se encontró la referencia del partido.');
+
+                let partidoActualizado = null;
+                let eliminarPartido = false;
+                let invitacionesCanceladas = [];
+
+                await api.runTransaction(api.db, async transaction => {
+                    const snap = await transaction.get(ref);
+                    if (!snap.exists()) throw new Error('El partido ya no existe.');
+
+                    const partido = normalizarPartidoRemoto(snap.data(), partidoLocal);
+                    if (!['Buscando Rival', 'Partido Confirmado'].includes(partido.estado)) {
+                        throw new Error('Este partido ya no permite salir desde Pendientes.');
                     }
 
-                    partidosData = partidosData.filter(p => String(p.id) !== String(partido.id));
+                    const slot = ['j1','j2','j3','j4'].find(s =>
+                        String(partido[s] || '').trim().toLowerCase() === usuario.trim().toLowerCase()
+                    );
+                    if (!slot) throw new Error('No figurás como jugador de este partido.');
+
+                    invitacionesCanceladas = obtenerInvitacionesPendientesPartido(partido).filter(inv =>
+                        String(inv.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
+                        String(inv.invitadoPor || '').trim().toLowerCase() === usuario.trim().toLowerCase()
+                    );
+
+                    partido[slot] = 'Libre';
+                    partido.jugadoresUid = (partido.jugadoresUid || []).filter(uid =>
+                        String(uid) !== String(usuarioActual?.uid || '')
+                    );
+                    partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido)
+                        .filter(inv => !invitacionesCanceladas.some(c => String(c.id) === String(inv.id)));
+                    partido.estado = 'Buscando Rival';
+
+                    eliminarPartido = ![partido.j1,partido.j2,partido.j3,partido.j4]
+                        .some(n => n && n !== 'Libre');
+
+                    if (eliminarPartido) {
+                        transaction.delete(ref);
+                    } else {
+                        const guardar = {...partido};
+                        delete guardar._firestorePath;
+                        transaction.set(ref, {
+                            ...guardar,
+                            actualizadoEn: api.serverTimestamp()
+                        }, {merge:true});
+                    }
+
+                    partidoActualizado = partido;
+                });
+
+                if (eliminarPartido) {
+                    partidosData = partidosData.filter(p => String(p.id) !== String(partidoId));
+                    const reservaId = partidoLocal.reservaId || partidoLocal.reserva?.id || '';
+                    if (reservaId && partidoLocal._firestorePath) {
+                        const partes = String(partidoLocal._firestorePath).split('/').filter(Boolean);
+                        const clubId = partes[1];
+                        if (clubId) {
+                            await api.deleteDoc(api.doc(api.db, 'clubs', clubId, 'reservas', String(reservaId)))
+                                .catch(error => console.warn('No se pudo eliminar la reserva asociada:', error));
+                        }
+                    }
+                } else {
+                    const indice = partidosData.findIndex(p => String(p.id) === String(partidoId));
+                    if (indice >= 0) partidosData[indice] = {...partidosData[indice], ...partidoActualizado};
                 }
 
-                // Avisar a los amigos cuyas invitaciones se cancelaron al salir.
-                await Promise.all(invitacionesACancelar.filter(inv => inv.uid).map(inv => {
-                    const notifId = `invitacion-cancelada-salida-${partido.id}-${inv.slot}`;
+                await Promise.allSettled(invitacionesCanceladas.filter(inv => inv.uid).map(inv => {
+                    const id = `invitacion-cancelada-salida-${partidoId}-${inv.slot}`;
                     return api.setDoc(
-                        api.doc(api.db, 'users', String(inv.uid), 'notificaciones', notifId),
+                        api.doc(api.db, 'users', String(inv.uid), 'notificaciones', id),
                         {
-                            id: notifId,
-                            tipo: 'invitacion_partido_cancelada',
-                            titulo: 'Invitación cancelada',
-                            texto: `${usuario} salió del partido y la invitación quedó cancelada.`,
-                            partidoId: String(partido.id),
-                            leida: false,
-                            creadoEn: api.serverTimestamp()
+                            id,
+                            tipo:'invitacion_partido_cancelada',
+                            titulo:'Invitación cancelada',
+                            texto:`${usuario} salió del partido y la invitación quedó cancelada.`,
+                            partidoId:String(partidoId),
+                            leida:false,
+                            creadoEn:api.serverTimestamp()
                         },
-                        { merge: true }
+                        {merge:true}
                     );
                 }));
 
                 renderizarMisPartidos();
                 renderizarPartidosAbiertos();
                 renderizarBanner();
-            } catch (error) {
-                Object.assign(partido, original);
-                renderizarMisPartidos();
-                renderizarPartidosAbiertos();
-                renderizarBanner();
+            }).catch(error => {
                 console.error('Error al salir del partido:', error);
-                alert('No se pudo salir del partido. Revisá la conexión o las reglas de Firestore.');
-            }
+                alert(error.message || 'No se pudo salir del partido.');
+            });
         }
 
         window.salirDePartidoPendiente = salirDePartidoPendiente;
 
+        window.salirDePartidoPendiente = salirDePartidoPendiente;
+
         async function cancelarInvitacionPartido(partidoId, slot) {
-            const api = window.firebaseAPI;
-            const guardar = window.guardarPartidoEnFirebase;
-            const partido = partidosData.find(p => String(p.id) === String(partidoId));
-            if (!partido || !api || typeof guardar !== 'function') return;
+            const claveOperacion = `cancelar-invitacion-${partidoId}-${slot}`;
+            return ejecutarOperacionPartido(claveOperacion, async () => {
+                const api = window.firebaseAPI;
+                const local = partidosData.find(p => String(p.id) === String(partidoId));
+                if (!api || !local) throw new Error('No se encontró el partido.');
 
-            const invitacion = invitacionPendientePorSlot(partido, slot);
-            if (!invitacion) return;
+                const ref = obtenerReferenciaPartidoFirestore(local);
+                let removida = null;
+                let actualizado = null;
 
-            const puedeBorrar = String(invitacion.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
-                String(invitacion.invitadoPor || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
-            if (!puedeBorrar) return;
+                await api.runTransaction(api.db, async transaction => {
+                    const snap = await transaction.get(ref);
+                    if (!snap.exists()) throw new Error('El partido ya no existe.');
+                    const partido = normalizarPartidoRemoto(snap.data(), local);
+                    removida = invitacionPendientePorSlot(partido, slot);
+                    if (!removida) throw new Error('La invitación ya no existe.');
 
-            const anteriores = [...obtenerInvitacionesPendientesPartido(partido)];
-            partido.invitacionesPendientes = anteriores.filter(inv => inv.id !== invitacion.id);
-            renderizarMisPartidos();
-            renderizarPartidosAbiertos();
-            renderizarBanner();
+                    const autorizado =
+                        String(removida.invitadoPorUid || '') === String(usuarioActual?.uid || '') ||
+                        String(removida.invitadoPor || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
+                    if (!autorizado) throw new Error('No podés cancelar esta invitación.');
 
-            try {
-                await guardar(partido);
-                if (invitacion.uid) {
-                    const notifId = `invitacion-cancelada-${partido.id}-${slot}`;
-                    await api.setDoc(
-                        api.doc(api.db, 'users', String(invitacion.uid), 'notificaciones', notifId),
-                        {
-                            id: notifId,
-                            tipo: 'invitacion_partido_cancelada',
-                            titulo: 'Invitación cancelada',
-                            texto: `${getNombreCompleto()} canceló la invitación al partido del ${partido.fecha} a las ${partido.hora}.`,
-                            partidoId: String(partido.id),
-                            leida: false,
-                            creadoEn: api.serverTimestamp()
-                        }, { merge: true }
-                    );
-                }
-            } catch (error) {
-                partido.invitacionesPendientes = anteriores;
+                    partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido)
+                        .filter(inv => String(inv.id) !== String(removida.id));
+                    const guardar = {...partido};
+                    delete guardar._firestorePath;
+                    transaction.set(ref, {...guardar, actualizadoEn:api.serverTimestamp()}, {merge:true});
+                    actualizado = partido;
+                });
+
+                const indice = partidosData.findIndex(p => String(p.id) === String(partidoId));
+                if (indice >= 0) partidosData[indice] = {...partidosData[indice], ...actualizado};
+
                 renderizarMisPartidos();
                 renderizarPartidosAbiertos();
+                renderizarBanner();
+            }).catch(error => {
                 console.error(error);
-                alert('No se pudo cancelar la invitación.');
-            }
+                alert(error.message || 'No se pudo cancelar la invitación.');
+            });
         }
 
         function abrirModalInvitarAmigoPartido(id) {
@@ -4155,95 +4175,121 @@ tr:hover td{background:#f9fafb}
         }
 
         async function confirmarInvitacionAmigoPartido(amigoId) {
-            const api = window.firebaseAPI;
-            const guardar = window.guardarPartidoEnFirebase;
-            const partido = partidosData.find(p => String(p.id) === String(partidoInvitacionActualId));
-            const amigo = amigosData.find(a =>
-                String(a.id || '') === String(amigoId) ||
-                String(a.uid || '') === String(amigoId) ||
-                String(a.usuarioUid || '') === String(amigoId)
-            );
+            const partidoId = partidoInvitacionActualId;
+            const claveOperacion = `invitar-${partidoId}-${amigoId}`;
 
-            if (!partido || !amigo) return alert('No se pudo completar la invitación.');
-            if (!api || typeof guardar !== 'function') return alert('Firebase todavía no está listo. Probá nuevamente.');
+            return ejecutarOperacionPartido(claveOperacion, async () => {
+                const api = window.firebaseAPI;
+                const partidoLocal = partidosData.find(p => String(p.id) === String(partidoId));
+                const amigo = amigosData.find(a =>
+                    String(a.id || '') === String(amigoId) ||
+                    String(a.uid || '') === String(amigoId) ||
+                    String(a.usuarioUid || '') === String(amigoId)
+                );
 
-            const equipos = obtenerEquiposPartidoParaUsuario(partido, getNombreCompleto());
-            const slotReservado = equipos.slotLibrePropio;
-            if (!slotReservado) {
-                cerrarModalInvitarAmigoPartido();
-                return alert('Tu equipo ya no tiene un lugar disponible.');
-            }
+                if (!api || !partidoLocal || !amigo) throw new Error('No se pudo completar la invitación.');
 
-            const nombreAmigo = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
-            const uidAmigo = amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || '';
-            const jugadorAmigo = rankingData.find(j =>
-                String(j.uid || j.id) === String(uidAmigo) ||
-                String(j.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
-            );
-            const generoAmigo = normalizarGeneroCompetitivo(jugadorAmigo?.genero || jugadorAmigo?.modalidad || amigo.genero || '');
-            if (!slotCompatibleConGenero(partido, slotReservado, generoAmigo)) {
-                return alert(categoriaPartido(partido) === 'Mixto'
-                    ? 'En categoría Mixto cada equipo debe quedar formado por un jugador masculino y uno femenino.'
-                    : `Este jugador no puede participar en categoría ${categoriaPartido(partido)}.`);
-            }
+                const nombreAmigo = String(amigo.nombre || amigo.displayName || 'Amigo').trim();
+                const uidAmigo = String(amigo.uid || amigo.usuarioUid || amigo.userId || amigo.id || '');
+                const ref = obtenerReferenciaPartidoFirestore(partidoLocal);
+                if (!ref) throw new Error('No se encontró el partido.');
 
-            if ([partido.j1, partido.j2, partido.j3, partido.j4].some(n => String(n || '').trim().toLowerCase() === nombreAmigo.toLowerCase())) {
-                return alert('Este amigo ya forma parte del partido.');
-            }
+                let invitacionCreada = null;
+                let partidoActualizado = null;
 
-            if (obtenerInvitacionesPendientesPartido(partido).some(inv =>
-                (uidAmigo && String(inv.uid || '') === String(uidAmigo)) ||
-                String(inv.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
-            )) return alert('Este amigo ya tiene una invitación pendiente.');
+                await api.runTransaction(api.db, async transaction => {
+                    const snap = await transaction.get(ref);
+                    if (!snap.exists()) throw new Error('El partido ya no existe.');
 
-            const invitacion = {
-                id: `${partido.id}-${slotReservado}-${Date.now()}`,
-                slot: slotReservado,
-                nombre: nombreAmigo,
-                uid: uidAmigo ? String(uidAmigo) : '',
-                invitadoPor: getNombreCompleto(),
-                invitadoPorUid: usuarioActual?.uid || '',
-                estado: 'pendiente',
-                creadoEnCliente: new Date().toISOString()
-            };
+                    const partido = normalizarPartidoRemoto(snap.data(), partidoLocal);
+                    if (!['Buscando Rival','Partido Confirmado'].includes(partido.estado)) {
+                        throw new Error('El partido ya no admite invitaciones.');
+                    }
 
-            partido.invitacionesPendientes = [...obtenerInvitacionesPendientesPartido(partido), invitacion];
+                    const equipos = obtenerEquiposPartidoParaUsuario(partido, getNombreCompleto());
+                    const slot = equipos.slotLibrePropio;
+                    if (!slot) throw new Error('Tu equipo ya no tiene un lugar disponible.');
 
-            // Se ve inmediatamente en Pendientes como rectángulo con X.
-            cerrarModalInvitarAmigoPartido();
-            renderizarMisPartidos();
-            renderizarPartidosAbiertos();
-            renderizarBanner();
+                    const yaEsta = [partido.j1,partido.j2,partido.j3,partido.j4].some(n =>
+                        String(n || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+                    );
+                    if (yaEsta) throw new Error('Este amigo ya forma parte del partido.');
 
-            try {
-                await guardar(partido);
+                    const yaInvitado = obtenerInvitacionesPendientesPartido(partido).some(inv =>
+                        (uidAmigo && String(inv.uid || '') === uidAmigo) ||
+                        String(inv.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+                    );
+                    if (yaInvitado) throw new Error('Este amigo ya tiene una invitación pendiente.');
+
+                    const jugadorAmigo = rankingData.find(j =>
+                        String(j.uid || j.id) === uidAmigo ||
+                        String(j.nombre || '').trim().toLowerCase() === nombreAmigo.toLowerCase()
+                    );
+                    const generoAmigo = normalizarGeneroCompetitivo(
+                        jugadorAmigo?.genero || amigo.genero || ''
+                    );
+                    if (!slotCompatibleConGenero(partido, slot, generoAmigo)) {
+                        throw new Error(categoriaPartido(partido) === 'Mixto'
+                            ? 'En Mixto cada equipo debe tener un jugador masculino y una jugadora femenina.'
+                            : `Este jugador no puede participar en categoría ${categoriaPartido(partido)}.`);
+                    }
+
+                    invitacionCreada = {
+                        id:`${partido.id}-${slot}-${Date.now()}`,
+                        slot,
+                        nombre:nombreAmigo,
+                        uid:uidAmigo,
+                        invitadoPor:getNombreCompleto(),
+                        invitadoPorUid:usuarioActual?.uid || '',
+                        estado:'pendiente',
+                        creadoEnCliente:new Date().toISOString()
+                    };
+
+                    partido.invitacionesPendientes = [
+                        ...obtenerInvitacionesPendientesPartido(partido),
+                        invitacionCreada
+                    ];
+
+                    const guardar = {...partido};
+                    delete guardar._firestorePath;
+                    transaction.set(ref, {
+                        ...guardar,
+                        actualizadoEn:api.serverTimestamp()
+                    }, {merge:true});
+                    partidoActualizado = partido;
+                });
+
+                const indice = partidosData.findIndex(p => String(p.id) === String(partidoId));
+                if (indice >= 0) partidosData[indice] = {...partidosData[indice], ...partidoActualizado};
+
                 if (uidAmigo) {
-                    const notifId = `partido-${partido.id}-${slotReservado}`;
+                    const notifId = `partido-${partidoId}-${invitacionCreada.slot}`;
                     await api.setDoc(
-                        api.doc(api.db, 'users', String(uidAmigo), 'notificaciones', notifId),
+                        api.doc(api.db, 'users', uidAmigo, 'notificaciones', notifId),
                         {
-                            id: notifId,
-                            tipo: 'invitacion_partido',
-                            accion: 'unirse',
-                            titulo: 'Invitación a un partido',
-                            texto: `Has sido invitado por ${getNombreCompleto()} para jugar en ${partido.club}, el ${partido.fecha} a las ${partido.hora}.`,
-                            partidoId: String(partido.id),
-                            slotReservado,
-                            leida: false,
-                            creadoEn: api.serverTimestamp()
+                            id:notifId,
+                            tipo:'invitacion_partido',
+                            accion:'unirse',
+                            titulo:'Invitación a un partido',
+                            texto:`Has sido invitado por ${getNombreCompleto()} para jugar en ${partidoActualizado.club}, el ${partidoActualizado.fecha} a las ${partidoActualizado.hora}.`,
+                            partidoId:String(partidoId),
+                            slotReservado:invitacionCreada.slot,
+                            leida:false,
+                            creadoEn:api.serverTimestamp()
                         },
-                        { merge: true }
+                        {merge:true}
                     );
                 }
-                alert(`El lugar quedó reservado para ${nombreAmigo}.`);
-            } catch (error) {
-                partido.invitacionesPendientes = obtenerInvitacionesPendientesPartido(partido).filter(inv => inv.id !== invitacion.id);
+
+                cerrarModalInvitarAmigoPartido();
                 renderizarMisPartidos();
                 renderizarPartidosAbiertos();
                 renderizarBanner();
-                console.error(error);
-                alert('No se pudo guardar la invitación.');
-            }
+                alert(`El lugar quedó reservado para ${nombreAmigo}.`);
+            }).catch(error => {
+                console.error('Error al invitar:', error);
+                alert(error.message || 'No se pudo guardar la invitación.');
+            });
         }
 
         function fechaHoraPartidoMs(partido) {
@@ -4371,29 +4417,84 @@ tr:hover td{background:#f9fafb}
         }
 
         async function procesarEstadosPartidosCompetitivos() {
-            if (!window.firebaseAPI || !partidosData.length) return;
-            const limiteAhora = Date.now();
+            const api = window.firebaseAPI;
+            if (!api || !partidosData.length) return;
 
-            const candidatos = partidosData.filter(partido => {
-                if (String(partido.tipo || '').toLowerCase() !== 'competitivo') return false;
-                if (!['Buscando Rival', 'Partido Confirmado'].includes(partido.estado)) return false;
-                const inicio = fechaHoraPartidoMs(partido);
-                return Number.isFinite(inicio) && limiteAhora >= inicio;
+            const ahora = Date.now();
+            const candidatos = partidosData.filter(p => {
+                if (String(p.tipo || 'Competitivo').toLowerCase() !== 'competitivo') return false;
+                if (!['Buscando Rival','Partido Confirmado'].includes(p.estado)) return false;
+                const inicio = fechaHoraPartidoMs(p);
+                return Number.isFinite(inicio) && ahora >= inicio;
             });
 
-            for (const partido of candidatos) {
-                const clave = String(partido.id);
+            for (const local of candidatos) {
+                const clave = `vencimiento-${local.id}`;
                 if (partidosCompetitivosProcesando.has(clave)) continue;
                 partidosCompetitivosProcesando.add(clave);
 
                 try {
-                    if (partidoTieneCuatroJugadores(partido)) {
-                        await moverPartidoCompetitivoAResultados(partido);
+                    const ref = obtenerReferenciaPartidoFirestore(local);
+                    if (!ref) continue;
+
+                    let accion = '';
+                    let remoto = null;
+
+                    await api.runTransaction(api.db, async transaction => {
+                        const snap = await transaction.get(ref);
+                        if (!snap.exists()) return;
+                        const partido = normalizarPartidoRemoto(snap.data(), local);
+
+                        if (!['Buscando Rival','Partido Confirmado'].includes(partido.estado)) return;
+                        if (fechaHoraPartidoMs(partido) > Date.now()) return;
+
+                        remoto = partido;
+                        if (partidoTieneCuatroJugadores(partido)) {
+                            accion = 'resultados';
+                            transaction.set(ref, {
+                                estado:'Pendiente Resultado',
+                                pasoAResultadosEn:new Date().toISOString(),
+                                notificacionResultadoEnviada:true,
+                                actualizadoEn:api.serverTimestamp()
+                            }, {merge:true});
+                        } else {
+                            accion = 'cancelar';
+                            transaction.delete(ref);
+                        }
+                    });
+
+                    if (!accion || !remoto) continue;
+
+                    if (accion === 'resultados') {
+                        const idx = partidosData.findIndex(p => String(p.id) === String(remoto.id));
+                        if (idx >= 0) partidosData[idx] = {...partidosData[idx], estado:'Pendiente Resultado'};
+
+                        await notificarJugadoresPartido(remoto, {
+                            idBase:`recordatorio-resultado-${remoto.id}`,
+                            tipo:'recordatorio_cargar_resultado',
+                            titulo:'Resultado pendiente',
+                            texto:`No te olvides de cargar el resultado de tu último partido del ${remoto.fecha} a las ${remoto.hora} en ${remoto.club}.`
+                        });
                     } else {
-                        await cancelarPartidoCompetitivoIncompleto(partido);
+                        await notificarJugadoresPartido(remoto, {
+                            idBase:`cancelado-falta-jugadores-${remoto.id}`,
+                            tipo:'partido_cancelado_falta_jugadores',
+                            titulo:'Partido cancelado',
+                            texto:`El partido competitivo del ${remoto.fecha} a las ${remoto.hora} en ${remoto.club} fue cancelado porque no se completaron los cuatro jugadores.`
+                        });
+
+                        partidosData = partidosData.filter(p => String(p.id) !== String(remoto.id));
+                        const reservaId = remoto.reservaId || remoto.reserva?.id || '';
+                        if (reservaId && remoto._firestorePath) {
+                            const partes = String(remoto._firestorePath).split('/').filter(Boolean);
+                            if (partes[1]) {
+                                await api.deleteDoc(api.doc(api.db,'clubs',partes[1],'reservas',String(reservaId)))
+                                    .catch(error => console.warn('No se pudo liberar reserva:', error));
+                            }
+                        }
                     }
                 } catch (error) {
-                    logFirebaseError('procesamiento automático de partidos competitivos', error);
+                    console.error('Error procesando vencimiento:', error);
                 } finally {
                     partidosCompetitivosProcesando.delete(clave);
                 }
@@ -4413,33 +4514,42 @@ tr:hover td{background:#f9fafb}
 
         function renderizarMisPartidos() {
             const user = getNombreCompleto();
-            const hoyStr = getHoyFormateado();
             const misPartidos = partidosData
-                .filter(p => [p.j1, p.j2, p.j3, p.j4].includes(user))
-                .sort((a,b) => `${b.fecha} ${b.hora || ''}`.localeCompare(`${a.fecha} ${a.hora || ''}`));
+                .filter(p =>
+                    String(p.tipo || 'Competitivo').toLowerCase() === 'competitivo' &&
+                    [p.j1, p.j2, p.j3, p.j4].some(nombre =>
+                        String(nombre || '').trim().toLowerCase() === user.trim().toLowerCase()
+                    )
+                )
+                .sort((a,b) => `${b.fecha || ''} ${b.hora || ''}`.localeCompare(`${a.fecha || ''} ${a.hora || ''}`));
 
-            misPartidos.forEach(p => {
-                if (p.estado === 'Pendiente Resultado' && p.tipo === 'Casual' && p.fecha < hoyStr) {
-                    p.estado = 'Finalizado';
-                    p.resultado = 'Amistoso';
-                }
-            });
-
-            const pendientesResultado = misPartidos.filter(p => p.estado === 'Pendiente Resultado' && p.tipo === 'Competitivo');
-            const pendientes = misPartidos.filter(p => p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado');
+            const resultados = misPartidos.filter(p => p.estado === 'Pendiente Resultado');
+            const pendientes = misPartidos.filter(p =>
+                p.estado === 'Buscando Rival' || p.estado === 'Partido Confirmado'
+            );
             const finalizados = misPartidos.filter(p => p.estado === 'Finalizado');
 
-            document.getElementById('lista-mis-partidos').innerHTML = pendientesResultado.length
-                ? pendientesResultado.map(p => tarjetaPartidoMinimal(p, { resultado: true })).join('')
-                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay resultados pendientes.</p>`;
+            const listaResultados = document.getElementById('lista-mis-partidos');
+            const listaPendientes = document.getElementById('lista-en-curso-partidos');
+            const listaHistorial = document.getElementById('lista-historial-partidos');
 
-            document.getElementById('lista-en-curso-partidos').innerHTML = pendientes.length
-                ? pendientes.map(p => tarjetaPartidoMinimal(p, { invitar: true })).join('')
-                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay partidos pendientes.</p>`;
+            if (listaResultados) {
+                listaResultados.innerHTML = resultados.length
+                    ? resultados.map(p => tarjetaPartidoMinimal(p, { resultado: true })).join('')
+                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay resultados pendientes.</p>`;
+            }
 
-            document.getElementById('lista-historial-partidos').innerHTML = finalizados.length
-                ? finalizados.map(p => tarjetaPartidoMinimal(p, { historial: true })).join('')
-                : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">Todavía no hay partidos finalizados.</p>`;
+            if (listaPendientes) {
+                listaPendientes.innerHTML = pendientes.length
+                    ? pendientes.map(p => tarjetaPartidoMinimal(p, { invitar: true })).join('')
+                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay partidos pendientes.</p>`;
+            }
+
+            if (listaHistorial) {
+                listaHistorial.innerHTML = finalizados.length
+                    ? finalizados.map(p => tarjetaPartidoMinimal(p, { historial: true })).join('')
+                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">Todavía no hay partidos finalizados.</p>`;
+            }
         }
 
         function slotsDisponiblesEquipo(partido, equipo) {
@@ -6561,77 +6671,77 @@ tr:hover td{background:#f9fafb}
                 if (btnElement) btnElement.classList.add("activo");
             };
 
-            window.crearPartido = function() {
-                const fecha = window.formatearAFechaString(fechaSeleccionadaCrear);
-                const hora = horaSeleccionadaCrear;
-                const club = document.getElementById("input-club-crear").value;
-                const modalidad = document.getElementById("input-mod-crear").value;
-                const categoria = document.getElementById("input-categoria-crear").value;
-                const tipo = "Competitivo";
-                const visibilidad = "Publico";
+            window.crearPartido = async function() {
+                const claveOperacion = `crear-${usuarioActual?.uid || ''}`;
+                return ejecutarOperacionPartido(claveOperacion, async () => {
+                    const fecha = window.formatearAFechaString(fechaSeleccionadaCrear);
+                    const hora = horaSeleccionadaCrear;
+                    const club = document.getElementById('input-club-crear').value;
+                    const modalidad = document.getElementById('input-mod-crear').value;
+                    const categoria = document.getElementById('input-categoria-crear').value;
+                    const genero = normalizarGeneroCompetitivo(perfilUsuario.genero);
 
-                const generoCreador = normalizarGeneroCompetitivo(perfilUsuario.genero);
-                if (!usuarioPuedeParticiparCategoria(categoria, generoCreador)) {
-                    return alert(categoria === "Masculino"
-                        ? "La categoría Masculino admite únicamente jugadores masculinos."
-                        : categoria === "Femenino"
-                            ? "La categoría Femenino admite únicamente jugadoras femeninas."
-                            : "La categoría Mixto admite jugadores con género Masculino o Femenino.");
-                }
+                    if (!fecha || !hora) throw new Error('Seleccioná un horario disponible.');
+                    if (!usuarioPuedeParticiparCategoria(categoria, genero)) {
+                        throw new Error(`Tu género no es compatible con la categoría ${categoria}.`);
+                    }
 
-                if (!fecha || !hora) return alert("Selecciona un horario disponible.");
+                    const config = window.obtenerConfiguracionClub(club);
+                    const duracion = window.obtenerDuracionModalidadClub(config, modalidad);
+                    const partidoId = crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
+                    const reserva = window.crearReserva({
+                        id:`partido-${partidoId}`,
+                        clubId:club, fecha, hora, duracion, modalidad,
+                        jugador:getNombreCompleto(),
+                        jugadorUid:usuarioActual?.uid || null,
+                        telefono:perfilUsuario.telefono,
+                        tipoEvento:`Partido competitivo ${categoria}`,
+                        origen:'circuito',
+                        partidoId
+                    });
+                    if (!reserva.ok) throw new Error(reserva.error);
 
-                const configClub = window.obtenerConfiguracionClub(club);
-                const duracionPartido = window.obtenerDuracionModalidadClub(configClub, modalidad);
-                const partidoId = crypto?.randomUUID ? crypto.randomUUID() : Date.now().toString();
-                const reserva = window.crearReserva({
-                    id: `partido-${partidoId}`,
-                    clubId: club,
-                    fecha,
-                    hora,
-                    duracion: duracionPartido,
-                    modalidad,
-                    jugador: getNombreCompleto(),
-                    jugadorUid: usuarioActual?.uid || null,
-                    telefono: perfilUsuario.telefono,
-                    tipoEvento: `Partido competitivo ${categoria}`,
-                    origen: "circuito",
-                    partidoId
+                    const partido = {
+                        id:partidoId,
+                        reservaId:reserva.reserva.id,
+                        cancha:reserva.reserva.cancha,
+                        canchaNombre:reserva.reserva.canchaNombre || '',
+                        fecha,hora,club,modalidad,
+                        tipo:'Competitivo',
+                        categoria,
+                        visibilidad:'Publico',
+                        estado:'Buscando Rival',
+                        duracion,
+                        j1:getNombreCompleto(),
+                        j2:'Libre',j3:'Libre',j4:'Libre',
+                        creadorUid:usuarioActual?.uid || null,
+                        jugadoresUid:[usuarioActual?.uid].filter(Boolean)
+                    };
+
+                    try {
+                        await window.guardarPartidoEnFirebase(partido);
+                        partidosData.push(partido);
+                    } catch (error) {
+                        const api = window.firebaseAPI;
+                        const clubId = window.resolverClubDocId?.(club);
+                        if (api && clubId && reserva.reserva.id) {
+                            await api.deleteDoc(api.doc(api.db,'clubs',String(clubId),'reservas',String(reserva.reserva.id)))
+                                .catch(() => {});
+                        }
+                        throw error;
+                    }
+
+                    cambiarPanelPartidos('curso');
+                    renderizarPartidosAbiertos();
+                    renderizarMisPartidos();
+                    renderizarBanner();
+                    window.actualizarHorariosDisponibles();
+                    alert(`Partido competitivo ${categoria} creado y turno reservado en ${club}.`);
+                }).catch(error => {
+                    console.error('Error al crear partido:', error);
+                    alert(error.message || 'No se pudo crear el partido.');
                 });
-
-                if (!reserva.ok) return alert("❌ " + reserva.error);
-
-                const partidoNuevo = {
-                    id: partidoId,
-                    reservaId: reserva.reserva.id,
-                    cancha: reserva.reserva.cancha,
-                    fecha,
-                    hora,
-                    club,
-                    modalidad,
-                    tipo,
-                    categoria,
-                    visibilidad,
-                    estado: "Buscando Rival",
-                    duracion: duracionPartido,
-                    j1: getNombreCompleto(),
-                    creadorUid: usuarioActual?.uid || null,
-                    jugadoresUid: [usuarioActual?.uid].filter(Boolean),
-                    j2: "Libre",
-                    j3: "Libre",
-                    j4: "Libre",
-                    guardadoEnFirebase: true
-                };
-
-                partidosData.push(partidoNuevo);
-                guardarPartidoEnFirebase(partidoNuevo).catch(error => logFirebaseError("creación de partido", error));
-
-                alert(`Partido competitivo ${categoria} creado y turno reservado en ${club}, cancha ${reserva.reserva.cancha}.`);
-                cambiarPanelPartidos("curso");
-                renderizarPartidosAbiertos();
-                renderizarMisPartidos();
-                window.actualizarHorariosDisponibles();
-            };
+            };;
 
             window.renderizarPantallas = function() {
                 if (typeof renderizarTodo === "function") renderizarTodo();
@@ -6660,85 +6770,93 @@ tr:hover td{background:#f9fafb}
             };
 
             window.unirsePartido = async function(id, equipoElegido = '') {
-                const p = partidosData.find(x => String(x.id) === String(id));
-                const user = getNombreCompleto();
-                if (!p) return;
-                if ([p.j1, p.j2, p.j3, p.j4].includes(user)) {
-                    return alert("Ya estás anotado en este partido.");
-                }
+                const claveOperacion = `unirse-${id}-${usuarioActual?.uid || getNombreCompleto()}`;
 
-                const invitaciones = obtenerInvitacionesPendientesPartido(p);
-                const invitacionUsuario = invitacionUsuarioPartido(p);
+                return ejecutarOperacionPartido(claveOperacion, async () => {
+                    const api = window.firebaseAPI;
+                    const local = partidosData.find(p => String(p.id) === String(id));
+                    const user = getNombreCompleto();
+                    if (!api || !local) throw new Error('No se encontró el partido.');
 
-                let slot = invitacionUsuario?.slot || null;
+                    const ref = obtenerReferenciaPartidoFirestore(local);
+                    let actualizado = null;
+                    let aceptoInvitacion = false;
 
-                if (slot && (p[slot] !== 'Libre' || !slotEstaReservado(p, slot))) {
-                    slot = null;
-                }
+                    await api.runTransaction(api.db, async transaction => {
+                        const snap = await transaction.get(ref);
+                        if (!snap.exists()) throw new Error('El partido ya no existe.');
+                        const p = normalizarPartidoRemoto(snap.data(), local);
 
-                const generoUsuario = normalizarGeneroCompetitivo(perfilUsuario.genero);
-                if (!usuarioPuedeParticiparCategoria(categoriaPartido(p), generoUsuario)) {
-                    return alert("Tu género no es compatible con la categoría de este partido.");
-                }
+                        if (p.estado !== 'Buscando Rival') {
+                            throw new Error('Este partido ya no admite nuevos jugadores.');
+                        }
+                        if ([p.j1,p.j2,p.j3,p.j4].some(n =>
+                            String(n || '').trim().toLowerCase() === user.trim().toLowerCase()
+                        )) throw new Error('Ya estás anotado en este partido.');
 
-                if (slot && !slotCompatibleConGenero(p, slot, generoUsuario)) {
-                    return alert("La invitación ya no es compatible con la composición de este equipo.");
-                }
+                        const invitaciones = obtenerInvitacionesPendientesPartido(p);
+                        const invitacion = invitaciones.find(inv =>
+                            String(inv.uid || '') === String(usuarioActual?.uid || '') ||
+                            String(inv.nombre || '').trim().toLowerCase() === user.trim().toLowerCase()
+                        );
 
-                if (!slot) {
-                    const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
-                    slot = slotsDisponiblesEquipoParaGenero(p, equipo, generoUsuario)[0] || null;
-                }
+                        const genero = normalizarGeneroCompetitivo(perfilUsuario.genero);
+                        if (!usuarioPuedeParticiparCategoria(categoriaPartido(p), genero)) {
+                            throw new Error('Tu género no es compatible con la categoría de este partido.');
+                        }
 
-                if (!slot) return alert(categoriaPartido(p) === "Mixto"
-                    ? "Ese equipo no tiene un lugar compatible con tu género. En Mixto cada pareja debe tener un jugador masculino y uno femenino."
-                    : "Ese equipo ya no tiene lugares disponibles.");
+                        let slot = invitacion?.slot || null;
+                        if (slot && !slotCompatibleConGenero(p, slot, genero)) {
+                            throw new Error('El lugar reservado ya no es compatible o está ocupado.');
+                        }
 
-                p[slot] = user;
-                p.jugadoresUid = Array.from(new Set([
-                    ...(p.jugadoresUid || []),
-                    usuarioActual?.uid
-                ].filter(Boolean)));
+                        if (!slot) {
+                            const equipo = equipoElegido === 'equipo2' ? 'equipo2' : 'equipo1';
+                            slot = slotsDisponiblesEquipoParaGenero(p, equipo, genero)[0] || null;
+                        }
+                        if (!slot) throw new Error('Ese equipo ya no tiene lugares disponibles.');
 
-                // Clave del arreglo: al aceptar se elimina definitivamente la invitación pendiente.
-                if (invitacionUsuario) {
-                    p.invitacionesPendientes = invitaciones.filter(inv =>
-                        String(inv.id) !== String(invitacionUsuario.id)
-                    );
-                    p.invitados = Array.from(new Set([
-                        ...(p.invitados || []),
-                        user
-                    ]));
-                }
+                        p[slot] = user;
+                        p.jugadoresUid = Array.from(new Set([
+                            ...(p.jugadoresUid || []),
+                            usuarioActual?.uid
+                        ].filter(Boolean)));
 
-                if (![p.j1, p.j2, p.j3, p.j4].includes("Libre")) {
-                    p.estado = "Partido Confirmado";
-                } else {
-                    p.estado = "Buscando Rival";
-                }
+                        if (invitacion) {
+                            aceptoInvitacion = true;
+                            p.invitacionesPendientes = invitaciones.filter(inv =>
+                                String(inv.id) !== String(invitacion.id)
+                            );
+                        }
 
-                try {
-                    await guardarPartidoEnFirebase(p);
+                        p.estado = [p.j1,p.j2,p.j3,p.j4].every(n => n && n !== 'Libre')
+                            ? 'Partido Confirmado'
+                            : 'Buscando Rival';
 
-                    if (String(partidoDestacadoUnirseId) === String(p.id)) {
-                        partidoDestacadoUnirseId = null;
-                    }
+                        const guardar = {...p};
+                        delete guardar._firestorePath;
+                        transaction.set(ref, {...guardar, actualizadoEn:api.serverTimestamp()}, {merge:true});
+                        actualizado = p;
+                    });
 
-                    // Al re-renderizar, el slot ya no tiene invitación:
-                    // jugadorPartidoMinimal muestra avatar + nombre normal.
+                    const indice = partidosData.findIndex(p => String(p.id) === String(id));
+                    if (indice >= 0) partidosData[indice] = {...partidosData[indice], ...actualizado};
+
+                    partidoDestacadoUnirseId = null;
                     renderizarMisPartidos();
                     renderizarPartidosAbiertos();
                     renderizarBanner();
 
-                    alert(invitacionUsuario
-                        ? "Aceptaste la invitación y te uniste al equipo."
-                        : (p.estado === "Partido Confirmado"
-                            ? "¡Partido completado!"
-                            : "Te uniste al equipo seleccionado."));
-                } catch (error) {
-                    logFirebaseError("actualización de partido", error);
-                }
-            };
+                    alert(aceptoInvitacion
+                        ? 'Aceptaste la invitación y te uniste al equipo.'
+                        : (actualizado.estado === 'Partido Confirmado'
+                            ? '¡Partido completado!'
+                            : 'Te uniste al equipo seleccionado.'));
+                }).catch(error => {
+                    console.error('Error al unirse:', error);
+                    alert(error.message || 'No se pudo unir al partido.');
+                });
+            };;
 
 
             window.marcarNotificacionesLeidas = async function() {
@@ -6821,61 +6939,67 @@ tr:hover td{background:#f9fafb}
             };
 
             window.enviarSolicitudAmistadDesdeBusqueda = async function(uidDestino) {
-                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión.");
-                const jugador = rankingData.find(j => String(j.uid || j.id) === String(uidDestino));
-                if (!jugador) return alert("No se encontró ese jugador.");
-                if (String(uidDestino) === String(usuarioActual.uid)) return;
-                if (esAmigoActual(uidDestino)) return alert("Esta persona ya es tu amiga.");
-                if (solicitudPendienteConUsuario(uidDestino)) return alert("Ya existe una solicitud pendiente.");
+                const clave = `solicitud-${usuarioActual?.uid}-${uidDestino}`;
+                return ejecutarOperacionAmistad(clave, async () => {
+                    const api = window.firebaseAPI;
+                    if (!api || !usuarioActual) throw new Error('Iniciá sesión.');
 
-                const solicitudId = `${usuarioActual.uid}_${uidDestino}`;
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "users", String(uidDestino), "solicitudesAmistad", solicitudId),
-                    {
-                        id: solicitudId,
-                        deUid: usuarioActual.uid,
-                        deNombre: getNombreCompleto(),
-                        deDni: perfilUsuario.dni || "",
-                        paraUid: String(uidDestino),
-                        paraNombre: jugador.nombre,
-                        estado: "pendiente",
-                        creadoEn: firebaseAPI.serverTimestamp()
-                    },
-                    { merge: true }
-                ).catch(error => logFirebaseError("envío de solicitud de amistad", error));
+                    uidDestino = String(uidDestino || '');
+                    if (!uidDestino || uidDestino === String(usuarioActual.uid)) {
+                        throw new Error('No podés enviarte una solicitud a vos mismo.');
+                    }
 
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas", solicitudId),
-                    {
-                        id: solicitudId,
-                        deUid: usuarioActual.uid,
-                        deNombre: getNombreCompleto(),
-                        paraUid: String(uidDestino),
-                        paraNombre: jugador.nombre,
-                        paraDni: jugador.dni || "",
-                        estado: "pendiente",
-                        creadoEn: firebaseAPI.serverTimestamp()
-                    },
-                    { merge: true }
-                ).catch(error => logFirebaseError("registro de solicitud enviada", error));
+                    const jugador = rankingData.find(j => String(j.uid || j.id) === uidDestino);
+                    if (!jugador) throw new Error('No se encontró ese jugador.');
+                    if (esAmigoActual(uidDestino)) throw new Error('Esta persona ya es tu amiga.');
+                    if (solicitudPendienteConUsuario(uidDestino)) throw new Error('Ya existe una solicitud pendiente.');
 
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db, "users", String(uidDestino), "notificaciones", solicitudId),
-                    {
-                        id: solicitudId,
-                        tipo: "solicitud_amistad",
-                        titulo: "Nueva solicitud de amistad",
-                        texto: `${getNombreCompleto()} te envió una solicitud de amistad.`,
-                        leida: false,
-                        creadoEn: firebaseAPI.serverTimestamp()
-                    },
-                    { merge: true }
-                ).catch(error => logFirebaseError("notificación de solicitud", error));
+                    const solicitudId = `${usuarioActual.uid}_${uidDestino}`;
+                    const batch = api.writeBatch(api.db);
+                    const entranteRef = api.doc(api.db,'users',uidDestino,'solicitudesAmistad',solicitudId);
+                    const salienteRef = api.doc(api.db,'users',usuarioActual.uid,'solicitudesAmistadEnviadas',solicitudId);
+                    const notifRef = api.doc(api.db,'users',uidDestino,'notificaciones',solicitudId);
 
-                document.getElementById("input-buscar-amigo").value = "";
-                renderizarResultadosBusquedaAmigos();
-                alert("Solicitud enviada.");
-            };
+                    batch.set(entranteRef, {
+                        id:solicitudId,
+                        deUid:usuarioActual.uid,
+                        deNombre:getNombreCompleto(),
+                        deDni:perfilUsuario.dni || '',
+                        paraUid:uidDestino,
+                        paraNombre:jugador.nombre || '',
+                        estado:'pendiente',
+                        creadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    batch.set(salienteRef, {
+                        id:solicitudId,
+                        deUid:usuarioActual.uid,
+                        deNombre:getNombreCompleto(),
+                        paraUid:uidDestino,
+                        paraNombre:jugador.nombre || '',
+                        paraDni:jugador.dni || '',
+                        estado:'pendiente',
+                        creadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    batch.set(notifRef, {
+                        id:solicitudId,
+                        tipo:'solicitud_amistad',
+                        titulo:'Nueva solicitud de amistad',
+                        texto:`${getNombreCompleto()} te envió una solicitud de amistad.`,
+                        leida:false,
+                        creadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    await batch.commit();
+                    document.getElementById('input-buscar-amigo').value = '';
+                    renderizarResultadosBusquedaAmigos();
+                    alert('Solicitud enviada.');
+                }).catch(error => {
+                    console.error(error);
+                    alert(error.message || 'No se pudo enviar la solicitud.');
+                });
+            };;
 
             window.agregarAmigo = async function() {
                 const input = document.getElementById("input-buscar-amigo");
@@ -6890,104 +7014,102 @@ tr:hover td{background:#f9fafb}
             };
 
             window.aceptarSolicitudAmistad = async function(solicitudId) {
-                if (!firebaseAPI || !usuarioActual) return;
-                const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
-                if (!solicitud) return;
+                const clave = `aceptar-${solicitudId}`;
+                return ejecutarOperacionAmistad(clave, async () => {
+                    const api = window.firebaseAPI;
+                    if (!api || !usuarioActual) throw new Error('Iniciá sesión.');
 
-                const miUid = usuarioActual.uid;
-                const otroUid = String(solicitud.deUid);
-                const miNombre = getNombreCompleto();
-                const otroNombre = solicitud.deNombre || "Jugador";
-                const otroUsuario = rankingData.find(j => String(j.uid || j.id) === otroUid);
+                    const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
+                    if (!solicitud) throw new Error('La solicitud ya no existe.');
 
-                await Promise.all([
-                    firebaseAPI.setDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", miUid, "amigos", otroUid),
-                        {
-                            id: otroUid,
-                            uid: otroUid,
-                            nombre: otroNombre,
-                            dni: solicitud.deDni || otroUsuario?.dni || "",
-                            agregadoEn: firebaseAPI.serverTimestamp()
-                        },
-                        { merge: true }
-                    ),
-                    firebaseAPI.setDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "amigos", miUid),
-                        {
-                            id: miUid,
-                            uid: miUid,
-                            nombre: miNombre,
-                            dni: perfilUsuario.dni || "",
-                            agregadoEn: firebaseAPI.serverTimestamp()
-                        },
-                        { merge: true }
-                    ),
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", miUid, "solicitudesAmistad", String(solicitudId))
-                    ),
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "solicitudesAmistadEnviadas", String(solicitudId))
-                    ),
-                    firebaseAPI.setDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", otroUid, "notificaciones", `amistad-aceptada-${miUid}`),
-                        {
-                            id: `amistad-aceptada-${miUid}`,
-                            tipo: "amistad_aceptada",
-                            titulo: "Solicitud aceptada",
-                            texto: `${miNombre} aceptó tu solicitud de amistad.`,
-                            leida: false,
-                            creadoEn: firebaseAPI.serverTimestamp()
-                        },
-                        { merge: true }
-                    )
-                ]).catch(error => logFirebaseError("aceptación de solicitud", error));
-            };
+                    const miUid = String(usuarioActual.uid);
+                    const otroUid = String(solicitud.deUid);
+                    const batch = api.writeBatch(api.db);
+
+                    batch.set(api.doc(api.db,'users',miUid,'amigos',otroUid), {
+                        id:otroUid, uid:otroUid,
+                        nombre:solicitud.deNombre || 'Jugador',
+                        dni:solicitud.deDni || '',
+                        agregadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    batch.set(api.doc(api.db,'users',otroUid,'amigos',miUid), {
+                        id:miUid, uid:miUid,
+                        nombre:getNombreCompleto(),
+                        dni:perfilUsuario.dni || '',
+                        agregadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    batch.delete(api.doc(api.db,'users',miUid,'solicitudesAmistad',String(solicitudId)));
+                    batch.delete(api.doc(api.db,'users',otroUid,'solicitudesAmistadEnviadas',String(solicitudId)));
+
+                    const notifId = `amistad-aceptada-${miUid}`;
+                    batch.set(api.doc(api.db,'users',otroUid,'notificaciones',notifId), {
+                        id:notifId,
+                        tipo:'amistad_aceptada',
+                        titulo:'Solicitud aceptada',
+                        texto:`${getNombreCompleto()} aceptó tu solicitud de amistad.`,
+                        leida:false,
+                        creadoEn:api.serverTimestamp()
+                    }, {merge:true});
+
+                    await batch.commit();
+                }).catch(error => {
+                    console.error(error);
+                    alert(error.message || 'No se pudo aceptar la solicitud.');
+                });
+            };;
 
             window.rechazarSolicitudAmistad = async function(solicitudId) {
-                if (!firebaseAPI || !usuarioActual) return;
-                const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
-                if (!solicitud) return;
+                const clave = `rechazar-${solicitudId}`;
+                return ejecutarOperacionAmistad(clave, async () => {
+                    const api = window.firebaseAPI;
+                    const solicitud = solicitudesAmistadData.find(s => String(s.id) === String(solicitudId));
+                    if (!api || !usuarioActual || !solicitud) throw new Error('La solicitud ya no existe.');
 
-                await Promise.all([
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad", String(solicitudId))
-                    ),
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", String(solicitud.deUid), "solicitudesAmistadEnviadas", String(solicitudId))
-                    )
-                ]).catch(error => logFirebaseError("rechazo de solicitud", error));
-            };
+                    const batch = api.writeBatch(api.db);
+                    batch.delete(api.doc(api.db,'users',usuarioActual.uid,'solicitudesAmistad',String(solicitudId)));
+                    batch.delete(api.doc(api.db,'users',String(solicitud.deUid),'solicitudesAmistadEnviadas',String(solicitudId)));
+                    await batch.commit();
+                }).catch(error => {
+                    console.error(error);
+                    alert(error.message || 'No se pudo rechazar la solicitud.');
+                });
+            };;
 
             window.cancelarSolicitudAmistadEnviada = async function(solicitudId) {
-                if (!firebaseAPI || !usuarioActual) return;
-                const solicitud = solicitudesAmistadEnviadasData.find(s => String(s.id) === String(solicitudId));
-                if (!solicitud) return;
-                if (!confirm("¿Querés cancelar esta solicitud de amistad?")) return;
+                if (!confirm('¿Querés cancelar esta solicitud de amistad?')) return;
+                const clave = `cancelar-solicitud-${solicitudId}`;
+                return ejecutarOperacionAmistad(clave, async () => {
+                    const api = window.firebaseAPI;
+                    const solicitud = solicitudesAmistadEnviadasData.find(s => String(s.id) === String(solicitudId));
+                    if (!api || !usuarioActual || !solicitud) throw new Error('La solicitud ya no existe.');
 
-                await Promise.all([
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas", String(solicitudId))
-                    ),
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", String(solicitud.paraUid), "solicitudesAmistad", String(solicitudId))
-                    )
-                ]).catch(error => logFirebaseError("cancelación de solicitud enviada", error));
-            };
+                    const batch = api.writeBatch(api.db);
+                    batch.delete(api.doc(api.db,'users',usuarioActual.uid,'solicitudesAmistadEnviadas',String(solicitudId)));
+                    batch.delete(api.doc(api.db,'users',String(solicitud.paraUid),'solicitudesAmistad',String(solicitudId)));
+                    await batch.commit();
+                }).catch(error => {
+                    console.error(error);
+                    alert(error.message || 'No se pudo cancelar la solicitud.');
+                });
+            };;
 
             window.eliminarAmigo = async function(uidAmigo) {
-                if (!firebaseAPI || !usuarioActual) return;
-                if (!confirm("¿Querés eliminar a esta persona de tus amigos?")) return;
-
-                await Promise.all([
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid, "amigos", String(uidAmigo))
-                    ),
-                    firebaseAPI.deleteDoc(
-                        firebaseAPI.doc(firebaseAPI.db, "users", String(uidAmigo), "amigos", usuarioActual.uid)
-                    )
-                ]).catch(error => logFirebaseError("eliminación de amistad", error));
-            };
+                if (!confirm('¿Querés eliminar a esta persona de tus amigos?')) return;
+                const clave = `eliminar-amigo-${usuarioActual?.uid}-${uidAmigo}`;
+                return ejecutarOperacionAmistad(clave, async () => {
+                    const api = window.firebaseAPI;
+                    if (!api || !usuarioActual) throw new Error('Iniciá sesión.');
+                    const batch = api.writeBatch(api.db);
+                    batch.delete(api.doc(api.db,'users',usuarioActual.uid,'amigos',String(uidAmigo)));
+                    batch.delete(api.doc(api.db,'users',String(uidAmigo),'amigos',usuarioActual.uid));
+                    await batch.commit();
+                }).catch(error => {
+                    console.error(error);
+                    alert(error.message || 'No se pudo eliminar la amistad.');
+                });
+            };;
 
             window.inscribirseTorneo = async function(id) {
                 if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión para inscribirte.");
@@ -7033,6 +7155,13 @@ tr:hover td{background:#f9fafb}
             document.addEventListener("DOMContentLoaded", inicializarFirebase);
         })();
 
+    
+        window.addEventListener('unhandledrejection', event => {
+            console.error('Promesa rechazada:', event.reason);
+        });
+        window.addEventListener('error', event => {
+            console.error('Error de aplicación:', event.error || event.message);
+        });
     </script>
 </body>
 </html>
