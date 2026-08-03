@@ -3623,13 +3623,19 @@ tr:hover td{background:#f9fafb}
             if (Array.isArray(set)) {
                 return [Number(set[0]), Number(set[1])];
             }
+
             if (set && typeof set === 'object') {
-                return [Number(set.e1 ?? set.izquierda ?? set.a), Number(set.e2 ?? set.derecha ?? set.b)];
+                return [
+                    Number(set.e1 ?? set.izquierda ?? set.a),
+                    Number(set.e2 ?? set.derecha ?? set.b)
+                ];
             }
+
             if (typeof set === 'string' && set.includes('-')) {
-                const [a, b] = set.split('-').map(Number);
-                return [a, b];
+                const [e1, e2] = set.split('-').map(Number);
+                return [e1, e2];
             }
+
             return [0, 0];
         }
 
@@ -3641,42 +3647,127 @@ tr:hover td{background:#f9fafb}
         }
 
         function deserializarSetsCarga(carga) {
-            const origen = carga?.sets || carga?.setsCanonicos || [];
-            return Array.isArray(origen) ? origen.map(normalizarSetCanonico) : [];
+            const origen = carga?.sets || carga?.setsCanonicos || carga?.resultadoSets || [];
+            if (!Array.isArray(origen)) return [];
+            return origen.map(normalizarSetCanonico);
         }
 
         function resultadosCargadosPartido(partido) {
-            return Array.isArray(partido?.resultadosCargados)
-                ? partido.resultadosCargados
-                    .filter(r => r && r.usuario)
-                    .map(r => ({
-                        ...r,
-                        setsCanonicos: deserializarSetsCarga(r)
-                    }))
-                : [];
+            if (!Array.isArray(partido?.resultadosCargados)) return [];
+
+            const unicos = new Map();
+
+            partido.resultadosCargados.forEach(carga => {
+                if (!carga || !carga.usuario) return;
+
+                const setsCanonicos = deserializarSetsCarga(carga);
+                if (setsCanonicos.length < 2) return;
+
+                const uid = String(carga.uid || '').trim();
+                const nombre = String(carga.usuario || '').trim();
+                const identidad = uid || nombre.toLowerCase();
+
+                if (!identidad || unicos.has(identidad)) return;
+
+                unicos.set(identidad, {
+                    usuario: nombre,
+                    uid,
+                    equipo: String(carga.equipo || '').trim().toLowerCase(),
+                    setsCanonicos,
+                    sets: serializarSetsFirestore(setsCanonicos),
+                    clave: claveResultadoCanonico(setsCanonicos),
+                    cargadoEn: carga.cargadoEn || ''
+                });
+            });
+
+            return [...unicos.values()];
         }
 
         function claveResultadoCanonico(setsCanonicos) {
             return (setsCanonicos || [])
                 .map(normalizarSetCanonico)
-                .map(set => `${Number(set[0])}-${Number(set[1])}`)
+                .map(([e1, e2]) => `${e1}-${e2}`)
                 .join('|');
         }
 
         function equipoUsuarioEnPartido(partido, usuario = getNombreCompleto()) {
-            if ([partido.j1, partido.j2].includes(usuario)) return 'equipo1';
-            if ([partido.j3, partido.j4].includes(usuario)) return 'equipo2';
+            const buscado = String(usuario || '').trim().toLowerCase();
+
+            if ([partido.j1, partido.j2].some(nombre =>
+                String(nombre || '').trim().toLowerCase() === buscado
+            )) return 'equipo1';
+
+            if ([partido.j3, partido.j4].some(nombre =>
+                String(nombre || '').trim().toLowerCase() === buscado
+            )) return 'equipo2';
+
             return '';
         }
 
         function cargaResultadoUsuario(partido, usuario = getNombreCompleto()) {
-            const uidActual = String(usuarioActual?.uid || '');
+            const uidActual = String(usuarioActual?.uid || '').trim();
             const nombreActual = String(usuario || '').trim().toLowerCase();
 
-            return resultadosCargadosPartido(partido).find(r => {
-                if (uidActual && r.uid && String(r.uid) === uidActual) return true;
-                return String(r.usuario || '').trim().toLowerCase() === nombreActual;
+            return resultadosCargadosPartido(partido).find(carga => {
+                if (uidActual && carga.uid && carga.uid === uidActual) return true;
+                return carga.usuario.trim().toLowerCase() === nombreActual;
             }) || null;
+        }
+
+        function analizarCargasResultado(cargas) {
+            const normalizadas = Array.isArray(cargas) ? cargas : [];
+            const grupos = new Map();
+
+            normalizadas.forEach(carga => {
+                const clave = carga.clave || claveResultadoCanonico(carga.setsCanonicos);
+                if (!grupos.has(clave)) grupos.set(clave, []);
+                grupos.get(clave).push(carga);
+            });
+
+            // Regla principal: una carga de cada equipo con el mismo marcador.
+            for (const [clave, grupo] of grupos.entries()) {
+                const equipos = new Set(grupo.map(c => String(c.equipo || '').toLowerCase()));
+                if (equipos.has('equipo1') && equipos.has('equipo2')) {
+                    return {
+                        estado: 'confirmado',
+                        motivo: 'coincidencia_entre_equipos',
+                        clave,
+                        cargas: grupo,
+                        setsCanonicos: grupo[0].setsCanonicos.map(normalizarSetCanonico)
+                    };
+                }
+            }
+
+            if (normalizadas.length < 4) {
+                return {
+                    estado: 'pendiente',
+                    motivo: grupos.size > 1 ? 'resultados_diferentes' : 'esperando_otro_equipo'
+                };
+            }
+
+            const ordenados = [...grupos.entries()]
+                .sort((a, b) => b[1].length - a[1].length);
+
+            const primero = ordenados[0];
+            const segundo = ordenados[1];
+
+            // Con cuatro cargas, una mayoría inequívoca confirma el marcador.
+            if (primero && primero[1].length >= 3 &&
+                (!segundo || primero[1].length > segundo[1].length)) {
+                return {
+                    estado: 'confirmado',
+                    motivo: 'mayoria_clara',
+                    clave: primero[0],
+                    cargas: primero[1],
+                    setsCanonicos: primero[1][0].setsCanonicos.map(normalizarSetCanonico)
+                };
+            }
+
+            // Todo empate o ausencia de mayoría clara pasa a revisión sin estadísticas.
+            return {
+                estado: 'revision',
+                motivo: 'resultados_incongruentes'
+            };
         }
 
         function estadoVerificacionResultado(partido) {
@@ -3684,89 +3775,41 @@ tr:hover td{background:#f9fafb}
             if (!cargas.length) return { estado:'sin_cargas', texto:'' };
 
             const propia = cargaResultadoUsuario(partido);
-            const equipoPropio = equipoUsuarioEnPartido(partido);
-            const equipoRival = equipoPropio === 'equipo1' ? 'equipo2' : 'equipo1';
-            const hayRival = cargas.some(c => c.equipo === equipoRival);
+            if (!propia) return { estado:'puede_cargar', texto:'' };
 
-            if (propia && !hayRival) {
+            const analisis = analizarCargasResultado(cargas);
+
+            if (analisis.estado === 'confirmado') {
+                return { estado:'confirmado', texto:'Resultado confirmado' };
+            }
+
+            if (analisis.estado === 'revision') {
                 return {
-                    estado:'esperando_rival',
-                    texto:'Los rivales tienen que cargar el resultado'
+                    estado:'revision',
+                    texto:'Partido con resultados incongruentes · Pendiente de revisión'
                 };
             }
 
-            const grupos = new Map();
-            cargas.forEach(c => {
-                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
-                if (!grupos.has(clave)) grupos.set(clave, []);
-                grupos.get(clave).push(c);
-            });
-
-            const hayConflicto = grupos.size > 1;
-            if (propia && hayConflicto) {
+            if (analisis.motivo === 'resultados_diferentes') {
                 return {
                     estado:'conflicto',
                     texto:'Los resultados no coinciden. Faltan cargas para verificar'
                 };
             }
 
-            if (propia) {
-                return {
-                    estado:'esperando',
-                    texto:'Los rivales tienen que cargar el resultado'
-                };
-            }
-
-            return { estado:'puede_cargar', texto:'' };
+            return {
+                estado:'esperando_rival',
+                texto:'Los rivales tienen que cargar el resultado'
+            };
         }
 
         function resultadoCoincidenteEntreEquipos(partido) {
-            const cargas = resultadosCargadosPartido(partido);
-            const grupos = new Map();
-
-            cargas.forEach(c => {
-                const clave = String(c.clave || claveResultadoCanonico(c.setsCanonicos));
-                if (!grupos.has(clave)) grupos.set(clave, []);
-                grupos.get(clave).push(c);
-            });
-
-            for (const [clave, grupo] of grupos.entries()) {
-                const equipos = new Set(
-                    grupo.map(c => String(c.equipo || '').trim().toLowerCase())
-                );
-
-                if (grupo.length >= 2 &&
-                    equipos.has('equipo1') &&
-                    equipos.has('equipo2')) {
-                    return {
-                        clave,
-                        grupo,
-                        setsCanonicos: grupo[0].setsCanonicos.map(normalizarSetCanonico)
-                    };
-                }
-            }
-
-            return null;
+            const analisis = analizarCargasResultado(resultadosCargadosPartido(partido));
+            return analisis.estado === 'confirmado' ? analisis : null;
         }
 
         function hayEmpateIncongruenteTrasCuatroCargas(partido) {
-            const cargas = resultadosCargadosPartido(partido);
-            if (cargas.length < 4) return false;
-
-            const grupos = new Map();
-            cargas.forEach(c => {
-                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
-                if (!grupos.has(clave)) grupos.set(clave, []);
-                grupos.get(clave).push(c);
-            });
-
-            const cantidades = [...grupos.values()]
-                .map(grupo => grupo.length)
-                .sort((a,b) => b-a);
-
-            return cantidades.length >= 2 &&
-                   cantidades[0] === cantidades[1] &&
-                   cantidades[0] === 2;
+            return analizarCargasResultado(resultadosCargadosPartido(partido)).estado === 'revision';
         }
 
         async function marcarPartidoResultadoIncongruente(partido) {
@@ -3775,33 +3818,13 @@ tr:hover td{background:#f9fafb}
             partido.pendienteRevision = true;
             partido.resultado = 'Resultados incongruentes';
             partido.puntosAplicados = false;
-            partido.resultadoConfirmadoEn = null;
             partido.cambiosPuntos = {};
-            partido.revisionSolicitadaEn = new Date().toISOString();
-
-            const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
-            await guardar(partido);
+            return partido;
         }
 
         function resultadoVerificableTrasCuatroCargas(partido) {
-            const cargas = resultadosCargadosPartido(partido);
-            if (cargas.length < 4) return null;
-
-            const grupos = new Map();
-            cargas.forEach(c => {
-                const clave = c.clave || claveResultadoCanonico(c.setsCanonicos);
-                if (!grupos.has(clave)) grupos.set(clave, []);
-                grupos.get(clave).push(c);
-            });
-
-            const ordenados = [...grupos.entries()].sort((a,b) => b[1].length - a[1].length);
-            if (!ordenados.length || ordenados[0][1].length < 2) return null;
-
-            // Debe existir una única versión con mayoría clara.
-            if (ordenados[1] && ordenados[0][1].length === ordenados[1][1].length) return null;
-
-            const [clave, grupo] = ordenados[0];
-            return { clave, grupo, setsCanonicos: grupo[0].setsCanonicos };
+            const analisis = analizarCargasResultado(resultadosCargadosPartido(partido));
+            return analisis.estado === 'confirmado' ? analisis : null;
         }
 
         function cambioPuntosUsuarioEnPartido(partido) {
@@ -3858,7 +3881,7 @@ tr:hover td{background:#f9fafb}
                 const cargaPropia = cargaResultadoUsuario(partido);
                 const verificacion = estadoVerificacionResultado(partido);
 
-                if (!cargaPropia) {
+                if (!cargaPropia && partido.estado === 'Pendiente Resultado') {
                     accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
                 } else {
                     accion = `<span class="resultado-verificacion-pendiente">${escaparHtmlClub(verificacion.texto || 'Esperando verificación del resultado')}</span>`;
@@ -5348,26 +5371,75 @@ tr:hover td{background:#f9fafb}
             }
         }
 
+        function encontrarJugadorRankingPorNombre(nombre) {
+            const buscado = String(nombre || '').trim().toLowerCase();
+            return rankingData.find(j =>
+                String(j.nombre || '').trim().toLowerCase() === buscado
+            ) || null;
+        }
+
+        function datosEstadisticosActualizados(datosActuales, cambios) {
+            const actual = datosActuales || {};
+            const pj = Number(actual.pj ?? actual.partidosJugados ?? 0) + 1;
+            const victorias = Number(actual.victorias ?? actual.partidosGanados ?? 0) +
+                (cambios.gano ? 1 : 0);
+            const derrotas = Number(actual.derrotas ?? actual.partidosPerdidos ?? 0) +
+                (cambios.gano ? 0 : 1);
+            const setsGanados = Number(actual.setsGanados || 0) +
+                Number(cambios.setsGanados || 0);
+            const setsPerdidos = Number(actual.setsPerdidos || 0) +
+                Number(cambios.setsPerdidos || 0);
+            const gamesGanados = Number(actual.gamesGanados || 0) +
+                Number(cambios.gamesGanados || 0);
+            const gamesPerdidos = Number(actual.gamesPerdidos || 0) +
+                Number(cambios.gamesPerdidos || 0);
+            const puntos = Math.max(0,
+                Number(actual.puntos || 0) + Number(cambios.puntos || 0)
+            );
+
+            return {
+                puntos,
+                pj,
+                partidosJugados: pj,
+                victorias,
+                partidosGanados: victorias,
+                derrotas,
+                partidosPerdidos: derrotas,
+                diferenciaPartidos: victorias - derrotas,
+                setsGanados,
+                setsPerdidos,
+                diferenciaSets: setsGanados - setsPerdidos,
+                gamesGanados,
+                gamesPerdidos,
+                diferenciaGames: gamesGanados - gamesPerdidos
+            };
+        }
+
+        function sincronizarRankingLocal(nombre, datos) {
+            const jugador = encontrarJugadorRankingPorNombre(nombre);
+            if (jugador) Object.assign(jugador, datos);
+        }
+
         function abrirModalResultado(id) {
             partidoEnEdicion = partidosData.find(x => String(x.id) === String(id));
-            if (!partidoEnEdicion) return;
+            if (!partidoEnEdicion) return alert('No se encontró el partido.');
+
+            if (partidoEnEdicion.estado === 'Finalizado') {
+                return alert('Este partido ya fue finalizado.');
+            }
 
             if (cargaResultadoUsuario(partidoEnEdicion)) {
-                return alert('Ya cargaste tu resultado. Ahora debe ser verificado por los demás jugadores.');
+                return alert('Ya cargaste tu resultado. Debés esperar la verificación.');
             }
 
             const lado = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
             if (!lado) return alert('No formás parte de este partido.');
 
-            const propio = lado === 'equipo1'
-                ? [partidoEnEdicion.j1, partidoEnEdicion.j2]
-                : [partidoEnEdicion.j3, partidoEnEdicion.j4];
-            const rival = lado === 'equipo1'
-                ? [partidoEnEdicion.j3, partidoEnEdicion.j4]
-                : [partidoEnEdicion.j1, partidoEnEdicion.j2];
-            ['s1-e1','s1-e2','s2-e1','s2-e2','s3-e1','s3-e2'].forEach(inputId => {
-                document.getElementById(inputId).value = '';
+            ['s1-e1','s1-e2','s2-e1','s2-e2','s3-e1','s3-e2'].forEach(idInput => {
+                const input = document.getElementById(idInput);
+                if (input) input.value = '';
             });
+
             document.getElementById('modal-resultado').style.display = 'flex';
         }
 
@@ -5421,255 +5493,351 @@ tr:hover td{background:#f9fafb}
 
         async function confirmarGuardadoDefinitivoResultado() {
             if (guardandoResultadoEnCurso) return;
+
             const boton = document.getElementById('btn-confirmar-resultado-definitivo');
-            if (boton) boton.disabled = true;
+            if (boton) {
+                boton.disabled = true;
+                boton.textContent = 'Guardando...';
+            }
+
             cerrarConfirmacionFinalResultado();
+
             try {
                 await guardarResultado();
             } finally {
-                if (boton) boton.disabled = false;
+                if (boton) {
+                    boton.disabled = false;
+                    boton.textContent = 'Sí, confirmar resultado';
+                }
             }
         }
 
         async function aplicarResultadoConfirmadoPartido(partido, setsCanonicos) {
-            if (partido.puntosAplicados === true) return;
-
-            const setsEquipo1 = setsCanonicos.filter(set => Number(set[0]) > Number(set[1])).length;
-            const setsEquipo2 = setsCanonicos.filter(set => Number(set[1]) > Number(set[0])).length;
-            const equipoGanadorCanonico = setsEquipo1 > setsEquipo2 ? 'equipo1' : 'equipo2';
-
-            partido.estado = 'Finalizado';
-            partido.resultadoSets = serializarSetsFirestore(setsCanonicos);
-            partido.resultado = setsCanonicos.map(set => `${set[0]}-${set[1]}`).join(', ');
-            partido.equipoGanador = equipoGanadorCanonico;
-            partido.resultadoConfirmadoEn = new Date().toISOString();
-
-            const calculo = calcularPuntosPartido(
-                {...partido, modalidad: categoriaPartido(partido)},
-                equipoGanadorCanonico
-            );
-
-            const equipo1Nombres = [partido.j1, partido.j2];
-            const equipo2Nombres = [partido.j3, partido.j4];
-            const ganadores = equipoGanadorCanonico === 'equipo1' ? equipo1Nombres : equipo2Nombres;
-            const perdedores = equipoGanadorCanonico === 'equipo1' ? equipo2Nombres : equipo1Nombres;
-
-            const statsEquipo1 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo1');
-            const statsEquipo2 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo2');
-            const statsGanadores = equipoGanadorCanonico === 'equipo1' ? statsEquipo1 : statsEquipo2;
-            const statsPerdedores = equipoGanadorCanonico === 'equipo1' ? statsEquipo2 : statsEquipo1;
-
-            partido.puntosAplicados = true;
-            partido.puntosOtorgados = calculo.puntosVictoria;
-            partido.puntosDescontados = calculo.puntosDerrota;
-            partido.multiplicadorVictoria = calculo.multiplicadorVictoria;
-            partido.multiplicadorDerrota = calculo.multiplicadorDerrota;
-            partido.estadisticasEquipo1 = statsEquipo1;
-            partido.estadisticasEquipo2 = statsEquipo2;
-            partido.cambiosPuntos = {};
-
-            ganadores.forEach(nombre => {
-                partido.cambiosPuntos[nombre] = calculo.puntosVictoria;
-            });
-            perdedores.forEach(nombre => {
-                partido.cambiosPuntos[nombre] = -calculo.puntosDerrota;
-            });
-
-            const guardar = window.guardarPartidoEnFirebase || guardarPartidoEnFirebase;
-            await guardar(partido);
-
-            // El estado definitivo ya quedó persistido. Las estadísticas se
-            // actualizan después para que un error secundario no impida que
-            // el partido pase a Historial.
-            const actualizaciones = [
-                ...ganadores.map(nombre => actualizarJugadorRankingResultado(
-                    nombre,
-                    categoriaPartido(partido),
-                    {
-                        puntos: calculo.puntosVictoria,
-                        gano: true,
-                        ...statsGanadores
-                    }
-                )),
-                ...perdedores.map(nombre => actualizarJugadorRankingResultado(
-                    nombre,
-                    categoriaPartido(partido),
-                    {
-                        puntos: -calculo.puntosDerrota,
-                        gano: false,
-                        ...statsPerdedores
-                    }
-                ))
-            ];
-
-            const resultadosActualizacion = await Promise.allSettled(actualizaciones);
-            resultadosActualizacion
-                .filter(r => r.status === 'rejected')
-                .forEach(r => console.error('Error actualizando estadísticas:', r.reason));
+            // La finalización y las estadísticas se realizan dentro de
+            // guardarCargaYResolverResultadoAtomico. Esta función se conserva
+            // únicamente para compatibilidad con llamadas antiguas.
+            return {
+                partido,
+                setsCanonicos: setsCanonicos.map(normalizarSetCanonico)
+            };
         }
 
         async function agregarCargaResultadoAtomica(partido, nuevaCarga) {
+            return guardarCargaYResolverResultadoAtomico(partido, nuevaCarga);
+        }
+
+        async function guardarCargaYResolverResultadoAtomico(partidoLocal, nuevaCarga) {
             const api = window.firebaseAPI;
             if (!api) throw new Error('Firebase todavía no está listo.');
-            if (!partido?._firestorePath) throw new Error('No se encontró la ruta del partido.');
 
-            const partes = String(partido._firestorePath).split('/').filter(Boolean);
-            const ref = api.doc(api.db, ...partes);
+            const refPartido = obtenerReferenciaPartidoFirestore(partidoLocal);
+            if (!refPartido) throw new Error('No se encontró la referencia del partido.');
 
-            let cargasFusionadas = [];
+            let respuesta = null;
 
             await api.runTransaction(api.db, async transaction => {
-                const snap = await transaction.get(ref);
-                if (!snap.exists()) throw new Error('El partido ya no existe.');
+                const snapPartido = await transaction.get(refPartido);
+                if (!snapPartido.exists()) throw new Error('El partido ya no existe.');
 
-                const remoto = snap.data() || {};
-                const cargasRemotas = Array.isArray(remoto.resultadosCargados)
-                    ? remoto.resultadosCargados
-                    : [];
+                const remoto = normalizarPartidoRemoto(snapPartido.data(), partidoLocal);
 
-                const normalizadas = cargasRemotas.map(c => {
-                    const setsCanonicos = deserializarSetsCarga(c);
-                    return {
-                        usuario: c.usuario || '',
-                        uid: c.uid || '',
-                        equipo: c.equipo || '',
-                        sets: serializarSetsFirestore(setsCanonicos),
-                        clave: c.clave || claveResultadoCanonico(setsCanonicos),
-                        cargadoEn: c.cargadoEn || ''
-                    };
-                });
-
-                const uidNuevo = String(nuevaCarga.uid || '');
-                const nombreNuevo = String(nuevaCarga.usuario || '').trim().toLowerCase();
-
-                const yaExiste = normalizadas.some(c => {
-                    if (uidNuevo && c.uid && String(c.uid) === uidNuevo) return true;
-                    return String(c.usuario || '').trim().toLowerCase() === nombreNuevo;
-                });
-
-                if (yaExiste) {
-                    throw new Error('Ya cargaste tu resultado. Debés esperar la verificación de los demás jugadores.');
+                if (remoto.estado === 'Finalizado') {
+                    throw new Error('Este partido ya fue finalizado.');
                 }
 
-                cargasFusionadas = [...normalizadas, nuevaCarga];
+                if (remoto.estado !== 'Pendiente Resultado') {
+                    throw new Error('El partido todavía no está habilitado para cargar resultados.');
+                }
 
-                transaction.set(ref, {
-                    resultadosCargados: cargasFusionadas,
-                    estado: 'Pendiente Resultado',
-                    actualizadoEn: api.serverTimestamp()
-                }, { merge: true });
+                const usuario = String(nuevaCarga.usuario || '').trim();
+                const uid = String(nuevaCarga.uid || '').trim();
+                const equipoReal = equipoUsuarioEnPartido(remoto, usuario);
+
+                if (!equipoReal) throw new Error('No formás parte de este partido.');
+                if (equipoReal !== nuevaCarga.equipo) {
+                    throw new Error('No se pudo validar tu equipo.');
+                }
+
+                const existentes = resultadosCargadosPartido(remoto);
+                const duplicada = existentes.some(carga => {
+                    if (uid && carga.uid && carga.uid === uid) return true;
+                    return carga.usuario.trim().toLowerCase() === usuario.toLowerCase();
+                });
+
+                if (duplicada) {
+                    throw new Error('Ya cargaste tu resultado. Debés esperar la verificación.');
+                }
+
+                const cargas = [
+                    ...existentes,
+                    {
+                        usuario,
+                        uid,
+                        equipo: equipoReal,
+                        setsCanonicos: nuevaCarga.setsCanonicos.map(normalizarSetCanonico),
+                        sets: serializarSetsFirestore(nuevaCarga.setsCanonicos),
+                        clave: claveResultadoCanonico(nuevaCarga.setsCanonicos),
+                        cargadoEn: nuevaCarga.cargadoEn
+                    }
+                ];
+
+                const analisis = analizarCargasResultado(cargas);
+                const cargasFirestore = cargas.map(carga => ({
+                    usuario: carga.usuario,
+                    uid: carga.uid,
+                    equipo: carga.equipo,
+                    sets: serializarSetsFirestore(carga.setsCanonicos),
+                    clave: carga.clave,
+                    cargadoEn: carga.cargadoEn
+                }));
+
+                if (analisis.estado === 'pendiente') {
+                    transaction.set(refPartido, {
+                        resultadosCargados: cargasFirestore,
+                        estado: 'Pendiente Resultado',
+                        actualizadoEn: api.serverTimestamp()
+                    }, { merge:true });
+
+                    respuesta = {
+                        estado:'pendiente',
+                        motivo:analisis.motivo,
+                        partido:{
+                            ...remoto,
+                            resultadosCargados:cargasFirestore,
+                            estado:'Pendiente Resultado'
+                        }
+                    };
+                    return;
+                }
+
+                if (analisis.estado === 'revision') {
+                    transaction.set(refPartido, {
+                        resultadosCargados:cargasFirestore,
+                        estado:'Finalizado',
+                        resultado:'Resultados incongruentes',
+                        resultadoIncongruente:true,
+                        pendienteRevision:true,
+                        puntosAplicados:false,
+                        cambiosPuntos:{},
+                        revisionSolicitadaEn:new Date().toISOString(),
+                        actualizadoEn:api.serverTimestamp()
+                    }, { merge:true });
+
+                    respuesta = {
+                        estado:'revision',
+                        partido:{
+                            ...remoto,
+                            resultadosCargados:cargasFirestore,
+                            estado:'Finalizado',
+                            resultado:'Resultados incongruentes',
+                            resultadoIncongruente:true,
+                            pendienteRevision:true,
+                            puntosAplicados:false,
+                            cambiosPuntos:{}
+                        }
+                    };
+                    return;
+                }
+
+                const setsCanonicos = analisis.setsCanonicos.map(normalizarSetCanonico);
+                const setsEquipo1 = setsCanonicos.filter(([e1,e2]) => e1 > e2).length;
+                const setsEquipo2 = setsCanonicos.filter(([e1,e2]) => e2 > e1).length;
+                const equipoGanador = setsEquipo1 > setsEquipo2 ? 'equipo1' : 'equipo2';
+
+                const calculo = calcularPuntosPartido(
+                    {...remoto, modalidad:categoriaPartido(remoto)},
+                    equipoGanador
+                );
+
+                const equipo1 = [remoto.j1, remoto.j2];
+                const equipo2 = [remoto.j3, remoto.j4];
+                const ganadores = equipoGanador === 'equipo1' ? equipo1 : equipo2;
+                const perdedores = equipoGanador === 'equipo1' ? equipo2 : equipo1;
+                const statsEquipo1 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo1');
+                const statsEquipo2 = estadisticasEquipoDesdeSets(setsCanonicos, 'equipo2');
+                const statsGanadores = equipoGanador === 'equipo1' ? statsEquipo1 : statsEquipo2;
+                const statsPerdedores = equipoGanador === 'equipo1' ? statsEquipo2 : statsEquipo1;
+
+                const jugadores = [...equipo1, ...equipo2].map(nombre => {
+                    const ranking = encontrarJugadorRankingPorNombre(nombre);
+                    const uidJugador = String(ranking?.uid || ranking?.id || '').trim();
+                    if (!uidJugador) {
+                        throw new Error(`No se encontró la cuenta de ${nombre} para actualizar el ranking.`);
+                    }
+                    return { nombre, uid:uidJugador, ranking };
+                });
+
+                // Firestore exige todas las lecturas antes de cualquier escritura.
+                const documentosUsuarios = [];
+                for (const jugador of jugadores) {
+                    const refUsuario = api.doc(api.db, 'users', jugador.uid);
+                    const snapUsuario = await transaction.get(refUsuario);
+                    documentosUsuarios.push({
+                        ...jugador,
+                        ref:refUsuario,
+                        datos:snapUsuario.exists() ? snapUsuario.data() : {}
+                    });
+                }
+
+                const cambiosPuntos = {};
+                const datosUsuariosActualizados = [];
+
+                documentosUsuarios.forEach(jugador => {
+                    const gano = ganadores.includes(jugador.nombre);
+                    const estadisticas = gano ? statsGanadores : statsPerdedores;
+                    const cambio = {
+                        puntos:gano ? calculo.puntosVictoria : -calculo.puntosDerrota,
+                        gano,
+                        ...estadisticas
+                    };
+                    const datosNuevos = datosEstadisticosActualizados(jugador.datos, cambio);
+                    cambiosPuntos[jugador.nombre] = cambio.puntos;
+                    datosUsuariosActualizados.push({
+                        nombre:jugador.nombre,
+                        ref:jugador.ref,
+                        datos:datosNuevos
+                    });
+                });
+
+                transaction.set(refPartido, {
+                    resultadosCargados:cargasFirestore,
+                    estado:'Finalizado',
+                    resultadoSets:serializarSetsFirestore(setsCanonicos),
+                    resultado:setsCanonicos.map(([e1,e2]) => `${e1}-${e2}`).join(', '),
+                    equipoGanador,
+                    resultadoConfirmadoEn:new Date().toISOString(),
+                    resultadoIncongruente:false,
+                    pendienteRevision:false,
+                    puntosAplicados:true,
+                    puntosOtorgados:calculo.puntosVictoria,
+                    puntosDescontados:calculo.puntosDerrota,
+                    multiplicadorVictoria:calculo.multiplicadorVictoria,
+                    multiplicadorDerrota:calculo.multiplicadorDerrota,
+                    estadisticasEquipo1:statsEquipo1,
+                    estadisticasEquipo2:statsEquipo2,
+                    cambiosPuntos,
+                    actualizadoEn:api.serverTimestamp()
+                }, { merge:true });
+
+                datosUsuariosActualizados.forEach(usuario => {
+                    transaction.set(usuario.ref, {
+                        ...usuario.datos,
+                        actualizadoEn:api.serverTimestamp()
+                    }, { merge:true });
+                });
+
+                respuesta = {
+                    estado:'confirmado',
+                    motivo:analisis.motivo,
+                    partido:{
+                        ...remoto,
+                        resultadosCargados:cargasFirestore,
+                        estado:'Finalizado',
+                        resultadoSets:serializarSetsFirestore(setsCanonicos),
+                        resultado:setsCanonicos.map(([e1,e2]) => `${e1}-${e2}`).join(', '),
+                        equipoGanador,
+                        puntosAplicados:true,
+                        puntosOtorgados:calculo.puntosVictoria,
+                        puntosDescontados:calculo.puntosDerrota,
+                        multiplicadorVictoria:calculo.multiplicadorVictoria,
+                        multiplicadorDerrota:calculo.multiplicadorDerrota,
+                        estadisticasEquipo1:statsEquipo1,
+                        estadisticasEquipo2:statsEquipo2,
+                        cambiosPuntos
+                    },
+                    usuarios:datosUsuariosActualizados.map(u => ({
+                        nombre:u.nombre,
+                        datos:u.datos
+                    }))
+                };
             });
 
-            // Sin esperar al snapshot: actualizar inmediatamente el objeto local
-            // con TODAS las cargas obtenidas dentro de la transacción.
-            partido.resultadosCargados = cargasFusionadas;
-            partido.estado = 'Pendiente Resultado';
-
-            return cargasFusionadas;
+            if (!respuesta) throw new Error('No se pudo resolver el resultado.');
+            return respuesta;
         }
 
         async function guardarResultado() {
-            if (!partidoEnEdicion) return;
-            if (guardandoResultadoEnCurso) return;
-
-            if (partidoEnEdicion.estado === 'Finalizado' || partidoEnEdicion.puntosAplicados === true) {
-                return alert('Este resultado ya fue confirmado.');
-            }
-            if (cargaResultadoUsuario(partidoEnEdicion)) {
-                return alert('Ya cargaste tu resultado. Debés esperar la verificación de los demás jugadores.');
-            }
+            if (!partidoEnEdicion || guardandoResultadoEnCurso) return;
 
             guardandoResultadoEnCurso = true;
 
             try {
                 const temporal = obtenerResultadoTemporalDesdeFormulario();
-                const ladoUsuario = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
-                if (!ladoUsuario) throw new Error('No formás parte de este partido.');
+                const equipo = obtenerLadoUsuarioEnPartido(partidoEnEdicion);
+                if (!equipo) throw new Error('No formás parte de este partido.');
 
                 const setsCanonicos = temporal.sets.map(set => {
-                    if (ladoUsuario === 'equipo1') return [set.izquierda, set.derecha];
-                    return [set.derecha, set.izquierda];
+                    const izquierda = Number(set.izquierda);
+                    const derecha = Number(set.derecha);
+
+                    return equipo === 'equipo1'
+                        ? [izquierda, derecha]
+                        : [derecha, izquierda];
                 });
 
-                const nuevaCarga = {
-                    usuario: getNombreCompleto(),
-                    uid: usuarioActual?.uid || '',
-                    equipo: ladoUsuario,
-                    // Firestore sí admite arrays de maps; no admite arrays dentro de arrays.
-                    sets: serializarSetsFirestore(setsCanonicos),
-                    clave: claveResultadoCanonico(setsCanonicos),
-                    cargadoEn: new Date().toISOString()
-                };
+                const resultado = await guardarCargaYResolverResultadoAtomico(
+                    partidoEnEdicion,
+                    {
+                        usuario:getNombreCompleto(),
+                        uid:String(usuarioActual?.uid || ''),
+                        equipo,
+                        setsCanonicos,
+                        cargadoEn:new Date().toISOString()
+                    }
+                );
 
-                // Se fusiona contra el documento más reciente de Firestore.
-                // Así dos perfiles que cargan casi al mismo tiempo no se pisan.
-                await agregarCargaResultadoAtomica(partidoEnEdicion, nuevaCarga);
+                const indice = partidosData.findIndex(p =>
+                    String(p.id) === String(partidoEnEdicion.id)
+                );
+                if (indice >= 0) {
+                    partidosData[indice] = {
+                        ...partidosData[indice],
+                        ...resultado.partido
+                    };
+                    partidoEnEdicion = partidosData[indice];
+                }
 
-                // Re-render inmediato: el usuario ya no ve el botón de cargar.
+                if (Array.isArray(resultado.usuarios)) {
+                    resultado.usuarios.forEach(usuario => {
+                        sincronizarRankingLocal(usuario.nombre, usuario.datos);
+                    });
+                }
+
                 cerrarModales();
                 renderizarMisPartidos();
+                renderizarRanking();
                 renderizarBanner();
                 cambiarVistaPrincipal('partidos');
+
+                if (resultado.estado === 'confirmado') {
+                    cambiarPanelPartidos('historial');
+                    alert(
+                        resultado.motivo === 'coincidencia_entre_equipos'
+                            ? 'El resultado coincide con el cargado por el equipo rival. El partido fue finalizado.'
+                            : 'El resultado quedó confirmado por mayoría y el partido fue finalizado.'
+                    );
+                    return;
+                }
+
+                if (resultado.estado === 'revision') {
+                    cambiarPanelPartidos('historial');
+                    alert(
+                        'Las cuatro cargas son incongruentes. El partido pasó al historial pendiente de revisión y no modificó el ranking.'
+                    );
+                    return;
+                }
+
                 cambiarPanelPartidos('pendientes');
 
-                // 1) Coincidencia entre al menos una carga de cada equipo.
-                // partidoEnEdicion ya contiene la fusión atómica de Firestore.
-                let verificado = resultadoCoincidenteEntreEquipos(partidoEnEdicion);
-
-                // 2) Si hubo conflicto, esperar las cuatro cargas y verificar mayoría.
-                if (!verificado) {
-                    verificado = resultadoVerificableTrasCuatroCargas(partidoEnEdicion);
-                }
-
-                if (verificado) {
-                    await aplicarResultadoConfirmadoPartido(partidoEnEdicion, verificado.setsCanonicos);
-
-                    // Quitar inmediatamente de Resultados y mostrar Historial,
-                    // sin depender de que llegue primero el snapshot.
-                    renderizarMisPartidos();
-                    renderizarRanking();
-                    renderizarBanner();
-                    cambiarVistaPrincipal('partidos');
-                    cambiarPanelPartidos('historial');
-
-                    setTimeout(() => {
-                        document.getElementById('panel-partidos-historial')?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }, 50);
-
-                    alert('El resultado coincide con el cargado por el equipo rival. El partido pasó al historial.');
-                    return;
-                }
-
-                if (hayEmpateIncongruenteTrasCuatroCargas(partidoEnEdicion)) {
-                    await marcarPartidoResultadoIncongruente(partidoEnEdicion);
-                    renderizarMisPartidos();
-                    renderizarRanking();
-                    renderizarBanner();
-                    cambiarPanelPartidos('historial');
-                    alert('Los resultados cargados son incongruentes. El partido pasó al historial y quedó pendiente de revisión.');
-                    return;
-                }
-
-                // Permanece en Resultados con cartel rojo.
-                renderizarMisPartidos();
-                const cargas = resultadosCargadosPartido(partidoEnEdicion);
-                const claves = new Set(cargas.map(c => c.clave || claveResultadoCanonico(c.setsCanonicos)));
-
-                if (claves.size > 1) {
-                    alert('Resultado guardado. Hay resultados diferentes cargados; faltan las cargas de los otros jugadores para verificar.');
+                if (resultado.motivo === 'resultados_diferentes') {
+                    alert(
+                        'Resultado guardado. No coincide con otra carga; los demás jugadores deben cargar para verificar.'
+                    );
                 } else {
-                    alert('Resultado guardado. Los rivales tienen que cargar el resultado.');
+                    alert(
+                        'Resultado guardado. Los rivales tienen que cargar el resultado.'
+                    );
                 }
-
-                setTimeout(() => {
-                    document.getElementById('panel-partidos-pendientes')?.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }, 60);
             } catch (error) {
                 console.error('Error al guardar resultado:', error);
                 alert(error.message || 'No se pudo guardar el resultado.');
