@@ -5885,6 +5885,9 @@ tr:hover td{background:#f9fafb}
             let firebaseAPI = null;
             let reservasCompartidasCache = [];
             let configsClubesCache = {};
+            let configuracionGeneralPorClub = {};
+            let ultimoSnapshotClubes = null;
+            let procesarSnapshotClubes = null;
             let authModoActual = "login";
             let unsubscribeFirebase = [];
 
@@ -6145,7 +6148,8 @@ tr:hover td{background:#f9fafb}
                     window.renderizarPantallas();
                 }, (error) => logFirebaseError("lectura de reservas", error));
 
-                const unsubClubes = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "clubs"), (snapshot) => {
+                procesarSnapshotClubes = (snapshot) => {
+                    ultimoSnapshotClubes = snapshot;
                     configsClubesCache = {};
                     clubesData = snapshot.docs.map(docSnap => {
                         const raiz = docSnap.data() || {};
@@ -6154,7 +6158,8 @@ tr:hover td{background:#f9fafb}
                         const datosClub = raiz.datosClub && typeof raiz.datosClub === "object"
                             ? raiz.datosClub
                             : {};
-                        const data = { ...raiz, ...datosClub };
+                        const configGeneral = configuracionGeneralPorClub[docSnap.id] || {};
+                        const data = { ...raiz, ...datosClub, ...configGeneral };
                         const nombre = raiz.nombre || data.nombre || raiz.clubId || data.clubId || docSnap.id;
                         const leerNumero = (...valores) => {
                             for (const valor of valores) {
@@ -6232,7 +6237,32 @@ tr:hover td{background:#f9fafb}
                     actualizarSelectorClubes();
                     renderizarClubes();
                     window.actualizarHorariosDisponibles();
-                }, (error) => logFirebaseError("lectura de clubes", error));
+                };
+
+                const unsubClubes = firebaseAPI.onSnapshot(
+                    firebaseAPI.collection(firebaseAPI.db, "clubs"),
+                    procesarSnapshotClubes,
+                    (error) => logFirebaseError("lectura de clubes", error)
+                );
+
+                const unsubConfiguracion = firebaseAPI.onSnapshot(
+                    firebaseAPI.collectionGroup(firebaseAPI.db, "configuracion"),
+                    (snapshot) => {
+                        const nuevoMapa = {};
+                        snapshot.docs.forEach(docSnap => {
+                            if (docSnap.id !== "general") return;
+                            const partes = String(docSnap.ref.path || "").split("/").filter(Boolean);
+                            const indiceClubs = partes.indexOf("clubs");
+                            const clubId = indiceClubs >= 0 ? partes[indiceClubs + 1] : "";
+                            if (clubId) nuevoMapa[clubId] = docSnap.data() || {};
+                        });
+                        configuracionGeneralPorClub = nuevoMapa;
+                        if (ultimoSnapshotClubes && typeof procesarSnapshotClubes === "function") {
+                            procesarSnapshotClubes(ultimoSnapshotClubes);
+                        }
+                    },
+                    (error) => logFirebaseError("lectura de configuración general", error)
+                );
 
                 const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
                     const todosPartidos = docsToArray(snapshot).map(p => ({
@@ -6351,6 +6381,7 @@ tr:hover td{background:#f9fafb}
                 unsubscribeFirebase = [
                     unsubReservas,
                     unsubClubes,
+                    unsubConfiguracion,
                     unsubPartidos,
                     unsubUsuarios,
                     unsubTorneos,
