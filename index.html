@@ -1,4 +1,21 @@
 <!DOCTYPE html>
+<!--
+CIRCUITO COMPETITIVO — PROTOTIPO TODO EN UN SOLO ARCHIVO
+
+USO:
+1. Guardá este contenido como index.html
+2. Subí SOLO index.html a GitHub
+3. Activá GitHub Pages en main / root
+
+TODO HTML, CSS Y JAVASCRIPT ESTÁ INTEGRADO EN ESTE ARCHIVO.
+
+Firebase continúa funcionando por Internet.
+
+LIMITACIÓN DEL MODO SINGLE-FILE:
+La instalación PWA y el Service Worker quedan desactivados.
+Todo el resto del prototipo queda integrado en este único archivo.
+-->
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,9 +24,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="./manifest.webmanifest">
     <title>Circuito Competitivo</title>
-    <style>
+
+<style id="circuito-single-file-css">
+/* ===== app.css ===== */
+
 :root{
   --bg:#f6f7f9;
   --surface:#fff;
@@ -442,9 +461,9 @@ tr:hover td{background:#f9fafb}
   .header-acciones h2{font-size:1.35rem}
 }
 
-    </style>
+    
 
-<style id="clubes-circuito-redesign-css">
+
 #vista-clubes .clubes-intro{margin:0 0 16px;color:var(--muted);font-size:.92rem;text-align:center}
 #lista-clubes{display:flex;flex-direction:column;gap:12px;max-height:none;overflow:visible;padding:0}
 .club-circuito-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:16px;padding:17px 18px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 8px 24px rgba(16,24,40,.055);transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
@@ -462,10 +481,9 @@ tr:hover td{background:#f9fafb}
 .club-whatsapp-btn[disabled]{opacity:.38;cursor:not-allowed;transform:none}
 .clubes-empty{padding:28px 18px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);text-align:center;background:var(--surface-2)}
 @media(max-width:420px){.club-circuito-card{padding:15px;gap:12px}.club-whatsapp-btn{width:43px;height:43px;min-width:43px;border-radius:14px}.club-modalidad-chip{font-size:.72rem}}
-</style>
 
 
-<style id="banner-inicio-minimalista-css">
+
 #banner-proximo-partido.carousel-container{
   min-height:252px;
   border:1px solid var(--line)!important;
@@ -727,10 +745,9 @@ tr:hover td{background:#f9fafb}
   .banner-team-players{gap:8px}
   .banner-club-image-card{height:96px}
 }
-</style>
 
 
-<style id="partidos-pendientes-minimalistas-css">
+
 .partidos-nav{
   display:grid!important;
   grid-template-columns:repeat(5,minmax(0,1fr))!important;
@@ -983,10 +1000,9 @@ tr:hover td{background:#f9fafb}
   .partido-minimal-footer{flex-direction:column;align-items:stretch}
   .partido-minimal-action{width:100%!important}
 }
-</style>
 
 
-<style id="banner-clubes-imagen-completa-css">
+
 #banner-proximo-partido .banner-match-clickable{
   cursor:pointer;
 }
@@ -1080,10 +1096,9 @@ tr:hover td{background:#f9fafb}
     font-size:1.15rem;
   }
 }
-</style>
 
 
-<style id="acciones-jugador-banner-css">
+
 .banner-teams.banner-pendientes-link{
   cursor:pointer;
   border-radius:0 0 14px 14px;
@@ -1157,10 +1172,9 @@ tr:hover td{background:#f9fafb}
   background:#fffafa;
   border-color:#fecdca;
 }
-</style>
 
 
-<style id="banner-clubes-ajuste-final-css">
+
 #banner-proximo-partido .banner-clubs-slide{
   position:absolute!important;
   inset:0!important;
@@ -1211,10 +1225,9 @@ tr:hover td{background:#f9fafb}
   .banner-club-full-top{top:15px;left:14px;right:14px}
   .banner-club-full-content{padding:18px 15px 36px!important}
 }
-</style>
 
 
-<style id="header-iconos-ajuste-css">
+
 .header-acciones .icon-btn{
   display:inline-flex!important;
   align-items:center!important;
@@ -1237,15 +1250,13 @@ tr:hover td{background:#f9fafb}
 .header-acciones .icon-btn.header-menu-icon svg{
   stroke-width:2.8;
 }
-</style>
 
 
-<style id="modal-jugador-ranking-contexto-css">
+
 .jugador-modal-opciones button[hidden]{display:none!important}
-</style>
 
 
-<style id="resultado-mejor-tres-css">
+
 .modal-resultado-mejor-tres{max-width:430px!important;text-align:left!important}
 .modal-resultado-mejor-tres h3{margin:0!important;color:var(--text)!important;text-align:center}
 .resultado-perspectiva{margin:7px 0 16px;color:var(--muted);font-size:.82rem;line-height:1.4;text-align:center}
@@ -1263,10 +1274,9 @@ tr:hover td{background:#f9fafb}
 .resultado-set span{text-align:center;color:var(--muted);font-weight:900}
 .resultado-ayuda{margin:0 0 15px;color:var(--muted);font-size:.75rem;line-height:1.4;text-align:center}
 @media(max-width:420px){.resultado-sets-grid{grid-template-columns:1fr}.resultado-set label small{display:inline;margin-left:4px}}
-</style>
 
 
-<style id="ranking-estadisticas-invitaciones-css">
+
 #vista-ranking .scrollable{overflow-x:auto!important}
 #vista-ranking table{min-width:1060px}
 #vista-ranking th,#vista-ranking td{white-space:nowrap}
@@ -1331,10 +1341,9 @@ tr:hover td{background:#f9fafb}
   font-size:.7rem;
   font-weight:850;
 }
-</style>
 
 
-<style id="partidos-unirse-acordeon-css">
+
 #lista-partidos-abiertos{
   display:flex;
   flex-direction:column;
@@ -1511,10 +1520,9 @@ tr:hover td{background:#f9fafb}
   .partido-unirse-vs{width:28px;height:28px}
   .partido-unirse-body{padding:12px}
 }
-</style>
 
 
-<style id="unirse-equipos-ajustes-css">
+
 .partido-unirse-destacado-fijo{
   overflow:hidden;
   border:2px solid var(--primary);
@@ -1591,10 +1599,9 @@ tr:hover td{background:#f9fafb}
 @media(max-width:420px){
   .opciones-equipo-unirse{grid-template-columns:1fr}
 }
-</style>
 
 
-<style id="amigos-solicitudes-css">
+
 .amigos-buscador-card,.amigos-seccion{
   margin-bottom:16px;
   padding:15px;
@@ -1724,10 +1731,9 @@ tr:hover td{background:#f9fafb}
   font-size:.78rem;
   text-align:center;
 }
-</style>
 
 
-<style id="notificaciones-amigos-salir-css">
+
 .notif-header-btn{position:relative!important}
 .notif-header-emoji{
   display:flex;
@@ -1874,10 +1880,9 @@ tr:hover td{background:#f9fafb}
   flex-wrap:wrap;
   gap:7px;
 }
-</style>
 
 
-<style id="invitacion-pendiente-refuerzo-css">
+
 .invitacion-slot-card{
   border:1px solid #98a2b3!important;
   background:#f9fafb!important;
@@ -1887,17 +1892,18 @@ tr:hover td{background:#f9fafb}
   color:#000!important;
   font-weight:900!important;
 }
-</style>
 
-<style id="campana-outline-fix-css">
+
+
 .notif-header-btn .notif-header-svg{
   width:16px!important;height:16px!important;display:block!important;
   fill:none!important;stroke:#000!important;stroke-width:1.85!important;
   stroke-linecap:round!important;stroke-linejoin:round!important;
 }
 .notif-header-btn .notif-header-emoji{display:none!important}
-</style>
-<style id="invitacion-visual-fix-css">
+
+
+
 .invitacion-slot-card{
   width:100%!important;max-width:none!important;min-height:42px!important;
   display:flex!important;align-items:center!important;justify-content:space-between!important;
@@ -1911,13 +1917,13 @@ tr:hover td{background:#f9fafb}
   border:1px solid #d0d5dd!important;border-radius:999px!important;background:#fff!important;
   color:#101828!important;font-size:1rem!important;font-weight:900!important;cursor:pointer!important;
 }
-</style>
 
-<style id="solo-competitivo-categorias-css">
+
+
 .banner-empty .banner-meta-chip{margin-top:12px}
-</style>
 
-<style id="resultado-confirmacion-final-css">
+
+
 .resultado-equipos-simple strong{
   display:block!important;
   color:var(--text)!important;
@@ -1963,10 +1969,9 @@ tr:hover td{background:#f9fafb}
   font-size:.86rem;
   font-weight:850;
 }
-</style>
 
 
-<style id="historial-puntos-css">
+
 .historial-puntos{
   display:inline-flex;
   align-items:center;
@@ -1993,10 +1998,9 @@ tr:hover td{background:#f9fafb}
   background:var(--surface-2);
   border:1px solid var(--line);
 }
-</style>
 
 
-<style id="resultado-verificacion-equipos-css">
+
 .resultado-verificacion-pendiente{
   display:inline-flex;
   align-items:center;
@@ -2022,9 +2026,9 @@ tr:hover td{background:#f9fafb}
   font-weight:800;
   text-align:center;
 }
-</style>
 
-<style id="historial-revision-incongruente-css">
+
+
 .historial-revision-incongruente{
   display:inline-flex;
   align-items:center;
@@ -2040,9 +2044,9 @@ tr:hover td{background:#f9fafb}
   line-height:1.2;
   text-align:center;
 }
-</style>
 
-<style id="ux-partidos-amigos-css">
+
+
 .tab-count{
   display:inline-flex;
   min-width:19px;
@@ -2225,10 +2229,9 @@ tr:hover td{background:#f9fafb}
   .partido-detalle-actions{flex-direction:column}
   .partido-detalle-actions .btn{width:100%}
 }
-</style>
 
 
-<style id="partidos-swipe-navigation-css">
+
 #vista-partidos{
   --partidos-nav-bg:rgba(246,247,249,.94);
   touch-action:pan-y;
@@ -2365,10 +2368,9 @@ tr:hover td{background:#f9fafb}
     animation:none!important;
   }
 }
-</style>
 
 
-<style id="contadores-profesor-css">
+
 .tab-count[hidden]{display:none!important}
 .partidos-nav button{
   display:grid!important;
@@ -2429,10 +2431,9 @@ tr:hover td{background:#f9fafb}
 .profesor-clase-meta{margin-top:6px;color:var(--muted);font-size:.72rem;line-height:1.45}
 .profesor-clase-contacto{margin-top:9px;display:inline-flex;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#101828;font-size:.7rem;font-weight:850;cursor:pointer}
 @media(max-width:480px){.profesor-form-grid{grid-template-columns:1fr}}
-</style>
 
 
-<style id="experiencia-completa-css">
+
 :root{
   --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;
   --fs-xs:clamp(.68rem,.65rem + .15vw,.75rem);
@@ -2595,10 +2596,9 @@ img[data-club-image]{background:#e4e7ec}
   .contenedor-principal{padding-bottom:32px!important}
   .menu-grid{grid-template-columns:repeat(4,1fr)!important}
 }
-</style>
 
 
-<style id="accesos-rapidos-minimalistas-css">
+
 .accesos-rapidos-grid{
   width:min(100%,620px)!important;
   margin:0 auto!important;
@@ -2717,10 +2717,9 @@ img[data-club-image]{background:#e4e7ec}
     font-size:.73rem!important;
   }
 }
-</style>
 
 
-<style id="accesos-rapidos-solo-iconos-css">
+
 .accesos-rapidos-grid{
   width:min(100%,560px)!important;
   margin:0 auto!important;
@@ -2814,10 +2813,9 @@ img[data-club-image]{background:#e4e7ec}
     font-size:1.82rem!important;
   }
 }
-</style>
 
 
-<style id="amigos-torneos-minimal-css">
+
 /* Amigos */
 .amigos-busqueda-fija{
   margin:12px auto 12px;
@@ -3101,10 +3099,75 @@ img[data-club-image]{background:#e4e7ec}
   .torneo-card-actions{justify-content:stretch}
   .torneo-card-actions .torneo-btn{flex:1}
 }
-</style>
 
+
+/* ===== features.css ===== */
+
+.app-svg,.bottom-svg,.menu-inline-svg,.acceso-rapido-svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acceso-rapido-svg{width:38px;height:38px}
+.bottom-svg{width:20px;height:20px}
+.menu-inline-svg{width:18px;height:18px;vertical-align:-4px;margin-right:8px}
+.eyebrow-ui{display:block;color:#667085;font-size:.58rem;font-weight:900;letter-spacing:.09em}
+.seccion-mini-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 10px}
+.seccion-mini-head h3{margin:2px 0 0;font-size:1rem}
+.link-minimal{border:0;background:transparent;color:#475467;font-size:.72rem;font-weight:850;min-height:36px}
+.actividad-home{margin-top:16px}
+.actividad-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.actividad-icon{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#f2f4f7;flex:none}
+.actividad-item strong{display:block;font-size:.75rem}.actividad-item span{display:block;color:#667085;font-size:.68rem;margin-top:2px}
+.perfil-competitivo-extra{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.perfil-metricas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.perfil-metrica{text-align:center;padding:9px 5px;border-radius:11px;background:#f9fafb}
+.perfil-metrica strong{display:block;font-size:.92rem}.perfil-metrica span{font-size:.58rem;color:#667085}
+.perfil-ultimo-partido{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #f2f4f7;font-size:.7rem}
+.admin-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px;padding:4px;border:1px solid var(--line);border-radius:13px;background:#f9fafb}
+.admin-tabs button{border:0;background:transparent;border-radius:9px;padding:8px 4px;color:#667085;font-size:.68rem;font-weight:850}
+.admin-tabs button.activo{background:#101828;color:#fff}
+.admin-panel{display:none}.admin-panel.activo{display:block}
+.admin-card{padding:12px;margin-bottom:9px;border:1px solid var(--line);border-radius:13px;background:#fff}
+.admin-card strong{font-size:.78rem}.admin-card p{font-size:.68rem;color:#667085;line-height:1.4}
+.admin-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.admin-actions button{width:auto!important;min-height:34px!important;padding:6px 9px!important;font-size:.66rem!important}
+.sancion-badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#fef3f2;color:#b42318;font-size:.62rem;font-weight:850}
+.onboarding-overlay{position:fixed;inset:0;z-index:10000;background:rgba(16,24,40,.62);display:flex;align-items:center;justify-content:center;padding:16px}
+.onboarding-overlay[hidden]{display:none!important}
+.onboarding-card{width:min(100%,420px);padding:18px;border-radius:22px;background:#fff;box-shadow:0 24px 60px rgba(16,24,40,.28)}
+.onboarding-progress{height:5px;background:#eaecf0;border-radius:999px;overflow:hidden;margin-bottom:18px}.onboarding-progress span{display:block;height:100%;width:33%;background:#101828;transition:width .2s}
+.onboarding-step{display:none}.onboarding-step.activo{display:block}
+.onboarding-step h2{margin:5px 0 6px}.onboarding-step p{color:#667085;font-size:.8rem;line-height:1.5}
+.onboarding-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.onboarding-options button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-weight:850}
+.onboarding-options button.activo{border-color:#101828;background:#101828;color:#fff}
+.onboarding-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.favorite-btn{width:36px;height:36px;min-height:36px;border:1px solid var(--line);border-radius:50%;background:#fff;color:#667085;display:flex;align-items:center;justify-content:center}
+.favorite-btn.activo{color:#b54708;background:#fffaeb;border-color:#fedf89}
+.favorite-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+.recordatorio-chip{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eff8ff;color:#175cd3;font-size:.62rem;font-weight:850}
+.notif-grupo-titulo{margin:14px 0 7px;color:#667085;font-size:.65rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.torneo-detail-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.torneo-cuadro{display:grid;gap:8px;margin-top:10px}.torneo-ronda{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f9fafb}
+.torneo-ronda h5{margin:0 0 7px;font-size:.7rem}.torneo-cruce{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid #eaecf0;font-size:.68rem}
+.modal-help{color:#667085;font-size:.74rem;line-height:1.45}
+@media(max-width:600px){.perfil-metricas-grid{grid-template-columns:repeat(2,1fr)}.admin-tabs{grid-template-columns:1fr 1fr}.onboarding-actions{grid-template-columns:1fr}}
+
+</style>
 </head>
 <body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/></symbol>
+  <symbol id="i-match" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m8 16 8-8"/><path d="m9 7 8 8"/></symbol>
+  <symbol id="i-ranking" viewBox="0 0 24 24"><path d="M5 19V9h4v10"/><path d="M10 19V5h4v14"/><path d="M15 19v-7h4v7"/></symbol>
+  <symbol id="i-academy" viewBox="0 0 24 24"><path d="m3 8 9-4 9 4-9 4-9-4Z"/><path d="M7 10.5V15c3 2 7 2 10 0v-4.5"/><path d="M21 8v6"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4h8v4c0 4-2 7-4 7s-4-3-4-7V4Z"/><path d="M8 6H4c0 4 2 6 5 6"/><path d="M16 6h4c0 4-2 6-5 6"/><path d="M12 15v4"/><path d="M8 20h8"/></symbol>
+  <symbol id="i-club" viewBox="0 0 24 24"><path d="M14.5 3.5c3 3 2.5 7-1 10.5l-4.5 4.5-3.5-3.5 4.5-4.5c3.5-3.5 7.5-4 10.5-1"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.2-4 3.7-6 7.5-6s6.3 2 7.5 6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 5 3 8 7 10 4-2 7-5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol>
+</svg>
+
 
 
     <div id="pantalla-auth">
@@ -3211,6 +3274,14 @@ img[data-club-image]{background:#e4e7ec}
 
             <section id="home-prioridad" class="home-prioridad" aria-live="polite"></section>
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
+<section class="actividad-home" id="actividad-home">
+  <div class="seccion-mini-head">
+    <div><span class="eyebrow-ui">ACTIVIDAD</span><h3>Lo último</h3></div>
+    <button type="button" class="link-minimal" onclick="cambiarVistaPrincipal('notificaciones')">Ver todo</button>
+  </div>
+  <div id="actividad-home-lista"></div>
+</section>
+
             <div class="padel-visual-strip" role="img" aria-label="Ilustración de una cancha de pádel">
                 <div class="padel-visual-copy">
                     <strong>Jugá. Competí. Mejorá.</strong>
@@ -3222,17 +3293,17 @@ img[data-club-image]{background:#e4e7ec}
             
             <div class="menu-grid accesos-rapidos-grid">
                 <button type="button" class="tarjeta-menu acceso-rapido card-ranking" onclick="cambiarVistaPrincipal('ranking')" aria-label="Ranking" title="Ranking">
-                    <span class="acceso-rapido-icono" aria-hidden="true">🏆</span>
+                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-ranking"></use></svg>
                 </button>
                 <button type="button" class="tarjeta-menu acceso-rapido card-partidos" onclick="cambiarVistaPrincipal('partidos')" aria-label="Partidos" title="Partidos">
-                    <span class="acceso-rapido-icono" aria-hidden="true">🎾</span>
+                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-match"></use></svg>
                 </button>
                 <button type="button" id="boton-academia-inicio" class="tarjeta-menu acceso-rapido card-academia" onclick="cambiarVistaPrincipal('academia')" aria-label="Academia" title="Academia">
-                    <span class="acceso-rapido-icono" aria-hidden="true">🎓</span>
+                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-academy"></use></svg>
                     <span id="texto-boton-academia" class="acceso-rapido-texto-visualmente-oculto">Academia</span>
                 </button>
                 <button type="button" class="tarjeta-menu acceso-rapido card-torneos" onclick="cambiarVistaPrincipal('torneos')" aria-label="Torneos" title="Torneos">
-                    <span class="acceso-rapido-icono" aria-hidden="true">🏅</span>
+                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-trophy"></use></svg>
                 </button>
             </div>
         </div>
@@ -3666,7 +3737,13 @@ img[data-club-image]{background:#e4e7ec}
                     <div><strong id="perfil-stat-pj">0</strong><span>PJ</span></div>
                 </div>
             </div>
-            <div style="background: var(--bg-light); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light);">
+            
+<section class="perfil-competitivo-extra">
+  <div class="seccion-mini-head"><div><span class="eyebrow-ui">COMPETENCIA</span><h3>Historial competitivo</h3></div></div>
+  <div id="perfil-competitivo-metricas" class="perfil-metricas-grid"></div>
+  <div id="perfil-ultimos-partidos" class="perfil-ultimos-partidos"></div>
+</section>
+<div style="background: var(--bg-light); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light);">
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
@@ -3710,11 +3787,32 @@ img[data-club-image]{background:#e4e7ec}
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('perfil')">👤 Mi perfil</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
                 <button id="menu-profesor-btn" class="btn cancha-bg" style="text-align:left;padding:15px;" onclick="accionMenuProfesor()">🧑‍🏫 Profesores · Solicitar rol</button>
+                <button id="menu-admin-btn" class="btn cancha-bg" style="text-align:left;padding:15px;display:none;" onclick="cambiarVistaPrincipal('admin')"><svg class="menu-inline-svg" aria-hidden="true"><use href="#i-shield"></use></svg> Administración</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
+                <button id="menu-push-btn" class="btn cancha-bg" style="text-align:left;padding:15px;" onclick="activarNotificacionesPush()"><svg class="menu-inline-svg" aria-hidden="true"><use href="#i-bell"></use></svg> Activar notificaciones</button>
                 <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
                 <button class="btn btn-cerrar" style="text-align: left; padding: 15px;" onclick="cerrarSesionUsuario()">🚪 Cerrar sesión</button>
             </div>
         </div>
+
+
+<!-- VISTA ADMIN -->
+<div id="vista-admin" class="vista-interna">
+  <div class="header-vista">
+    <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">←</button>
+    <h3 style="margin:0;">Administración</h3><div style="width:30px"></div>
+  </div>
+  <div class="admin-tabs">
+    <button class="activo" data-admin-tab="revision" onclick="cambiarAdminPanel('revision')">Revisión</button>
+    <button data-admin-tab="denuncias" onclick="cambiarAdminPanel('denuncias')">Denuncias</button>
+    <button data-admin-tab="profesores" onclick="cambiarAdminPanel('profesores')">Profesores</button>
+    <button data-admin-tab="sanciones" onclick="cambiarAdminPanel('sanciones')">Sanciones</button>
+  </div>
+  <section id="admin-panel-revision" class="admin-panel activo"><div id="admin-resultados-revision"></div></section>
+  <section id="admin-panel-denuncias" class="admin-panel"><div id="admin-denuncias"></div></section>
+  <section id="admin-panel-profesores" class="admin-panel"><div id="admin-profesores"></div></section>
+  <section id="admin-panel-sanciones" class="admin-panel"><div id="admin-sanciones"></div></section>
+</div>
 
         <!-- VISTA NUESTROS CLUBES -->
         <div id="vista-clubes" class="vista-interna">
@@ -3728,17 +3826,48 @@ img[data-club-image]{background:#e4e7ec}
         </div>
 
         <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Navegación principal">
-            <button data-vista="inicio" onclick="cambiarVistaPrincipal('inicio')"><span>⌂</span><small>Inicio</small></button>
-            <button data-vista="partidos" onclick="cambiarVistaPrincipal('partidos')"><span>◉</span><small>Partidos</small></button>
-            <button data-vista="ranking" onclick="cambiarVistaPrincipal('ranking')"><span>≡</span><small>Ranking</small></button>
-            <button data-vista="academia" onclick="cambiarVistaPrincipal('academia')"><span>🎓</span><small>Academia</small></button>
-            <button data-vista="menu" onclick="cambiarVistaPrincipal('menu')"><span>•••</span><small>Más</small></button>
+            <button data-vista="inicio" onclick="cambiarVistaPrincipal('inicio')"><svg class="bottom-svg" aria-hidden="true"><use href="#i-home"></use></svg><small>Inicio</small></button>
+            <button data-vista="partidos" onclick="cambiarVistaPrincipal('partidos')"><svg class="bottom-svg" aria-hidden="true"><use href="#i-match"></use></svg><small>Partidos</small></button>
+            <button data-vista="ranking" onclick="cambiarVistaPrincipal('ranking')"><svg class="bottom-svg" aria-hidden="true"><use href="#i-ranking"></use></svg><small>Ranking</small></button>
+            <button data-vista="academia" onclick="cambiarVistaPrincipal('academia')"><svg class="bottom-svg" aria-hidden="true"><use href="#i-academy"></use></svg><small>Academia</small></button>
+            <button data-vista="menu" onclick="cambiarVistaPrincipal('menu')"><svg class="bottom-svg" aria-hidden="true"><use href="#i-more"></use></svg><small>Más</small></button>
         </nav>
     </div>
 
 
 
 
+
+    
+<div id="modal-onboarding" class="onboarding-overlay" hidden>
+  <div class="onboarding-card">
+    <div class="onboarding-progress"><span id="onboarding-progress-bar"></span></div>
+    <section class="onboarding-step activo" data-step="1">
+      <span class="eyebrow-ui">PASO 1 DE 3</span><h2>Elegí tu categoría</h2>
+      <p>La usamos para mostrarte partidos y ranking compatibles.</p>
+      <div class="onboarding-options">
+        <button onclick="seleccionarOnboardingGenero('Masculino',this)">Masculino</button>
+        <button onclick="seleccionarOnboardingGenero('Femenino',this)">Femenino</button>
+      </div>
+      <button class="btn btn-primario" onclick="avanzarOnboarding(2)">Continuar</button>
+    </section>
+    <section class="onboarding-step" data-step="2">
+      <span class="eyebrow-ui">PASO 2 DE 3</span><h2>Completá tu perfil</h2>
+      <p>Estos datos ayudan a que otros jugadores puedan reconocerte.</p>
+      <input id="onboarding-telefono" class="input-form" placeholder="Teléfono">
+      <input id="onboarding-dni" class="input-form" placeholder="DNI">
+      <button class="btn btn-primario" onclick="guardarOnboardingPerfil()">Continuar</button>
+    </section>
+    <section class="onboarding-step" data-step="3">
+      <span class="eyebrow-ui">PASO 3 DE 3</span><h2>Listo para jugar</h2>
+      <p>Buscá un partido disponible o creá uno nuevo.</p>
+      <div class="onboarding-actions">
+        <button class="btn btn-primario" onclick="finalizarOnboarding('unirse')">Buscar partido</button>
+        <button class="btn btn-secundario" onclick="finalizarOnboarding('crear')">Crear partido</button>
+      </div>
+    </section>
+  </div>
+</div>
 
     <div id="offline-banner" class="offline-banner" hidden>Sin conexión · mostrando los últimos datos disponibles</div>
     <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
@@ -3876,6 +4005,23 @@ img[data-club-image]{background:#e4e7ec}
         </div>
     </div>
 
+
+<div id="modal-wo-partido" class="modal-overlay">
+  <div class="modal-content">
+    <h3>Reportar situación especial</h3>
+    <p class="modal-help">Elegí el motivo. No modifica el ranking automáticamente: queda pendiente de revisión.</p>
+    <select id="wo-motivo" class="input-form">
+      <option value="no_presentacion">Rival no se presentó</option>
+      <option value="abandono">Abandono durante el partido</option>
+      <option value="suspendido_club">Partido suspendido por el club</option>
+      <option value="otro">Otro</option>
+    </select>
+    <textarea id="wo-detalle" class="input-form" rows="3" placeholder="Detalle opcional"></textarea>
+    <button class="btn btn-primario" onclick="enviarReporteWO()">Enviar a revisión</button>
+    <button class="btn btn-cerrar" onclick="cerrarModalWO()">Cancelar</button>
+  </div>
+</div>
+
     <!-- MODAL DENUNCIAR -->
     <div id="modal-denunciar" class="modal-overlay">
         <div class="modal-content">
@@ -3911,7 +4057,17 @@ img[data-club-image]{background:#e4e7ec}
         </div>
     </div>
 
-    <script>
+
+<script id="circuito-single-file-js">
+
+// ============================================================
+// CIRCUITO COMPETITIVO — MODO PROTOTIPO EN UN SOLO ARCHIVO
+// ============================================================
+window.CIRCUITO_SINGLE_FILE = true;
+
+
+// ===== app.js =====
+
         // --- ESTADO GLOBAL ---
         let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "", rolProfesor: false, roles: {} };
         let usuarioActual = null;
@@ -4628,9 +4784,7 @@ img[data-club-image]{background:#e4e7ec}
         }
 
         function instalarPWAListeners() {
-            if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-                navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('Service worker:',err));
-            }
+            console.info('Modo prototipo: PWA/Service Worker desactivado en archivo único.');
         }
 
         function ejecutarAutochequeosUI() {
@@ -9878,6 +10032,410 @@ img[data-club-image]{background:#e4e7ec}
             ejecutarAutochequeosUI();
             actualizarNavegacionInferior('inicio');
         });
+
+
+// ===== feature-ui.js =====
+
+(function(){
+  function svg(name, cls='app-svg'){ return `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`; }
+  window.circuitoSvg = svg;
+
+  window.usuarioEsAdmin = function(){
+    return perfilUsuario?.roles?.admin === true || perfilUsuario?.rol === 'Admin' || perfilUsuario?.esAdmin === true;
+  };
+
+  window.usuarioTieneSancionCompetitiva = function(){
+    const sanciones = Array.isArray(perfilUsuario?.sanciones) ? perfilUsuario.sanciones : [];
+    const ahora = Date.now();
+    return sanciones.some(s => s?.activa !== false && (!s.hasta || new Date(s.hasta).getTime() > ahora) &&
+      ['competitiva','suspension','bloqueo'].includes(String(s.tipo||'').toLowerCase()));
+  };
+
+  const oldRenderTodo = window.renderizarTodo;
+  window.renderizarTodo = function(){
+    if (typeof oldRenderTodo === 'function') oldRenderTodo();
+    const admin = document.getElementById('menu-admin-btn');
+    if (admin) admin.style.display = usuarioEsAdmin() ? '' : 'none';
+    actualizarAccionesContextuales();
+  };
+
+  window.actualizarAccionesContextuales = function(){
+    const sancionado = usuarioTieneSancionCompetitiva();
+    document.querySelectorAll('[data-accion-competitiva]').forEach(el => {
+      el.hidden = sancionado;
+    });
+    if (sancionado) {
+      document.getElementById('home-prioridad')?.insertAdjacentHTML('afterbegin',
+        `<div class="home-prioridad-card"><div><strong>Participación competitiva restringida</strong><span>Revisá tu perfil o contactá a administración.</span></div></div>`);
+    }
+  };
+
+  const oldCambiar = window.cambiarVistaPrincipal;
+  window.cambiarVistaPrincipal = function(vista){
+    if (vista === 'admin' && !usuarioEsAdmin()) return mostrarAviso('No tenés permisos de administración.','error');
+    oldCambiar(vista);
+    if (vista === 'admin') renderizarAdmin();
+    if (vista === 'perfil') renderizarPerfilCompetitivoExtra();
+  };
+})();
+
+
+// ===== feature-profile.js =====
+
+(function(){
+  function misPartidosFinalizados(){
+    const yo = getNombreCompleto().trim().toLowerCase();
+    return partidosData.filter(p => p.estado === 'Finalizado' &&
+      [p.j1,p.j2,p.j3,p.j4].some(n => String(n||'').trim().toLowerCase() === yo))
+      .sort((a,b)=>`${b.fecha||''} ${b.hora||''}`.localeCompare(`${a.fecha||''} ${a.hora||''}`));
+  }
+
+  window.renderizarPerfilCompetitivoExtra = function(){
+    const met = document.getElementById('perfil-competitivo-metricas');
+    const list = document.getElementById('perfil-ultimos-partidos');
+    if (!met || !list) return;
+    const yo = getNombreCompleto();
+    const jugador = rankingData.find(j => String(j.nombre||'').trim().toLowerCase() === yo.trim().toLowerCase());
+    const s = estadisticasNormalizadasJugador(jugador || {});
+    const finalizados = misPartidosFinalizados();
+    let racha = 0;
+    for (const p of finalizados) {
+      const cambio = cambioPuntosUsuarioEnPartido(p);
+      if (cambio > 0) racha++; else break;
+    }
+    const torneosJugados = torneosData.filter(t => torneoEstaFinalizado(t) && usuarioInscriptoTorneo(t)).length;
+    met.innerHTML = [
+      ['Victorias',s.pg],['Derrotas',s.pp],['Racha',racha],['Torneos',torneosJugados]
+    ].map(([l,v])=>`<div class="perfil-metrica"><strong>${v||0}</strong><span>${l}</span></div>`).join('');
+
+    list.innerHTML = finalizados.slice(0,5).map(p=>{
+      const cambio = cambioPuntosUsuarioEnPartido(p);
+      return `<div class="perfil-ultimo-partido"><span>${escaparHtmlClub(p.fecha||'')} · ${escaparHtmlClub(p.club||'')}</span><strong style="color:${cambio>0?'#067647':cambio<0?'#b42318':'#667085'}">${cambio>0?'+':''}${cambio??0} pts</strong></div>`;
+    }).join('') || htmlEstadoVacio('🏁','Sin partidos finalizados','Tu actividad competitiva aparecerá acá.');
+  };
+
+  window.obtenerHeadToHead = function(nombreRival){
+    const yo = getNombreCompleto().trim().toLowerCase(), rival = String(nombreRival||'').trim().toLowerCase();
+    const partidos = partidosData.filter(p => p.estado === 'Finalizado' &&
+      [p.j1,p.j2,p.j3,p.j4].some(n=>String(n||'').trim().toLowerCase()===yo) &&
+      [p.j1,p.j2,p.j3,p.j4].some(n=>String(n||'').trim().toLowerCase()===rival));
+    let yoG=0, rivalG=0;
+    partidos.forEach(p=>{
+      const eqYo=[p.j1,p.j2].map(x=>String(x||'').toLowerCase()).includes(yo)?'equipo1':'equipo2';
+      const eqR=[p.j1,p.j2].map(x=>String(x||'').toLowerCase()).includes(rival)?'equipo1':'equipo2';
+      if (p.equipoGanador===eqYo) yoG++;
+      if (p.equipoGanador===eqR) rivalG++;
+    });
+    return {partidos:partidos.length,yo:yoG,rival:rivalG};
+  };
+})();
+
+
+// ===== feature-tournaments.js =====
+
+(function(){
+  function torneoAvanzadoHtml(t){
+    const grupos = Array.isArray(t.grupos) ? t.grupos : [];
+    const cuadro = Array.isArray(t.cuadro) ? t.cuadro : Array.isArray(t.eliminacion) ? t.eliminacion : [];
+    let html = '';
+    if (grupos.length) {
+      html += `<div class="torneo-cuadro"><h5>Fase de grupos</h5>${grupos.map((g,i)=>`
+        <div class="torneo-ronda"><h5>Grupo ${g.nombre||String.fromCharCode(65+i)}</h5>
+          ${(g.equipos||g.parejas||[]).map((e,j)=>`<div class="torneo-cruce"><span>${escaparHtmlClub(typeof e==='string'?e:e.nombre||'Pareja')}</span><strong>${e.puntos??''}</strong></div>`).join('')}
+        </div>`).join('')}</div>`;
+    }
+    if (cuadro.length) {
+      html += `<div class="torneo-cuadro"><h5>Cuadro</h5>${cuadro.map((r,i)=>`
+        <div class="torneo-ronda"><h5>${escaparHtmlClub(r.nombre||`Ronda ${i+1}`)}</h5>
+          ${(r.partidos||r.cruces||[]).map(c=>`<div class="torneo-cruce"><span>${escaparHtmlClub(c.equipo1||c.pareja1||'Por definir')} vs ${escaparHtmlClub(c.equipo2||c.pareja2||'Por definir')}</span><strong>${escaparHtmlClub(c.resultado||'')}</strong></div>`).join('')}
+        </div>`).join('')}</div>`;
+    }
+    return html || `<div class="estado-vacio"><strong>Cuadro todavía no publicado</strong><span>El club podrá cargar grupos, cruces y resultados desde su panel.</span></div>`;
+  }
+
+  const oldActiva = window.tarjetaTorneoActivo;
+  window.tarjetaTorneoActivo = function(t){
+    const base = oldActiva(t);
+    return base.replace('</article>', `<div class="torneo-detail-actions"><button class="btn torneo-btn suave" onclick="event.stopPropagation();abrirDetalleTorneo('${escaparAtributoJs(t.id)}')">Ver torneo</button></div></article>`);
+  };
+
+  window.abrirDetalleTorneo = function(id){
+    const t = torneosData.find(x=>String(x.id)===String(id));
+    if(!t) return mostrarAviso('No se encontró el torneo.','error');
+    const modal = document.createElement('div');
+    modal.className='modal-overlay'; modal.style.display='flex';
+    modal.innerHTML=`<div class="modal-content"><div class="modal-torneo-head"><div><span class="modal-torneo-kicker">TORNEO</span><h3>${escaparHtmlClub(t.nombre)}</h3><p>${escaparHtmlClub(t.club)} · ${escaparHtmlClub(t.fecha||'')}</p></div><button class="btn-cerrar-modal-x">×</button></div>${torneoAvanzadoHtml(t)}</div>`;
+    modal.querySelector('.btn-cerrar-modal-x').onclick=()=>modal.remove();
+    modal.onclick=e=>{if(e.target===modal)modal.remove()};
+    document.body.appendChild(modal);
+  };
+})();
+
+
+// ===== feature-competition.js =====
+
+(function(){
+  const MINUTOS_CANCELACION_LIBRE = 120;
+  let partidoWOActualId = null;
+
+  window.minutosHastaPartido = function(p){
+    return Math.round((fechaHoraPartidoMs(p)-Date.now())/60000);
+  };
+
+  const oldSalir = window.salirDePartidoPendiente;
+  window.salirDePartidoPendiente = async function(id){
+    const p = partidosData.find(x=>String(x.id)===String(id));
+    if(!p) return mostrarAviso('No se encontró el partido.','error');
+    const min = minutosHastaPartido(p);
+    if (min < MINUTOS_CANCELACION_LIBRE && min > 0) {
+      const ok = confirm(`Faltan menos de ${MINUTOS_CANCELACION_LIBRE/60} horas. Tu salida quedará registrada como cancelación tardía para revisión. ¿Continuar?`);
+      if(!ok) return;
+      await registrarIncidentePartido(p,'cancelacion_tardia',`Salida con ${Math.max(0,min)} minutos de anticipación.`);
+    }
+    return oldSalir(id);
+  };
+
+  window.registrarIncidentePartido = async function(partido,tipo,detalle){
+    const api=window.firebaseAPI;if(!api||!usuarioActual)return;
+    const id=crypto?.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random()}`;
+    await api.setDoc(api.doc(api.db,'incidentes',id),{
+      id,tipo,detalle,partidoId:String(partido.id),club:partido.club||'',fecha:partido.fecha||'',hora:partido.hora||'',
+      reportadoPorUid:usuarioActual.uid,reportadoPor:getNombreCompleto(),estado:'pendiente',creadoEn:api.serverTimestamp()
+    });
+  };
+
+  window.abrirModalWO = function(id){ partidoWOActualId=id; document.getElementById('modal-wo-partido').style.display='flex'; };
+  window.cerrarModalWO = function(){ partidoWOActualId=null; document.getElementById('modal-wo-partido').style.display='none'; };
+  window.enviarReporteWO = async function(){
+    const p=partidosData.find(x=>String(x.id)===String(partidoWOActualId)); if(!p)return;
+    const motivo=document.getElementById('wo-motivo').value, detalle=document.getElementById('wo-detalle').value.trim();
+    await registrarIncidentePartido(p,motivo,detalle);
+    cerrarModalWO(); mostrarAviso('Situación enviada a revisión. No se modificó el ranking.','success');
+  };
+
+  const oldDetail = window.renderizarDetallePartido;
+  window.renderizarDetallePartido = function(){
+    oldDetail();
+    const p=partidosData.find(x=>String(x.id)===String(partidoDetalleActualId));
+    const cont=document.getElementById('contenido-partido-detalle');
+    if(!p||!cont)return;
+    if(['Pendiente Resultado','Finalizado'].includes(p.estado)){
+      const section=cont.querySelector('.partido-detalle-section:last-child')||cont.querySelector('.partido-detalle-card');
+      section?.insertAdjacentHTML('beforeend',`<button class="btn btn-secundario" style="margin-top:8px" onclick="abrirModalWO('${escaparAtributoJs(p.id)}')">Reportar WO / abandono</button>`);
+    }
+  };
+
+  // Competitive sanctions block critical actions.
+  if (window.crearPartido) {
+    const oldCrear=window.crearPartido;
+    window.crearPartido=async function(...args){
+      if(usuarioTieneSancionCompetitiva()) return mostrarAviso('Tu cuenta tiene una restricción competitiva activa.','error');
+      return oldCrear(...args);
+    };
+  }
+  if (window.unirsePartido) {
+    const oldJoin=window.unirsePartido;
+    window.unirsePartido=async function(...args){
+      if(usuarioTieneSancionCompetitiva()) return mostrarAviso('Tu cuenta tiene una restricción competitiva activa.','error');
+      return oldJoin(...args);
+    };
+  }
+})();
+
+
+// ===== feature-admin.js =====
+
+(function(){
+  let adminData={denuncias:[],incidentes:[],profesores:[],usuarios:[]};
+
+  window.cambiarAdminPanel=function(panel){
+    document.querySelectorAll('.admin-tabs button').forEach(b=>b.classList.toggle('activo',b.dataset.adminTab===panel));
+    document.querySelectorAll('.admin-panel').forEach(p=>p.classList.toggle('activo',p.id===`admin-panel-${panel}`));
+  };
+
+  async function cargarColeccion(nombre){
+    const api=window.firebaseAPI;if(!api)return[];
+    try{
+      const snap=await api.getDocs(api.collection(api.db,nombre));
+      return snap.docs.map(d=>({id:d.id,...d.data()}));
+    }catch(e){console.warn(nombre,e);return[]}
+  }
+
+  window.renderizarAdmin=async function(){
+    if(!usuarioEsAdmin())return;
+    [adminData.denuncias,adminData.incidentes,adminData.usuarios] = await Promise.all([
+      cargarColeccion('denuncias'),cargarColeccion('incidentes'),cargarColeccion('users')
+    ]);
+    adminData.profesores=profesoresData||[];
+    renderAdminRevision();renderAdminDenuncias();renderAdminProfesores();renderAdminSanciones();
+  };
+
+  function card(titulo,texto,acciones=''){return `<div class="admin-card"><strong>${escaparHtmlClub(titulo)}</strong><p>${escaparHtmlClub(texto)}</p>${acciones?`<div class="admin-actions">${acciones}</div>`:''}</div>`}
+
+  function renderAdminRevision(){
+    const div=document.getElementById('admin-resultados-revision');if(!div)return;
+    const partidos=partidosData.filter(p=>p.pendienteRevision||p.resultadoIncongruente);
+    const inc=adminData.incidentes.filter(i=>i.estado!=='resuelto');
+    div.innerHTML=[...partidos.map(p=>card(`Resultado · ${p.club}`,`${p.fecha} ${p.hora} · ${p.resultado||'Incongruente'}`,`<button class="btn btn-secundario" onclick="marcarRevisionResuelta('${escaparAtributoJs(p._firestorePath||'')}')">Marcar revisado</button>`)),
+      ...inc.map(i=>card(`Incidente · ${i.tipo}`,`${i.reportadoPor||''} · ${i.detalle||''}`,`<button class="btn btn-secundario" onclick="resolverIncidente('${i.id}')">Resolver</button>`))
+    ].join('')||htmlEstadoVacio('✓','Sin revisiones pendientes','No hay resultados o incidentes pendientes.');
+  }
+
+  function renderAdminDenuncias(){
+    const div=document.getElementById('admin-denuncias');if(!div)return;
+    div.innerHTML=adminData.denuncias.map(d=>card(d.motivo||'Denuncia',`${d.reportadoPor||d.usuario||''} · ${d.detalle||d.descripcion||''}`,`<button class="btn btn-secundario" onclick="resolverDenuncia('${d.id}')">Cerrar</button>`)).join('')||htmlEstadoVacio('✓','Sin denuncias','No hay denuncias abiertas.');
+  }
+
+  function renderAdminProfesores(){
+    const div=document.getElementById('admin-profesores');if(!div)return;
+    const solicitudes=adminData.usuarios.filter(u=>u.solicitudProfesor===true||u.rolProfesorSolicitado===true);
+    div.innerHTML=solicitudes.map(u=>card(u.nombre?`${u.nombre} ${u.apellido||''}`:u.email||u.id,'Solicitud de rol Profesor',`<button class="btn btn-primario" onclick="aprobarProfesor('${u.id}')">Aprobar</button><button class="btn btn-secundario" onclick="rechazarProfesor('${u.id}')">Rechazar</button>`)).join('')||htmlEstadoVacio('🧑‍🏫','Sin solicitudes','No hay solicitudes de Profesor pendientes.');
+  }
+
+  function renderAdminSanciones(){
+    const div=document.getElementById('admin-sanciones');if(!div)return;
+    const sancionados=adminData.usuarios.filter(u=>(u.sanciones||[]).some(s=>s.activa!==false));
+    div.innerHTML=sancionados.map(u=>card(u.nombre||u.email||u.id,'Tiene sanciones activas',`<button class="btn btn-secundario" onclick="quitarSanciones('${u.id}')">Levantar sanciones</button>`)).join('')+
+      `<div class="admin-card"><strong>Aplicar sanción</strong><p>Ingresá el UID desde la consola/listado de usuarios.</p><div class="admin-actions"><button class="btn btn-alerta" onclick="crearSancionPrompt()">Nueva sanción</button></div></div>`;
+  }
+
+  window.marcarRevisionResuelta=async function(path){
+    const api=window.firebaseAPI;if(!path)return;const partes=path.split('/').filter(Boolean);
+    await api.setDoc(api.doc(api.db,...partes),{pendienteRevision:false,revisionAdmin:true,revisionAdminEn:api.serverTimestamp()},{merge:true});mostrarAviso('Revisión actualizada.','success');renderizarAdmin();
+  };
+  window.resolverIncidente=async id=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'incidentes',id),{estado:'resuelto',resueltoEn:api.serverTimestamp()},{merge:true});renderizarAdmin()};
+  window.resolverDenuncia=async id=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'denuncias',id),{estado:'cerrada',cerradaEn:api.serverTimestamp()},{merge:true});renderizarAdmin()};
+  window.aprobarProfesor=async uid=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'users',uid),{rolProfesor:true,roles:{profesor:true},solicitudProfesor:false},{merge:true});mostrarAviso('Profesor aprobado.','success');renderizarAdmin()};
+  window.rechazarProfesor=async uid=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'users',uid),{solicitudProfesor:false,rolProfesorSolicitado:false},{merge:true});renderizarAdmin()};
+  window.quitarSanciones=async uid=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'users',uid),{sanciones:[]},{merge:true});renderizarAdmin()};
+  window.crearSancionPrompt=async function(){
+    const uid=prompt('UID del usuario');if(!uid)return;const motivo=prompt('Motivo de la sanción');if(!motivo)return;
+    const dias=Number(prompt('Duración en días (0 = indefinida)','7')||0);
+    const api=window.firebaseAPI;const ref=api.doc(api.db,'users',uid);const snap=await api.getDoc(ref);if(!snap.exists())return mostrarAviso('Usuario no encontrado.','error');
+    const data=snap.data()||{}, sanciones=Array.isArray(data.sanciones)?data.sanciones:[];
+    const hasta=dias>0?new Date(Date.now()+dias*86400000).toISOString():null;
+    sanciones.push({id:`s-${Date.now()}`,tipo:'competitiva',motivo,activa:true,desde:new Date().toISOString(),hasta,aplicadaPor:usuarioActual.uid});
+    await api.setDoc(ref,{sanciones},{merge:true});mostrarAviso('Sanción aplicada.','success');renderizarAdmin();
+  };
+})();
+
+
+// ===== feature-engagement.js =====
+
+(function(){
+  const FAVORITOS_KEY='circuito-favoritos';
+  let favoritos={clubes:[],profesores:[]};
+  try{favoritos=JSON.parse(localStorage.getItem(FAVORITOS_KEY)||'{"clubes":[],"profesores":[]}')}catch(e){}
+  function saveFav(){localStorage.setItem(FAVORITOS_KEY,JSON.stringify(favoritos))}
+  window.esFavorito=(tipo,id)=>(favoritos[tipo]||[]).includes(String(id));
+  window.toggleFavorito=function(tipo,id){
+    id=String(id);const arr=favoritos[tipo]||(favoritos[tipo]=[]);
+    const i=arr.indexOf(id);if(i>=0)arr.splice(i,1);else arr.push(id);saveFav();
+    if(tipo==='clubes')renderizarClubes();else renderizarProfesores();
+  };
+
+  const oldClubes=window.renderizarClubes;
+  window.renderizarClubes=function(){
+    oldClubes();
+    const cards=[...document.querySelectorAll('.club-circuito-card')];
+    cards.forEach((card,i)=>{
+      const club=clubesData[i];if(!club)return;
+      const id=club.id||club.nombre;
+      card.insertAdjacentHTML('afterbegin',`<button class="favorite-btn ${esFavorito('clubes',id)?'activo':''}" style="position:absolute;right:52px;top:10px" onclick="event.stopPropagation();toggleFavorito('clubes','${escaparAtributoJs(id)}')" aria-label="Favorito">${circuitoSvg('star')}</button>`);
+      card.style.position='relative';
+    });
+  };
+
+  const oldProfes=window.renderizarProfesores;
+  window.renderizarProfesores=function(){
+    oldProfes();
+    document.querySelectorAll('.profesor-clase-publica').forEach((card,i)=>{
+      const prof=profesoresData[i%Math.max(1,profesoresData.length)];if(!prof)return;
+      const id=prof.uid||prof.id||prof.nombre;
+      card.style.position='relative';
+      card.insertAdjacentHTML('afterbegin',`<button class="favorite-btn ${esFavorito('profesores',id)?'activo':''}" style="position:absolute;right:10px;top:10px" onclick="event.stopPropagation();toggleFavorito('profesores','${escaparAtributoJs(id)}')" aria-label="Favorito">${circuitoSvg('star')}</button>`);
+    });
+  };
+
+  function grupoFecha(n){
+    const d=n.creadoEn?.toDate?n.creadoEn.toDate():new Date(n.creadoEn||n.fecha||Date.now());
+    const hoy=new Date(), ayer=new Date(Date.now()-86400000);
+    if(d.toDateString()===hoy.toDateString())return'Hoy';
+    if(d.toDateString()===ayer.toDateString())return'Ayer';
+    return'Anteriores';
+  }
+  const oldNotif=window.renderizarNotificaciones;
+  window.renderizarNotificaciones=function(){
+    oldNotif();
+    const c=document.getElementById('lista-notificaciones');if(!c||!notificacionesData.length)return;
+    const grupos={Hoy:[],Ayer:[],Anteriores:[]};notificacionesData.forEach(n=>grupos[grupoFecha(n)].push(n));
+    c.innerHTML=Object.entries(grupos).filter(([,a])=>a.length).map(([g,a])=>`<div class="notif-grupo-titulo">${g}</div>${a.map(n=>{
+      const accion=n.accion||'';return `<div class="notificacion-item ${n.leida?'':'no-leida'}" onclick="ejecutarAccionNotificacion('${escaparAtributoJs(n.id)}')"><strong>${escaparHtmlClub(n.titulo||'Notificación')}</strong><span>${escaparHtmlClub(n.texto||'')}</span></div>`;
+    }).join('')}`).join('');
+    renderizarActividadHome();
+    dispararNotificacionesLocales();
+  };
+
+  window.renderizarActividadHome=function(){
+    const d=document.getElementById('actividad-home-lista');if(!d)return;
+    d.innerHTML=notificacionesData.slice(0,4).map(n=>`<div class="actividad-item"><div class="actividad-icon">${circuitoSvg(n.tipo?.includes('partido')?'match':n.tipo?.includes('torneo')?'trophy':'bell')}</div><div><strong>${escaparHtmlClub(n.titulo||'Actividad')}</strong><span>${escaparHtmlClub(n.texto||'')}</span></div></div>`).join('')||htmlEstadoVacio('✓','Todo al día','No tenés actividad reciente.');
+  };
+
+  let onboardingGenero='';
+  window.seleccionarOnboardingGenero=function(g,btn){onboardingGenero=g;document.querySelectorAll('.onboarding-options button').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo')};
+  window.avanzarOnboarding=function(step){
+    if(step===2&&!onboardingGenero)return mostrarAviso('Elegí una categoría.','warning');
+    document.querySelectorAll('.onboarding-step').forEach(s=>s.classList.toggle('activo',Number(s.dataset.step)===step));
+    document.getElementById('onboarding-progress-bar').style.width=`${step*33.33}%`;
+  };
+  window.guardarOnboardingPerfil=async function(){
+    const tel=document.getElementById('onboarding-telefono').value.trim(),dni=document.getElementById('onboarding-dni').value.trim();
+    if(!tel||!dni)return mostrarAviso('Completá teléfono y DNI.','warning');
+    const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'users',usuarioActual.uid),{genero:onboardingGenero,telefono:tel,dni,onboardingCompletado:true},{merge:true});
+    Object.assign(perfilUsuario,{genero:onboardingGenero,telefono:tel,dni,onboardingCompletado:true});avanzarOnboarding(3);
+  };
+  window.finalizarOnboarding=function(panel){
+    localStorage.setItem('circuito-onboarding','1');document.getElementById('modal-onboarding').hidden=true;cambiarVistaPrincipal('partidos');cambiarPanelPartidos(panel);
+  };
+  window.verificarOnboarding=function(){
+    if(!usuarioActual)return;
+    const hecho=localStorage.getItem('circuito-onboarding')==='1'||perfilUsuario.onboardingCompletado===true;
+    document.getElementById('modal-onboarding').hidden=hecho;
+  };
+
+  let recordatoriosEnviados=new Set();
+  window.chequearRecordatorios=function(){
+    const now=Date.now(),yo=getNombreCompleto();
+    partidosData.filter(p=>['Buscando Rival','Partido Confirmado'].includes(p.estado)&&[p.j1,p.j2,p.j3,p.j4].includes(yo)).forEach(p=>{
+      const diff=fechaHoraPartidoMs(p)-now;
+      [[120,'Tu partido empieza en 2 horas'],[30,'Tu partido empieza en 30 minutos']].forEach(([m,t])=>{
+        const key=`${p.id}-${m}`;if(diff<=m*60000&&diff>(m-5)*60000&&!recordatoriosEnviados.has(key)){recordatoriosEnviados.add(key);mostrarAviso(t,'warning');mostrarNotificacionSistema(t,`${p.club} · ${p.hora}`)}
+      });
+    });
+  };
+  setInterval(()=>{try{chequearRecordatorios()}catch(e){}},60000);
+
+  window.mostrarNotificacionSistema=function(titulo,cuerpo){
+    if(Notification?.permission==='granted'){
+      navigator.serviceWorker?.ready.then(reg=>reg.showNotification(titulo,{body:cuerpo})).catch(()=>new Notification(titulo,{body:cuerpo}));
+    }
+  };
+  let notifsVistas=new Set();
+  function dispararNotificacionesLocales(){
+    notificacionesData.filter(n=>!n.leida).forEach(n=>{if(notifsVistas.has(n.id))return;notifsVistas.add(n.id);mostrarNotificacionSistema(n.titulo||'Circuito Competitivo',n.texto||'')});
+  }
+  window.activarNotificacionesPush=async function(){
+    if(!('Notification'in window))return mostrarAviso('Este dispositivo no admite notificaciones del navegador.','error');
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted')return mostrarAviso('Permiso de notificaciones no concedido.','warning');
+    const api=window.firebaseAPI;if(api&&usuarioActual)await api.setDoc(api.doc(api.db,'users',usuarioActual.uid),{notificacionesPush:true},{merge:true});
+    mostrarAviso('Notificaciones del dispositivo activadas.','success');
+    mostrarNotificacionSistema('Circuito Competitivo','Las notificaciones quedaron activadas.');
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{verificarOnboarding();renderizarActividadHome()},1200)});
+})();
+
 </script>
 </body>
 </html>
