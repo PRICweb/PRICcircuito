@@ -2,7 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#101828">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.webmanifest">
     <title>Circuito Competitivo</title>
     <style>
 :root{
@@ -2036,6 +2041,781 @@ tr:hover td{background:#f9fafb}
   text-align:center;
 }
 </style>
+
+<style id="ux-partidos-amigos-css">
+.tab-count{
+  display:inline-flex;
+  min-width:19px;
+  height:19px;
+  margin-left:3px;
+  padding:0 5px;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:#e4e7ec;
+  color:#344054;
+  font-size:.62rem;
+  font-weight:900;
+  vertical-align:middle;
+}
+.partidos-nav button.activo .tab-count{background:#fff;color:#101828}
+
+.estado-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:29px;
+  padding:5px 9px;
+  border:1px solid;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:850;
+  white-space:nowrap;
+}
+.estado-espera{background:#eff8ff;border-color:#b2ddff;color:#175cd3}
+.estado-confirmado{background:#ecfdf3;border-color:#abefc6;color:#067647}
+.estado-accion{background:#fef3f2;border-color:#fecdca;color:#b42318}
+.estado-revision{background:#fffaeb;border-color:#fedf89;color:#b54708}
+
+.toast-container{
+  position:fixed;
+  left:50%;
+  bottom:20px;
+  z-index:4000;
+  width:min(410px,calc(100vw - 24px));
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none;
+}
+.app-toast{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#101828;
+  color:#fff;
+  box-shadow:0 14px 36px rgba(16,24,40,.22);
+  font-size:.8rem;
+  line-height:1.4;
+  animation:toastIn .2s ease;
+}
+.app-toast.success{background:#067647}
+.app-toast.error{background:#b42318}
+.app-toast.warning{background:#b54708}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.btn.is-loading,.amigo-mini-btn.is-loading,.amigo-invitar-btn.is-loading,.partido-unirse-plus.is-loading{
+  pointer-events:none!important;
+  opacity:.68!important;
+}
+.btn.is-loading::after,.amigo-mini-btn.is-loading::after,.amigo-invitar-btn.is-loading::after{
+  content:'';
+  display:inline-block;
+  width:12px;height:12px;
+  margin-left:7px;
+  border:2px solid currentColor;
+  border-right-color:transparent;
+  border-radius:50%;
+  animation:spinBusy .65s linear infinite;
+  vertical-align:-2px;
+}
+@keyframes spinBusy{to{transform:rotate(360deg)}}
+
+.partido-minimal-card[data-partido-id]{
+  cursor:pointer;
+  transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
+}
+.partido-minimal-card[data-partido-id]:hover{
+  transform:translateY(-1px);
+  border-color:#cbd5e1!important;
+}
+.partido-minimal-card button,.partido-minimal-card .invitacion-slot-remove{cursor:pointer}
+
+.resultado-progreso{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  margin-top:10px;
+}
+.resultado-progreso-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:7px;
+  min-width:0;
+  padding:7px 8px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface-2);
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:750;
+}
+.resultado-progreso-item strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--text);
+  font-weight:800;
+}
+.resultado-progreso-item.ok{background:#ecfdf3;border-color:#abefc6;color:#067647}
+.resultado-progreso-item.pendiente{background:#fff;border-style:dashed}
+
+.partido-detalle-card{
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--surface);
+  box-shadow:var(--shadow);
+}
+.partido-detalle-head{padding:17px;border-bottom:1px solid var(--line)}
+.partido-detalle-head h4{margin:0 0 8px;font-size:1.12rem}
+.partido-detalle-meta{display:flex;flex-wrap:wrap;gap:7px}
+.partido-detalle-meta span{
+  padding:5px 8px;border:1px solid var(--line);border-radius:999px;
+  background:var(--surface-2);font-size:.72rem;font-weight:750;color:#475467;
+}
+.partido-detalle-section{padding:16px;border-bottom:1px solid var(--line)}
+.partido-detalle-section:last-child{border-bottom:0}
+.partido-detalle-section h5{margin:0 0 11px;font-size:.77rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.partido-detalle-equipos{display:grid;grid-template-columns:1fr 34px 1fr;align-items:center;gap:7px}
+.partido-detalle-equipo{display:flex;flex-direction:column;gap:8px}
+.partido-detalle-jugador{
+  min-height:38px;display:flex;align-items:center;gap:8px;padding:7px 9px;
+  border:1px solid var(--line);border-radius:11px;background:var(--surface-2);
+  font-size:.76rem;font-weight:800;
+}
+.partido-detalle-jugador.libre{color:var(--muted);border-style:dashed}
+.partido-detalle-actions{display:flex;flex-wrap:wrap;gap:8px}
+.partido-detalle-actions .btn{width:auto;flex:1;min-width:130px}
+.partido-detalle-vs{text-align:center;font-size:.7rem;font-weight:900;color:var(--muted)}
+
+.amigos-resumen-estados{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:12px;
+}
+.amigos-resumen-estados button{
+  min-height:66px;
+  padding:9px 6px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:var(--surface);
+  color:var(--text);
+  cursor:pointer;
+}
+.amigos-resumen-estados strong{
+  display:block;
+  margin-bottom:3px;
+  font-size:1.05rem;
+}
+.amigos-resumen-estados span{
+  display:block;
+  color:var(--muted);
+  font-size:.68rem;
+  font-weight:800;
+}
+
+@media(max-width:420px){
+  .resultado-progreso{grid-template-columns:1fr}
+  .partido-detalle-actions{flex-direction:column}
+  .partido-detalle-actions .btn{width:100%}
+}
+</style>
+
+
+<style id="partidos-swipe-navigation-css">
+#vista-partidos{
+  --partidos-nav-bg:rgba(246,247,249,.94);
+  touch-action:pan-y;
+  overscroll-behavior-x:contain;
+}
+
+.partidos-nav-wrap{
+  position:relative;
+  z-index:35;
+  margin-bottom:14px;
+}
+
+.partidos-swipe-hint{
+  display:none;
+}
+
+.panel-partidos{
+  transform:translateX(0);
+  opacity:1;
+  will-change:transform,opacity;
+}
+
+.panel-partidos.panel-entra-derecha{
+  animation:partidoPanelDesdeDerecha .22s cubic-bezier(.2,.7,.3,1);
+}
+.panel-partidos.panel-entra-izquierda{
+  animation:partidoPanelDesdeIzquierda .22s cubic-bezier(.2,.7,.3,1);
+}
+
+@keyframes partidoPanelDesdeDerecha{
+  from{opacity:.45;transform:translateX(24px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes partidoPanelDesdeIzquierda{
+  from{opacity:.45;transform:translateX(-24px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+.partidos-nav button{
+  position:relative;
+  transition:background .16s ease,color .16s ease,transform .16s ease;
+}
+.partidos-nav button:active{
+  transform:scale(.97);
+}
+
+@media(max-width:600px){
+  .partidos-nav-wrap{
+    position:sticky;
+    top:0;
+    z-index:80;
+    width:100vw;
+    margin-left:calc(50% - 50vw);
+    margin-right:calc(50% - 50vw);
+    padding:6px 0 4px;
+    background:var(--partidos-nav-bg);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(228,231,236,.88);
+  }
+
+  .partidos-nav{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:4px!important;
+    margin:0!important;
+    padding:5px 7px!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+
+  .partidos-nav button{
+    min-width:0!important;
+    width:100%!important;
+    padding:9px 2px!important;
+    border-radius:10px!important;
+    font-size:clamp(.61rem,2.45vw,.72rem)!important;
+    line-height:1.1;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .partidos-nav button.activo{
+    background:var(--primary)!important;
+    color:#fff!important;
+    box-shadow:0 4px 10px rgba(16,24,40,.16);
+  }
+
+  .partidos-nav .tab-count{
+    min-width:17px;
+    height:17px;
+    margin-left:1px;
+    padding:0 4px;
+    font-size:.56rem;
+  }
+
+  .partidos-swipe-hint{
+    height:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    color:#98a2b3;
+    font-size:.64rem;
+    font-weight:750;
+    user-select:none;
+    pointer-events:none;
+    transition:opacity .2s ease,height .2s ease;
+  }
+
+  .partidos-swipe-hint span{
+    font-size:.9rem;
+    line-height:1;
+  }
+
+  #vista-partidos.partidos-swipe-usado .partidos-swipe-hint{
+    opacity:0;
+    height:0;
+    overflow:hidden;
+  }
+
+  .partidos-panel-card{
+    touch-action:pan-y;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .panel-partidos.panel-entra-derecha,
+  .panel-partidos.panel-entra-izquierda{
+    animation:none!important;
+  }
+}
+</style>
+
+
+<style id="contadores-profesor-css">
+.tab-count[hidden]{display:none!important}
+.partidos-nav button{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  column-gap:4px!important;
+}
+.partidos-nav button .tab-label{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:center;
+}
+.partidos-nav button:not(:has(.tab-count:not([hidden]))){grid-template-columns:1fr!important}
+.tab-count{
+  position:static!important;
+  min-width:18px!important;
+  height:18px!important;
+  margin:0!important;
+  padding:0 5px!important;
+  box-sizing:border-box!important;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  justify-self:end!important;
+  line-height:1!important;
+}
+@media(max-width:600px){
+  .partidos-nav button{padding:8px 4px!important}
+  .partidos-nav button .tab-label{font-size:clamp(.58rem,2.3vw,.69rem)!important}
+  .tab-count{min-width:17px!important;height:17px!important;padding:0 4px!important;font-size:.54rem!important}
+}
+
+.profesor-publicador{
+  margin-bottom:15px;
+  padding:15px;
+  border:1px solid #b2ddff;
+  border-radius:16px;
+  background:#f5faff;
+}
+.profesor-publicador[hidden]{display:none!important}
+.profesor-publicador-head h4{margin:6px 0 4px;font-size:1rem;color:var(--text)}
+.profesor-publicador-head p{margin:0 0 14px;color:var(--muted);font-size:.78rem;line-height:1.45}
+.profesor-role-badge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#101828;color:#fff;font-size:.58rem;font-weight:900;letter-spacing:.08em}
+.profesor-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.profesor-form-grid label,.profesor-label{display:block;margin-bottom:5px;color:var(--muted);font-size:.7rem;font-weight:800}
+.profesor-label span{font-weight:600;color:#98a2b3}
+.profesor-publicaciones-propias{margin-top:16px;padding-top:14px;border-top:1px solid #d1e9ff}
+.profesor-publicaciones-propias h5{margin:0 0 9px;font-size:.82rem}
+.clase-profesor-card{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.clase-profesor-card strong{display:block;font-size:.78rem}
+.clase-profesor-card small{display:block;margin-top:3px;color:var(--muted);font-size:.68rem;line-height:1.35}
+.clase-profesor-delete{width:27px;height:27px;min-width:27px;border:1px solid #fecdca;border-radius:50%;background:#fff;color:#b42318;cursor:pointer;font-weight:900}
+.profesor-clase-publica{margin-bottom:9px;padding:12px;border:1px solid var(--line);border-radius:13px;background:var(--surface)}
+.profesor-clase-publica-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.profesor-clase-precio{white-space:nowrap;font-weight:900;color:#067647}
+.profesor-clase-meta{margin-top:6px;color:var(--muted);font-size:.72rem;line-height:1.45}
+.profesor-clase-contacto{margin-top:9px;display:inline-flex;padding:7px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#101828;font-size:.7rem;font-weight:850;cursor:pointer}
+@media(max-width:480px){.profesor-form-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="experiencia-completa-css">
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-6:24px;--space-8:32px;
+  --fs-xs:clamp(.68rem,.65rem + .15vw,.75rem);
+  --fs-sm:clamp(.78rem,.74rem + .18vw,.88rem);
+  --fs-md:clamp(.9rem,.86rem + .18vw,1rem);
+  --fs-lg:clamp(1.05rem,.98rem + .3vw,1.25rem);
+  --fs-xl:clamp(1.35rem,1.18rem + .65vw,1.8rem);
+  --touch:44px;
+}
+html{scroll-behavior:smooth}
+body{
+  padding-top:max(0px,env(safe-area-inset-top));
+  padding-bottom:max(0px,env(safe-area-inset-bottom));
+}
+.contenedor-principal{
+  width:min(100%,1180px)!important;
+  margin-inline:auto!important;
+  padding-inline:clamp(12px,2.5vw,28px)!important;
+  padding-bottom:90px!important;
+}
+button,.btn,.icon-btn,select,input[type="button"],input[type="submit"]{min-height:var(--touch)}
+.icon-btn{min-width:var(--touch)}
+img{max-width:100%}
+.vista-interna,#vista-inicio{animation:vistaFade .16s ease}
+@keyframes vistaFade{from{opacity:.7;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+.padel-visual-strip{
+  min-height:150px;
+  margin:16px 0 20px;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  align-items:flex-end;
+  padding:20px;
+  color:white;
+  background:
+    linear-gradient(135deg,rgba(16,24,40,.92),rgba(24,58,103,.62)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 420'%3E%3Crect width='1200' height='420' fill='%2318283f'/%3E%3Cg fill='none' stroke='%23d0d5dd' stroke-width='8' opacity='.7'%3E%3Crect x='190' y='55' width='820' height='310' rx='8'/%3E%3Cpath d='M600 55v310M190 210h820'/%3E%3C/g%3E%3Cg transform='translate(820 100) rotate(-22)'%3E%3Cellipse cx='0' cy='0' rx='70' ry='92' fill='%2348a6e8' stroke='white' stroke-width='8'/%3E%3Ccircle cx='-20' cy='-25' r='6' fill='%23fff'/%3E%3Ccircle cx='20' cy='15' r='6' fill='%23fff'/%3E%3Crect x='-14' y='80' width='28' height='100' rx='12' fill='%23fff'/%3E%3C/g%3E%3Ccircle cx='950' cy='120' r='28' fill='%23d7f23f'/%3E%3C/svg%3E") center/cover no-repeat;
+}
+.padel-visual-copy{display:flex;flex-direction:column;gap:4px}
+.padel-visual-copy strong{font-size:var(--fs-xl)}
+.padel-visual-copy span{font-size:var(--fs-sm);opacity:.9}
+
+.home-prioridad{margin:10px 0}
+.home-prioridad-card{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:var(--shadow)
+}
+.home-prioridad-card strong{display:block;font-size:var(--fs-md)}
+.home-prioridad-card span{display:block;margin-top:3px;color:var(--muted);font-size:var(--fs-sm)}
+.home-prioridad-card button{white-space:nowrap;width:auto;margin:0}
+
+.estado-vacio{
+  padding:28px 18px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:16px;background:var(--surface)
+}
+.estado-vacio-icono{font-size:2rem;margin-bottom:8px}
+.estado-vacio strong{display:block;color:var(--text);margin-bottom:4px}
+.estado-vacio span{display:block;font-size:var(--fs-sm);line-height:1.45}
+.estado-vacio .btn{margin-top:12px;width:auto}
+
+.skeleton{position:relative;overflow:hidden;background:#eaecf0!important;color:transparent!important}
+.skeleton::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);animation:skeleton 1.1s infinite}
+@keyframes skeleton{to{transform:translateX(100%)}}
+.skeleton-card{height:110px;border-radius:16px;margin-bottom:10px}
+
+.mobile-bottom-nav{
+  display:none;
+  position:fixed;left:0;right:0;bottom:0;z-index:120;
+  min-height:64px;padding:6px 8px calc(6px + env(safe-area-inset-bottom));
+  background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-top:1px solid var(--line);
+  box-shadow:0 -8px 28px rgba(16,24,40,.08)
+}
+.mobile-bottom-nav button{
+  border:0;background:transparent;color:#667085;border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  min-width:0;padding:5px 4px;font-weight:800
+}
+.mobile-bottom-nav button span{font-size:1.12rem;line-height:1}
+.mobile-bottom-nav button small{font-size:.59rem}
+.mobile-bottom-nav button.activo{color:#101828;background:#f2f4f7}
+
+.busqueda-global-box{position:sticky;top:0;z-index:20;background:var(--bg-base);padding-bottom:10px}
+.busqueda-global-resultados{display:flex;flex-direction:column;gap:10px}
+.busqueda-item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;
+  border:1px solid var(--line);border-radius:13px;background:#fff;cursor:pointer
+}
+.busqueda-item strong{display:block;font-size:var(--fs-sm)}
+.busqueda-item small{display:block;color:var(--muted);margin-top:2px}
+.busqueda-tipo{font-size:.62rem;font-weight:900;padding:4px 7px;border-radius:999px;background:#f2f4f7;color:#475467}
+
+.ranking-mobile-cards{display:none}
+.ranking-mobile-card{
+  display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;padding:11px 12px;
+  border-bottom:1px solid var(--line);background:#fff
+}
+.ranking-mobile-pos{font-weight:900;text-align:center}
+.ranking-mobile-main strong{display:block;font-size:.8rem}
+.ranking-mobile-main small{display:block;margin-top:3px;color:var(--muted);font-size:.68rem}
+.ranking-mobile-puntos{font-weight:900;color:#b54708}
+
+.bottom-sheet{display:none;position:fixed;inset:0;z-index:500}
+.bottom-sheet.abierto{display:block}
+.bottom-sheet-backdrop{position:absolute;inset:0;background:rgba(16,24,40,.42)}
+.bottom-sheet-panel{
+  position:absolute;left:0;right:0;bottom:0;max-height:85vh;overflow:auto;
+  padding:10px 16px calc(16px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;background:#fff;
+  box-shadow:0 -16px 40px rgba(16,24,40,.18)
+}
+.bottom-sheet-handle{width:44px;height:5px;border-radius:999px;background:#d0d5dd;margin:0 auto 12px}
+.bottom-sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.bottom-sheet-head button{border:0;background:#f2f4f7;border-radius:50%;width:38px;height:38px}
+.filtro-unirse-trigger{display:none}
+.chips-filtros-unirse{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.filtro-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 8px;border-radius:999px;background:#eff8ff;color:#175cd3;font-size:.68rem;font-weight:800}
+.filtros-count[hidden]{display:none!important}
+
+.perfil-resumen-competitivo{
+  display:grid;grid-template-columns:64px 1fr;gap:12px;margin-bottom:14px;padding:16px;border-radius:18px;
+  background:linear-gradient(135deg,#101828,#233b61);color:#fff
+}
+.perfil-resumen-competitivo img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#fff}
+.perfil-resumen-copy{align-self:center}
+.perfil-resumen-copy strong{display:block;font-size:1.05rem}
+.perfil-resumen-copy span{font-size:.72rem;opacity:.8}
+.perfil-resumen-stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.perfil-resumen-stats div{text-align:center;padding:8px;border-radius:11px;background:rgba(255,255,255,.08)}
+.perfil-resumen-stats strong{display:block;font-size:1rem}
+.perfil-resumen-stats span{font-size:.62rem;opacity:.8}
+
+.offline-banner{
+  position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  z-index:8000;padding:8px 12px;border-radius:999px;background:#b54708;color:#fff;font-size:.7rem;font-weight:850;
+  box-shadow:0 8px 20px rgba(16,24,40,.18)
+}
+.offline-banner[hidden]{display:none!important}
+
+:focus-visible{outline:3px solid rgba(47,128,237,.32);outline-offset:2px}
+.modal-content{max-height:min(88vh,760px);overflow:auto}
+img[data-club-image]{background:#e4e7ec}
+
+@media(max-width:760px){
+  .contenedor-principal{padding-inline:12px!important;padding-bottom:88px!important}
+  .mobile-bottom-nav{display:grid;grid-template-columns:repeat(5,1fr)}
+  .header-vista .btn-volver{visibility:hidden;pointer-events:none;width:12px}
+  .menu-grid{grid-template-columns:1fr 1fr!important}
+  .ranking-desktop-table{display:none!important}
+  .ranking-mobile-cards{display:block;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .filtro-unirse-trigger{display:flex!important;align-items:center;justify-content:center;gap:6px}
+  #panel-partidos-unirse>label,#panel-partidos-unirse>select,#panel-partidos-unirse>div[style*="grid-template-columns"]{display:none!important}
+  .modal-overlay{align-items:flex-end!important}
+  .modal-content{width:100%!important;max-width:none!important;border-radius:22px 22px 0 0!important;margin:0!important;padding-bottom:calc(18px + env(safe-area-inset-bottom))!important}
+}
+@media(min-width:761px) and (max-width:1024px){
+  .contenedor-principal{width:min(100%,900px)!important}
+  .menu-grid{grid-template-columns:repeat(4,1fr)!important}
+}
+@media(min-width:1025px){
+  .contenedor-principal{padding-bottom:32px!important}
+  .menu-grid{grid-template-columns:repeat(4,1fr)!important}
+}
+</style>
+
+
+<style id="accesos-rapidos-minimalistas-css">
+.accesos-rapidos-grid{
+  width:min(100%,620px)!important;
+  margin:0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:12px!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+}
+
+.acceso-rapido{
+  width:100%!important;
+  aspect-ratio:1 / 1!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:14px 8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  border:1px solid #e4e7ec!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  color:#101828!important;
+  box-shadow:0 4px 14px rgba(16,24,40,.045)!important;
+  font:inherit!important;
+  cursor:pointer!important;
+  text-align:center!important;
+  transition:
+    transform .16s ease,
+    box-shadow .16s ease,
+    border-color .16s ease,
+    background .16s ease!important;
+}
+
+.acceso-rapido:hover{
+  transform:translateY(-2px)!important;
+  border-color:#d0d5dd!important;
+  background:#fcfcfd!important;
+  box-shadow:0 8px 20px rgba(16,24,40,.07)!important;
+}
+
+.acceso-rapido:active{
+  transform:scale(.98)!important;
+}
+
+.acceso-rapido-icono{
+  width:40px!important;
+  height:40px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  font-size:1.7rem!important;
+  line-height:1!important;
+}
+
+.acceso-rapido-texto{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  color:#101828!important;
+  font-size:.76rem!important;
+  font-weight:800!important;
+  line-height:1.15!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-align:center!important;
+}
+
+/* Tablet */
+@media(max-width:760px){
+  .accesos-rapidos-grid{
+    width:min(100%,430px)!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+
+  .acceso-rapido{
+    aspect-ratio:1.35 / 1!important;
+    min-height:108px!important;
+    padding:14px 10px!important;
+  }
+
+  .acceso-rapido-icono{
+    width:38px!important;
+    height:38px!important;
+    font-size:1.6rem!important;
+  }
+
+  .acceso-rapido-texto{
+    font-size:.78rem!important;
+  }
+}
+
+/* Teléfonos pequeños */
+@media(max-width:390px){
+  .accesos-rapidos-grid{
+    width:min(100%,350px)!important;
+    gap:10px!important;
+  }
+
+  .acceso-rapido{
+    min-height:102px!important;
+    border-radius:16px!important;
+    padding:12px 8px!important;
+  }
+
+  .acceso-rapido-icono{
+    font-size:1.5rem!important;
+  }
+
+  .acceso-rapido-texto{
+    font-size:.73rem!important;
+  }
+}
+</style>
+
+
+<style id="accesos-rapidos-solo-iconos-css">
+.accesos-rapidos-grid{
+  width:min(100%,560px)!important;
+  margin:0 auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:14px!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+
+.acceso-rapido{
+  width:100%!important;
+  aspect-ratio:1 / 1!important;
+  min-height:88px!important;
+  padding:0!important;
+  margin:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px solid #e4e7ec!important;
+  border-radius:18px!important;
+  background:#fff!important;
+  box-shadow:0 4px 14px rgba(16,24,40,.045)!important;
+}
+
+.acceso-rapido-icono{
+  width:auto!important;
+  height:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  font-size:2.15rem!important;
+  line-height:1!important;
+  transform:none!important;
+}
+
+.acceso-rapido-texto,
+.acceso-rapido-texto-visualmente-oculto{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  white-space:nowrap!important;
+  border:0!important;
+}
+
+.acceso-rapido:hover{
+  transform:translateY(-2px)!important;
+  border-color:#d0d5dd!important;
+  background:#fcfcfd!important;
+  box-shadow:0 8px 20px rgba(16,24,40,.07)!important;
+}
+
+.acceso-rapido:active{
+  transform:scale(.98)!important;
+}
+
+@media(max-width:760px){
+  .accesos-rapidos-grid{
+    width:min(100%,420px)!important;
+    grid-template-columns:repeat(4,1fr)!important;
+    gap:10px!important;
+  }
+
+  .acceso-rapido{
+    min-height:78px!important;
+    border-radius:16px!important;
+  }
+
+  .acceso-rapido-icono{
+    font-size:1.95rem!important;
+  }
+}
+
+@media(max-width:390px){
+  .accesos-rapidos-grid{
+    width:100%!important;
+    gap:8px!important;
+  }
+
+  .acceso-rapido{
+    min-height:72px!important;
+    border-radius:15px!important;
+  }
+
+  .acceso-rapido-icono{
+    font-size:1.82rem!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -2119,6 +2899,12 @@ tr:hover td{background:#f9fafb}
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                     </button>
+                    <button class="icon-btn" onclick="cambiarVistaPrincipal('buscar')" title="Buscar" aria-label="Buscar">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-3.5-3.5"></path>
+                        </svg>
+                    </button>
                     <button class="icon-btn notif-header-btn" onclick="cambiarVistaPrincipal('notificaciones')" title="Notificaciones" aria-label="Notificaciones">
                         <svg class="notif-header-svg" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
@@ -2136,15 +2922,53 @@ tr:hover td{background:#f9fafb}
                 </div>
             </div>
 
+            <section id="home-prioridad" class="home-prioridad" aria-live="polite"></section>
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
+            <div class="padel-visual-strip" role="img" aria-label="Ilustración de una cancha de pádel">
+                <div class="padel-visual-copy">
+                    <strong>Jugá. Competí. Mejorá.</strong>
+                    <span>Todo tu circuito en un solo lugar.</span>
+                </div>
+            </div>
 
             <h4 style="color: var(--text-muted); margin-bottom: 10px; text-align: center;">Accesos rápidos</h4>
             
-            <div class="menu-grid">
-                <div class="tarjeta-menu cancha-bg card-ranking" onclick="cambiarVistaPrincipal('ranking')"><span style="font-size: 2.2em;">🏆</span> Ranking</div>
-                <div class="tarjeta-menu cancha-bg card-partidos" onclick="cambiarVistaPrincipal('partidos')"><span style="font-size: 2.2em;">🎾</span> Partidos</div>
-                <div class="tarjeta-menu cancha-bg card-academia" onclick="cambiarVistaPrincipal('academia')"><span style="font-size: 2.2em;">🎓</span> Academia</div>
-                <div class="tarjeta-menu cancha-bg card-torneos" onclick="cambiarVistaPrincipal('torneos')"><span style="font-size: 2.2em;">🏅</span> Torneos</div>
+            <div class="menu-grid accesos-rapidos-grid">
+                <button type="button" class="tarjeta-menu acceso-rapido card-ranking" onclick="cambiarVistaPrincipal('ranking')" aria-label="Ranking" title="Ranking">
+                    <span class="acceso-rapido-icono" aria-hidden="true">🏆</span>
+                </button>
+                <button type="button" class="tarjeta-menu acceso-rapido card-partidos" onclick="cambiarVistaPrincipal('partidos')" aria-label="Partidos" title="Partidos">
+                    <span class="acceso-rapido-icono" aria-hidden="true">🎾</span>
+                </button>
+                <button type="button" id="boton-academia-inicio" class="tarjeta-menu acceso-rapido card-academia" onclick="cambiarVistaPrincipal('academia')" aria-label="Academia" title="Academia">
+                    <span class="acceso-rapido-icono" aria-hidden="true">🎓</span>
+                    <span id="texto-boton-academia" class="acceso-rapido-texto-visualmente-oculto">Academia</span>
+                </button>
+                <button type="button" class="tarjeta-menu acceso-rapido card-torneos" onclick="cambiarVistaPrincipal('torneos')" aria-label="Torneos" title="Torneos">
+                    <span class="acceso-rapido-icono" aria-hidden="true">🏅</span>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- VISTA BUSQUEDA GLOBAL -->
+        <div id="vista-buscar" class="vista-interna">
+            <div class="header-vista">
+                <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
+                <h3 style="margin:0;">Buscar</h3>
+                <div style="width:38px;"></div>
+            </div>
+            <div class="busqueda-global-box">
+                <input id="busqueda-global-input" class="input-form" type="search"
+                       placeholder="Jugadores, clubes o profesores..."
+                       oninput="renderizarBusquedaGlobal()" autocomplete="off">
+            </div>
+            <div id="resultados-busqueda-global" class="busqueda-global-resultados">
+                <div class="estado-vacio">
+                    <div class="estado-vacio-icono">⌕</div>
+                    <strong>Buscá dentro del circuito</strong>
+                    <span>Encontrá jugadores, clubes y profesores desde un solo lugar.</span>
+                </div>
             </div>
         </div>
 
@@ -2175,7 +2999,8 @@ tr:hover td{background:#f9fafb}
                 <button type="button" id="subtab-femenino" class="toggle-btn" onclick="cambiarCategoriaRanking('Femenino')">Femenino</button>
                 <button type="button" id="subtab-mixto" class="toggle-btn" onclick="cambiarCategoriaRanking('Mixto')">Mixto</button>
             </div>
-            <div class="scrollable" style="background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border-light);">
+            <div id="ranking-mobile-cards" class="ranking-mobile-cards"></div>
+            <div class="ranking-desktop-table scrollable" style="background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border-light);">
                 <table>
                     <thead>
                         <tr>
@@ -2207,12 +3032,19 @@ tr:hover td{background:#f9fafb}
                 <div style="width:38px;"></div>
             </div>
 
-            <div class="partidos-nav" aria-label="Secciones de partidos">
-                <button id="partidos-tab-crear" class="activo" onclick="cambiarPanelPartidos('crear')">Crear</button>
-                <button id="partidos-tab-unirse" onclick="cambiarPanelPartidos('unirse')">Unirse</button>
-                <button id="partidos-tab-curso" onclick="cambiarPanelPartidos('curso')">Pendientes</button>
-                <button id="partidos-tab-pendientes" onclick="cambiarPanelPartidos('pendientes')">Resultados</button>
-                <button id="partidos-tab-historial" onclick="cambiarPanelPartidos('historial')">Historial</button>
+            <div class="partidos-nav-wrap">
+                <div class="partidos-nav" role="tablist" aria-label="Secciones de partidos">
+                    <button id="partidos-tab-crear" role="tab" aria-selected="true" class="activo" onclick="cambiarPanelPartidos('crear')"><span class="tab-label">Crear</span></button>
+                    <button id="partidos-tab-unirse" role="tab" aria-selected="false" onclick="cambiarPanelPartidos('unirse')"><span class="tab-label">Unirse</span><span id="contador-tab-unirse" class="tab-count" hidden></span></button>
+                    <button id="partidos-tab-curso" role="tab" aria-selected="false" onclick="cambiarPanelPartidos('curso')"><span class="tab-label">Pendientes</span><span id="contador-tab-curso" class="tab-count" hidden></span></button>
+                    <button id="partidos-tab-pendientes" role="tab" aria-selected="false" onclick="cambiarPanelPartidos('pendientes')"><span class="tab-label">Resultados</span><span id="contador-tab-resultados" class="tab-count" hidden></span></button>
+                    <button id="partidos-tab-historial" role="tab" aria-selected="false" onclick="cambiarPanelPartidos('historial')"><span class="tab-label">Historial</span></button>
+                </div>
+                <div class="partidos-swipe-hint" aria-hidden="true">
+                    <span>‹</span>
+                    <small>Deslizá para cambiar</small>
+                    <span>›</span>
+                </div>
             </div>
 
             <section id="panel-partidos-crear" class="panel-partidos activo partidos-panel-card">
@@ -2243,17 +3075,31 @@ tr:hover td{background:#f9fafb}
                 <label>Horarios disponibles</label>
                 <div id="grid-horarios" class="horarios-grid"></div>
                 <div id="msg-sin-horarios" style="display:none;color:var(--muted);text-align:center;margin-bottom:15px;font-size:.9em;">No hay turnos disponibles para esta fecha.</div>
-                <button class="btn btn-secundario" onclick="crearPartido()">Crear y reservar</button>
+                <button class="btn btn-secundario" onclick="ejecutarConBoton(this, () => crearPartido(), 'Creando...')">Crear y reservar</button>
             </section>
 
             <section id="panel-partidos-unirse" class="panel-partidos partidos-panel-card">
                 <h4 class="partidos-panel-title">Unirse a un partido</h4>
                 <p class="partidos-panel-help">Filtrá por club, modalidad y categoría. Solo se muestran partidos competitivos con lugares disponibles.</p>
-                <label>Club</label>
-                <select id="filtro-club-unirse" class="input-form" onchange="actualizarModalidadesUnirse(); renderizarPartidosAbiertos();"></select>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                    <div><label>Modalidad</label><select id="filtro-mod-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"></select></div>
-                    <div><label>Categoría</label><select id="filtro-categoria-unirse" class="input-form" onchange="renderizarPartidosAbiertos()"><option value="Todos">Todas</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="Mixto">Mixto</option></select></div>
+                <button type="button" class="btn btn-secundario filtro-unirse-trigger" onclick="abrirFiltrosUnirse()">
+                    ⚙ Filtros <span id="filtros-unirse-activos" class="filtros-count" hidden>0</span>
+                </button>
+                <div id="chips-filtros-unirse" class="chips-filtros-unirse"></div>
+                <div id="filtros-unirse-sheet" class="bottom-sheet">
+                    <div class="bottom-sheet-backdrop" onclick="cerrarFiltrosUnirse()"></div>
+                    <div class="bottom-sheet-panel">
+                        <div class="bottom-sheet-handle"></div>
+                        <div class="bottom-sheet-head"><strong>Filtros</strong><button onclick="cerrarFiltrosUnirse()">×</button></div>
+                        <label>Club</label>
+                        <select id="filtro-club-unirse" class="input-form" onchange="actualizarModalidadesUnirse(); renderizarPartidosAbiertos(); actualizarChipsFiltrosUnirse();"></select>
+                        <label>Modalidad</label>
+                        <select id="filtro-mod-unirse" class="input-form" onchange="renderizarPartidosAbiertos(); actualizarChipsFiltrosUnirse();"></select>
+                        <label>Categoría</label>
+                        <select id="filtro-categoria-unirse" class="input-form" onchange="renderizarPartidosAbiertos(); actualizarChipsFiltrosUnirse();">
+                            <option value="Todos">Todas</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="Mixto">Mixto</option>
+                        </select>
+                        <button class="btn btn-primario" onclick="cerrarFiltrosUnirse()">Ver partidos</button>
+                    </div>
                 </div>
                 <div id="lista-partidos-abiertos" class="scrollable"></div>
             </section>
@@ -2277,6 +3123,17 @@ tr:hover td{background:#f9fafb}
             </section>
         </div>
 
+
+        <!-- VISTA DETALLE DE PARTIDO -->
+        <div id="vista-partido-detalle" class="vista-interna">
+            <div class="header-vista">
+                <button class="btn-volver" onclick="volverDesdeDetallePartido()">⬅</button>
+                <h3 style="margin:0;">Detalle del partido</h3>
+                <div style="width:38px;"></div>
+            </div>
+            <div id="contenido-partido-detalle"></div>
+        </div>
+
         <!-- VISTA ACADEMIA -->
         <div id="vista-academia" class="vista-interna">
             <div class="header-vista">
@@ -2284,6 +3141,59 @@ tr:hover td{background:#f9fafb}
                 <h3 style="margin: 0;">🎓 Academia</h3>
                 <div style="width: 30px;"></div>
             </div>
+
+            <section id="panel-profesor-academia" class="profesor-publicador" hidden>
+                <div class="profesor-publicador-head">
+                    <span class="profesor-role-badge">ROL PROFESOR</span>
+                    <h4>Publicar una clase disponible</h4>
+                    <p>Publicá horarios para que los jugadores del circuito puedan encontrarte y contactarte.</p>
+                </div>
+
+                <div class="profesor-form-grid">
+                    <div><label>Club</label><select id="profe-clase-club" class="input-form"></select></div>
+                    <div>
+                        <label>Modalidad</label>
+                        <select id="profe-clase-modalidad" class="input-form">
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Indoor">Indoor</option>
+                            <option value="Tenis">Tenis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Día</label>
+                        <select id="profe-clase-dia" class="input-form">
+                            <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+                            <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+                        </select>
+                    </div>
+                    <div><label>Hora</label><input id="profe-clase-hora" type="time" class="input-form"></div>
+                    <div>
+                        <label>Duración</label>
+                        <select id="profe-clase-duracion" class="input-form">
+                            <option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option>
+                        </select>
+                    </div>
+                    <div><label>Precio</label><input id="profe-clase-precio" type="number" min="0" step="100" class="input-form" placeholder="$"></div>
+                    <div><label>Teléfono / WhatsApp</label><input id="profe-clase-telefono" type="tel" class="input-form" placeholder="Ej. 351..."></div>
+                    <div>
+                        <label>Nivel</label>
+                        <select id="profe-clase-nivel" class="input-form">
+                            <option value="Todos">Todos los niveles</option>
+                            <option value="Inicial">Inicial</option><option value="Intermedio">Intermedio</option><option value="Avanzado">Avanzado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="profesor-label">Detalle <span>(opcional)</span></label>
+                <textarea id="profe-clase-detalle" class="input-form" rows="3" placeholder="Ej. Clase individual, técnica, preparación para competencia..."></textarea>
+                <button class="btn btn-primario" onclick="ejecutarConBoton(this, () => publicarClaseProfesor(), 'Publicando...')">Publicar clase</button>
+
+                <div class="profesor-publicaciones-propias">
+                    <h5>Mis clases publicadas</h5>
+                    <div id="lista-clases-publicadas-profesor"></div>
+                </div>
+            </section>
+
             
             <details open>
                 <summary>📅 Mis Clases</summary>
@@ -2369,6 +3279,21 @@ tr:hover td{background:#f9fafb}
                 <div style="width:30px;"></div>
             </div>
 
+            <div class="amigos-resumen-estados">
+                <button type="button" onclick="irASeccionAmigos('amigos')">
+                    <strong id="resumen-amigos-count">0</strong>
+                    <span>Amigos</span>
+                </button>
+                <button type="button" onclick="irASeccionAmigos('recibidas')">
+                    <strong id="resumen-recibidas-count">0</strong>
+                    <span>Recibidas</span>
+                </button>
+                <button type="button" onclick="irASeccionAmigos('enviadas')">
+                    <strong id="resumen-enviadas-count">0</strong>
+                    <span>Enviadas</span>
+                </button>
+            </div>
+
             <details class="amigos-acordeon" open>
                 <summary>
                     <span>Buscar personas</span>
@@ -2433,6 +3358,18 @@ tr:hover td{background:#f9fafb}
                 <h3 style="margin: 0;">👤 Mi Perfil</h3>
                 <div style="width: 30px;"></div>
             </div>
+            <div id="perfil-resumen-competitivo" class="perfil-resumen-competitivo">
+                <img id="perfil-resumen-avatar" src="" alt="">
+                <div class="perfil-resumen-copy">
+                    <strong id="perfil-resumen-nombre">Jugador</strong>
+                    <span id="perfil-resumen-categoria">Circuito Competitivo</span>
+                </div>
+                <div class="perfil-resumen-stats">
+                    <div><strong id="perfil-stat-pos">—</strong><span>Puesto</span></div>
+                    <div><strong id="perfil-stat-puntos">0</strong><span>Puntos</span></div>
+                    <div><strong id="perfil-stat-pj">0</strong><span>PJ</span></div>
+                </div>
+            </div>
             <div style="background: var(--bg-light); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light);">
                 <div style="margin-bottom: 15px;">
                     <label>Foto de Perfil (URL de la imagen):</label>
@@ -2476,6 +3413,7 @@ tr:hover td{background:#f9fafb}
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('perfil')">👤 Mi perfil</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
+                <button id="menu-profesor-btn" class="btn cancha-bg" style="text-align:left;padding:15px;" onclick="accionMenuProfesor()">🧑‍🏫 Profesores · Solicitar rol</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
                 <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
                 <button class="btn btn-cerrar" style="text-align: left; padding: 15px;" onclick="cerrarSesionUsuario()">🚪 Cerrar sesión</button>
@@ -2492,10 +3430,22 @@ tr:hover td{background:#f9fafb}
             <p class="clubes-intro">Clubes del circuito:</p>
             <div id="lista-clubes" class="scrollable"></div>
         </div>
+
+        <nav id="mobile-bottom-nav" class="mobile-bottom-nav" aria-label="Navegación principal">
+            <button data-vista="inicio" onclick="cambiarVistaPrincipal('inicio')"><span>⌂</span><small>Inicio</small></button>
+            <button data-vista="partidos" onclick="cambiarVistaPrincipal('partidos')"><span>◉</span><small>Partidos</small></button>
+            <button data-vista="ranking" onclick="cambiarVistaPrincipal('ranking')"><span>≡</span><small>Ranking</small></button>
+            <button data-vista="academia" onclick="cambiarVistaPrincipal('academia')"><span>🎓</span><small>Academia</small></button>
+            <button data-vista="menu" onclick="cambiarVistaPrincipal('menu')"><span>•••</span><small>Más</small></button>
+        </nav>
     </div>
 
 
 
+
+
+    <div id="offline-banner" class="offline-banner" hidden>Sin conexión · mostrando los últimos datos disponibles</div>
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
     <!-- MODAL SELECCIONAR EQUIPO -->
     <div id="modal-seleccionar-equipo" class="modal-overlay">
@@ -2609,7 +3559,7 @@ tr:hover td{background:#f9fafb}
                 la situación podrá ser revisada y <strong>podría derivar en sanciones dentro de la aplicación.</strong>
             </p>
             <div class="confirmacion-final-resumen" id="confirmacion-final-resumen"></div>
-            <button id="btn-confirmar-resultado-definitivo" class="btn btn-primario" onclick="confirmarGuardadoDefinitivoResultado()">Sí, confirmar resultado</button>
+            <button id="btn-confirmar-resultado-definitivo" class="btn btn-primario" onclick="ejecutarConBoton(this, () => confirmarGuardadoDefinitivoResultado(), 'Guardando...')">Sí, confirmar resultado</button>
             <button class="btn btn-cerrar" onclick="cerrarConfirmacionFinalResultado()">Volver y revisar</button>
         </div>
     </div>
@@ -2651,7 +3601,7 @@ tr:hover td{background:#f9fafb}
 
     <script>
         // --- ESTADO GLOBAL ---
-        let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "" };
+        let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "", rolProfesor: false, roles: {} };
         let usuarioActual = null;
         const getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         const getHoyFormateado = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
@@ -2906,6 +3856,480 @@ tr:hover td{background:#f9fafb}
             btnElement.classList.add('activo');
         }
 
+
+        function tipoAvisoDesdeMensaje(mensaje) {
+            const texto = String(mensaje || '').toLowerCase();
+            if (/(error|no se pudo|no pod|incompatible|cancelad|incorrect|fall)/.test(texto)) return 'error';
+            if (/(pendiente|esper|revis|incongruent)/.test(texto)) return 'warning';
+            if (/(guardad|creado|uniste|acept|enviad|reservado|confirmad|completado|finalizado)/.test(texto)) return 'success';
+            return 'info';
+        }
+
+        function mostrarAviso(mensaje, tipo = 'info', duracion = 3300) {
+            const contenedor = document.getElementById('toast-container');
+            if (!contenedor) {
+                console.log(mensaje);
+                return;
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `app-toast ${tipo}`;
+            toast.textContent = String(mensaje || '');
+            contenedor.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(6px)';
+                setTimeout(() => toast.remove(), 180);
+            }, duracion);
+        }
+
+        // Se conserva confirm() para acciones destructivas, pero los mensajes
+        // informativos dejan de bloquear la navegación.
+        window.alert = function(mensaje) {
+            mostrarAviso(mensaje, tipoAvisoDesdeMensaje(mensaje));
+        };
+
+        function setBotonCargando(boton, cargando, textoCarga = 'Guardando...') {
+            if (!boton) return;
+            if (cargando) {
+                if (!boton.dataset.textoOriginal) boton.dataset.textoOriginal = boton.textContent;
+                boton.classList.add('is-loading');
+                boton.disabled = true;
+                if (textoCarga && boton.classList.contains('btn')) boton.textContent = textoCarga;
+            } else {
+                boton.classList.remove('is-loading');
+                boton.disabled = false;
+                if (boton.dataset.textoOriginal) {
+                    boton.textContent = boton.dataset.textoOriginal;
+                    delete boton.dataset.textoOriginal;
+                }
+            }
+        }
+
+        async function ejecutarConBoton(boton, callback, textoCarga = 'Guardando...') {
+            setBotonCargando(boton, true, textoCarga);
+            try {
+                return await callback();
+            } finally {
+                setBotonCargando(boton, false);
+            }
+        }
+
+        function actualizarContadorTab(id, cantidad) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const n = Math.max(0, Number(cantidad || 0));
+            if (n <= 0) {
+                el.hidden = true;
+                el.textContent = '';
+                el.setAttribute('aria-hidden','true');
+                return;
+            }
+            el.textContent = n > 99 ? '99+' : String(n);
+            el.hidden = false;
+            el.setAttribute('aria-hidden','false');
+        }
+
+        function actualizarContadoresPartidos() {
+            const usuario = getNombreCompleto().trim().toLowerCase();
+
+            const propios = partidosData.filter(p =>
+                String(p.tipo || 'Competitivo').toLowerCase() === 'competitivo' &&
+                [p.j1,p.j2,p.j3,p.j4].some(n => String(n || '').trim().toLowerCase() === usuario)
+            );
+
+            const pendientes = propios.filter(p => ['Buscando Rival','Partido Confirmado'].includes(p.estado)).length;
+            const resultados = propios.filter(p => p.estado === 'Pendiente Resultado').length;
+
+            const abiertos = partidosData.filter(p => {
+                if (p.estado !== 'Buscando Rival') return false;
+                if ([p.j1,p.j2,p.j3,p.j4].some(n => String(n || '').trim().toLowerCase() === usuario)) return false;
+                const invitado = invitacionUsuarioPartido(p);
+                return Boolean(invitado || partidoTieneCupoParaUsuario(p));
+            }).length;
+
+            actualizarContadorTab('contador-tab-unirse', abiertos);
+            actualizarContadorTab('contador-tab-curso', pendientes);
+            actualizarContadorTab('contador-tab-resultados', resultados);
+        }
+
+        function irASeccionAmigos(seccion) {
+            const mapa = {
+                amigos:'acordeon-mis-amigos',
+                recibidas:'acordeon-solicitudes-recibidas',
+                enviadas:'acordeon-solicitudes-enviadas'
+            };
+            const el = document.getElementById(mapa[seccion]);
+            if (!el) return;
+            el.open = true;
+            setTimeout(() => el.scrollIntoView({behavior:'smooth', block:'start'}), 20);
+        }
+
+        function actualizarResumenAmigos() {
+            const mapa = [
+                ['resumen-amigos-count', amigosData.length],
+                ['resumen-recibidas-count', solicitudesAmistadData.length],
+                ['resumen-enviadas-count', solicitudesAmistadEnviadasData.length]
+            ];
+            mapa.forEach(([id, valor]) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = String(valor || 0);
+            });
+        }
+
+        function estadoVisualPartido(partido) {
+            if (partido.pendienteRevision || partido.resultadoIncongruente) {
+                return {clase:'estado-revision', texto:'Pendiente de revisión'};
+            }
+            if (partido.estado === 'Finalizado') {
+                return {clase:'estado-confirmado', texto:'Finalizado'};
+            }
+            if (partido.estado === 'Pendiente Resultado') {
+                const propia = cargaResultadoUsuario(partido);
+                return propia
+                    ? {clase:'estado-accion', texto:'Esperando verificación'}
+                    : {clase:'estado-accion', texto:'Cargar resultado'};
+            }
+            if (partido.estado === 'Partido Confirmado') {
+                return {clase:'estado-confirmado', texto:'Partido completo'};
+            }
+            return {clase:'estado-espera', texto:'Buscando jugadores'};
+        }
+
+        function progresoResultadosHtml(partido) {
+            if (partido.estado !== 'Pendiente Resultado' && partido.estado !== 'Finalizado') return '';
+
+            const usuario = getNombreCompleto();
+            const equipos = obtenerEquiposPartidoParaUsuario(partido, usuario);
+            const cargas = resultadosCargadosPartido(partido);
+            const uidActual = String(usuarioActual?.uid || '');
+
+            const tieneCarga = nombre => cargas.some(c => {
+                if (nombre === usuario && uidActual && c.uid) return String(c.uid) === uidActual;
+                return String(c.usuario || '').trim().toLowerCase() === String(nombre || '').trim().toLowerCase();
+            });
+
+            const propio1 = equipos.propio[0]?.nombre || 'Libre';
+            const propio2 = equipos.propio[1]?.nombre || 'Libre';
+            const rival1 = equipos.rival[0]?.nombre || 'Libre';
+            const rival2 = equipos.rival[1]?.nombre || 'Libre';
+
+            const items = [
+                {label: propio1 === usuario ? 'Tu resultado' : 'Compañero', nombre:propio1},
+                {label: propio2 === usuario ? 'Tu resultado' : 'Compañero', nombre:propio2},
+                {label:'Rival 1', nombre:rival1},
+                {label:'Rival 2', nombre:rival2}
+            ];
+
+            return `<div class="resultado-progreso">
+                ${items.map(item => {
+                    const libre = !item.nombre || item.nombre === 'Libre';
+                    const ok = !libre && tieneCarga(item.nombre);
+                    return `<div class="resultado-progreso-item ${ok ? 'ok' : 'pendiente'}">
+                        <strong>${escaparHtmlClub(item.label)}</strong>
+                        <span>${libre ? '—' : (ok ? '✓' : '—')}</span>
+                    </div>`;
+                }).join('')}
+            </div>`;
+        }
+
+        let partidoDetalleActualId = null;
+        let panelPartidosAnteriorDetalle = 'curso';
+
+        function abrirDetallePartido(partidoId, panelOrigen = '') {
+            const partido = partidosData.find(p => String(p.id) === String(partidoId));
+            if (!partido) return mostrarAviso('No se encontró el partido.', 'error');
+            partidoDetalleActualId = partido.id;
+            if (panelOrigen) panelPartidosAnteriorDetalle = panelOrigen;
+            renderizarDetallePartido();
+            cambiarVistaPrincipal('partido-detalle');
+        }
+
+        function volverDesdeDetallePartido() {
+            cambiarVistaPrincipal('partidos');
+            cambiarPanelPartidos(panelPartidosAnteriorDetalle || 'curso');
+        }
+
+        function detalleJugadorHtml(nombre) {
+            if (!nombre || nombre === 'Libre') {
+                return `<div class="partido-detalle-jugador libre">Lugar libre</div>`;
+            }
+            return `<div class="partido-detalle-jugador">
+                <img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="">
+                <span>${escaparHtmlClub(nombre)}</span>
+            </div>`;
+        }
+
+        function renderizarDetallePartido() {
+            const contenedor = document.getElementById('contenido-partido-detalle');
+            const partido = partidosData.find(p => String(p.id) === String(partidoDetalleActualId));
+            if (!contenedor) return;
+            if (!partido) {
+                contenedor.innerHTML = '<p style="color:var(--muted);text-align:center;">Este partido ya no está disponible.</p>';
+                return;
+            }
+
+            const usuario = getNombreCompleto();
+            const equipos = obtenerEquiposPartidoParaUsuario(partido, usuario);
+            const estado = estadoVisualPartido(partido);
+            const invitacion = invitacionUsuarioPartido(partido);
+            const puedeInvitar = ['Buscando Rival','Partido Confirmado'].includes(partido.estado) && equipos.slotLibrePropio;
+            const puedeSalir = ['Buscando Rival','Partido Confirmado'].includes(partido.estado);
+            const puedeCargar = partido.estado === 'Pendiente Resultado' && !cargaResultadoUsuario(partido);
+
+            let acciones = '';
+            if (invitacion && ![partido.j1,partido.j2,partido.j3,partido.j4].includes(usuario)) {
+                acciones += `<button class="btn btn-primario" onclick="event.stopPropagation();window.unirsePartido('${escaparAtributoJs(partido.id)}')">Aceptar invitación</button>`;
+            }
+            if (puedeInvitar) {
+                acciones += `<button class="btn btn-secundario" onclick="event.stopPropagation();abrirModalInvitarAmigoPartido('${escaparAtributoJs(partido.id)}')">Invitar amigo</button>`;
+            }
+            if (puedeCargar) {
+                acciones += `<button class="btn btn-primario" onclick="event.stopPropagation();abrirModalResultado('${escaparAtributoJs(partido.id)}')">Cargar resultado</button>`;
+            }
+            if (puedeSalir) {
+                acciones += `<button class="btn btn-alerta" onclick="event.stopPropagation();window.salirDePartidoPendiente('${escaparAtributoJs(partido.id)}')">Salir del partido</button>`;
+            }
+
+            contenedor.innerHTML = `
+                <article class="partido-detalle-card">
+                    <div class="partido-detalle-head">
+                        <h4>${escaparHtmlClub(partido.club || 'Partido')}</h4>
+                        <div class="partido-detalle-meta">
+                            <span>${escaparHtmlClub(partido.fecha || '')}</span>
+                            <span>${escaparHtmlClub(partido.hora || '')}</span>
+                            <span>${escaparHtmlClub(categoriaPartido(partido))}</span>
+                            <span>${escaparHtmlClub(partido.modalidad || '')}</span>
+                            ${partido.cancha ? `<span>Cancha ${escaparHtmlClub(partido.canchaNombre || partido.cancha)}</span>` : ''}
+                        </div>
+                        <div style="margin-top:11px;"><span class="estado-badge ${estado.clase}">${estado.texto}</span></div>
+                    </div>
+
+                    <div class="partido-detalle-section">
+                        <h5>Jugadores</h5>
+                        <div class="partido-detalle-equipos">
+                            <div class="partido-detalle-equipo">
+                                ${equipos.propio.map(j => detalleJugadorHtml(j.nombre)).join('')}
+                            </div>
+                            <div class="partido-detalle-vs">VS</div>
+                            <div class="partido-detalle-equipo">
+                                ${equipos.rival.map(j => detalleJugadorHtml(j.nombre)).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    ${partido.estado === 'Pendiente Resultado' || partido.estado === 'Finalizado'
+                        ? `<div class="partido-detalle-section">
+                            <h5>Confirmación del resultado</h5>
+                            ${progresoResultadosHtml(partido)}
+                            ${partido.resultado ? `<div style="margin-top:10px;font-weight:850;font-size:.84rem;">${escaparHtmlClub(partido.resultado)}</div>` : ''}
+                          </div>`
+                        : ''}
+
+                    ${acciones ? `<div class="partido-detalle-section">
+                        <h5>Acciones</h5>
+                        <div class="partido-detalle-actions">${acciones}</div>
+                    </div>` : ''}
+                </article>`;
+        }
+
+
+        document.addEventListener('keydown', event => {
+            const vista = document.getElementById('vista-partidos');
+            if (!vista || vista.style.display === 'none' || !vista.offsetParent) return;
+            if (elementoBloqueaSwipePartidos(event.target)) return;
+
+            if (event.key === 'ArrowLeft') {
+                moverPanelPartidosPorSwipe('derecha');
+            } else if (event.key === 'ArrowRight') {
+                moverPanelPartidosPorSwipe('izquierda');
+            }
+        });
+
+
+        const IMAGEN_PADEL_FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700'%3E%3Crect width='1200' height='700' fill='%23101828'/%3E%3Cg fill='none' stroke='%23d0d5dd' stroke-width='10' opacity='.7'%3E%3Crect x='160' y='100' width='880' height='500'/%3E%3Cpath d='M600 100v500M160 350h880'/%3E%3C/g%3E%3Ccircle cx='940' cy='160' r='40' fill='%23d7f23f'/%3E%3Cg transform='translate(820 400) rotate(-25)'%3E%3Cellipse rx='90' ry='118' fill='%2348a6e8' stroke='%23fff' stroke-width='10'/%3E%3Crect x='-18' y='105' width='36' height='140' rx='16' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E";
+
+        function obtenerImagenClubSegura(club) {
+            return club?.imagen || club?.imagenUrl || club?.foto || club?.fotoClub ||
+                club?.imagenClub || club?.portada || club?.logo || club?.logoUrl || IMAGEN_PADEL_FALLBACK;
+        }
+
+        function aplicarFallbackImagen(img) {
+            if (!img || img.dataset.fallbackAplicado === '1') return;
+            img.dataset.fallbackAplicado = '1';
+            img.src = IMAGEN_PADEL_FALLBACK;
+        }
+
+        function mostrarSkeleton(contenedorId, cantidad = 3) {
+            const el = document.getElementById(contenedorId);
+            if (!el) return;
+            el.innerHTML = Array.from({length:cantidad}, () => '<div class="skeleton skeleton-card"></div>').join('');
+        }
+
+        function htmlEstadoVacio(icono, titulo, texto, boton = '', accion = '') {
+            return `<div class="estado-vacio">
+                <div class="estado-vacio-icono">${icono}</div>
+                <strong>${escaparHtmlClub(titulo)}</strong>
+                <span>${escaparHtmlClub(texto)}</span>
+                ${boton ? `<button class="btn btn-secundario" onclick="${accion}">${escaparHtmlClub(boton)}</button>` : ''}
+            </div>`;
+        }
+
+        function actualizarNavegacionInferior(vista) {
+            document.querySelectorAll('#mobile-bottom-nav button').forEach(btn => {
+                btn.classList.toggle('activo', btn.dataset.vista === vista);
+            });
+        }
+
+        function configurarEstadoConexion() {
+            const banner = document.getElementById('offline-banner');
+            const refrescar = () => {
+                if (!banner) return;
+                banner.hidden = navigator.onLine;
+                if (navigator.onLine && banner.dataset.estabaOffline === '1') {
+                    mostrarAviso('Conexión restaurada ✓', 'success');
+                }
+                banner.dataset.estabaOffline = navigator.onLine ? '0' : '1';
+            };
+            window.addEventListener('online', refrescar);
+            window.addEventListener('offline', refrescar);
+            refrescar();
+        }
+
+        function abrirFiltrosUnirse() {
+            document.getElementById('filtros-unirse-sheet')?.classList.add('abierto');
+        }
+        function cerrarFiltrosUnirse() {
+            document.getElementById('filtros-unirse-sheet')?.classList.remove('abierto');
+            actualizarChipsFiltrosUnirse();
+        }
+        function actualizarChipsFiltrosUnirse() {
+            const club = document.getElementById('filtro-club-unirse')?.value || 'Todos';
+            const mod = document.getElementById('filtro-mod-unirse')?.value || 'Todos';
+            const cat = document.getElementById('filtro-categoria-unirse')?.value || 'Todos';
+            const filtros = [];
+            if (club !== 'Todos') filtros.push({tipo:'club',texto:club});
+            if (mod !== 'Todos') filtros.push({tipo:'mod',texto:mod});
+            if (cat !== 'Todos') filtros.push({tipo:'cat',texto:cat});
+
+            const cont = document.getElementById('chips-filtros-unirse');
+            if (cont) cont.innerHTML = filtros.map(f => `<span class="filtro-chip">${escaparHtmlClub(f.texto)}</span>`).join('');
+
+            const badge = document.getElementById('filtros-unirse-activos');
+            if (badge) {
+                badge.hidden = filtros.length === 0;
+                badge.textContent = filtros.length ? String(filtros.length) : '';
+            }
+        }
+
+        function renderizarBusquedaGlobal() {
+            const q = normalizarTextoBusqueda(document.getElementById('busqueda-global-input')?.value || '');
+            const div = document.getElementById('resultados-busqueda-global');
+            if (!div) return;
+            if (!q) {
+                div.innerHTML = htmlEstadoVacio('⌕','Buscá dentro del circuito','Encontrá jugadores, clubes y profesores desde un solo lugar.');
+                return;
+            }
+
+            const jugadores = rankingData.filter(j => normalizarTextoBusqueda(j.nombre).includes(q) || normalizarTextoBusqueda(j.dni).includes(q)).slice(0,5);
+            const clubes = clubesData.filter(c => normalizarTextoBusqueda(c.nombre).includes(q)).slice(0,5);
+            const profes = profesoresData.filter(p => normalizarTextoBusqueda(p.nombre).includes(q)).slice(0,5);
+
+            const items = [
+                ...jugadores.map(j => ({tipo:'Jugador',titulo:j.nombre,sub:`${j.puntos || 0} pts`,accion:`abrirModalAccionesJugador('${escaparAtributoJs(j.nombre)}','busqueda')`})),
+                ...clubes.map(c => ({tipo:'Club',titulo:c.nombre,sub:(c.modalidades || []).join(' · '),accion:`cambiarVistaPrincipal('clubes')`})),
+                ...profes.map(p => ({tipo:'Profesor',titulo:p.nombre,sub:(p.clubes || []).join(' · '),accion:`cambiarVistaPrincipal('academia')`}))
+            ];
+
+            div.innerHTML = items.length ? items.map(i => `
+                <div class="busqueda-item" onclick="${i.accion}">
+                    <div><strong>${escaparHtmlClub(i.titulo)}</strong><small>${escaparHtmlClub(i.sub || '')}</small></div>
+                    <span class="busqueda-tipo">${i.tipo}</span>
+                </div>`).join('') :
+                htmlEstadoVacio('⌕','Sin resultados','Probá con otro nombre, DNI o club.');
+        }
+
+        function renderizarRankingMovil(jugadores) {
+            const cont = document.getElementById('ranking-mobile-cards');
+            if (!cont) return;
+            cont.innerHTML = jugadores.length ? jugadores.map((j,i) => {
+                const s = estadisticasNormalizadasJugador(j);
+                const esPropio = j.nombre.trim().toLowerCase() === getNombreCompleto().trim().toLowerCase();
+                return `<div class="ranking-mobile-card" ${esPropio ? '' : `onclick="abrirModalAccionesJugador('${escaparAtributoJs(j.nombre)}','ranking')"`}>
+                    <div class="ranking-mobile-pos">${i+1}</div>
+                    <div class="ranking-mobile-main"><strong>${escaparHtmlClub(j.nombre)}</strong><small>${s.pg}G · ${s.pp}P · ${s.diferenciaSets >= 0 ? '+' : ''}${s.diferenciaSets} sets</small></div>
+                    <div class="ranking-mobile-puntos">${Number(j.puntos || 0)}</div>
+                </div>`;
+            }).join('') : htmlEstadoVacio('🏆','Sin jugadores','Todavía no hay jugadores con partidos en esta categoría.');
+        }
+
+        function actualizarPerfilResumen() {
+            const avatar = document.getElementById('perfil-resumen-avatar');
+            const nombre = document.getElementById('perfil-resumen-nombre');
+            const cat = document.getElementById('perfil-resumen-categoria');
+            const pos = document.getElementById('perfil-stat-pos');
+            const pts = document.getElementById('perfil-stat-puntos');
+            const pj = document.getElementById('perfil-stat-pj');
+            const jugador = rankingData.find(j => String(j.nombre || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase());
+            if (avatar) avatar.src = perfilUsuario.foto || obtenerAvatarUrl(getNombreCompleto());
+            if (nombre) nombre.textContent = getNombreCompleto() || 'Jugador';
+            if (cat) cat.textContent = `${perfilUsuario.genero || ''} · ${perfilUsuario.preferencia || ''}`;
+            if (jugador) {
+                const categoria = jugador.modalidad || perfilUsuario.genero || 'Masculino';
+                const orden = rankingData.filter(r => r.modalidad === categoria && estadisticasNormalizadasJugador(r).pj > 0).sort(compararJugadoresRanking);
+                if (pos) pos.textContent = String(orden.findIndex(r => r === jugador)+1 || '—');
+                if (pts) pts.textContent = String(jugador.puntos || 0);
+                if (pj) pj.textContent = String(estadisticasNormalizadasJugador(jugador).pj);
+            }
+        }
+
+        function renderizarHomePrioridad() {
+            const cont = document.getElementById('home-prioridad');
+            if (!cont) return;
+            const user = getNombreCompleto();
+            const mis = partidosData.filter(p => [p.j1,p.j2,p.j3,p.j4].includes(user));
+
+            const resultado = mis.find(p => p.estado === 'Pendiente Resultado' && !cargaResultadoUsuario(p));
+            if (resultado) {
+                cont.innerHTML = `<div class="home-prioridad-card"><div><strong>Resultado pendiente</strong><span>${escaparHtmlClub(resultado.club)} · ${escaparHtmlClub(resultado.fecha)} ${escaparHtmlClub(resultado.hora)}</span></div><button class="btn btn-alerta" onclick="cambiarVistaPrincipal('partidos');cambiarPanelPartidos('pendientes')">Cargar</button></div>`;
+                return;
+            }
+
+            const invitado = partidosData.find(p => invitacionUsuarioPartido(p));
+            if (invitado) {
+                cont.innerHTML = `<div class="home-prioridad-card"><div><strong>Te invitaron a jugar</strong><span>${escaparHtmlClub(invitado.club)} · ${escaparHtmlClub(invitado.fecha)} ${escaparHtmlClub(invitado.hora)}</span></div><button class="btn btn-secundario" onclick="cambiarVistaPrincipal('partidos');cambiarPanelPartidos('unirse')">Ver</button></div>`;
+                return;
+            }
+
+            const solicitudes = solicitudesAmistadData.length;
+            if (solicitudes) {
+                cont.innerHTML = `<div class="home-prioridad-card"><div><strong>${solicitudes} solicitud${solicitudes===1?'':'es'} de amistad</strong><span>Tenés jugadores esperando respuesta.</span></div><button class="btn btn-secundario" onclick="cambiarVistaPrincipal('amigos')">Revisar</button></div>`;
+                return;
+            }
+
+            cont.innerHTML = '';
+        }
+
+        function instalarPWAListeners() {
+            if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+                navigator.serviceWorker.register('./service-worker.js').catch(err => console.warn('Service worker:',err));
+            }
+        }
+
+        function ejecutarAutochequeosUI() {
+            const checks = [
+                ['Partidos nav', !!document.querySelector('.partidos-nav')],
+                ['Amigos', !!document.getElementById('vista-amigos')],
+                ['Ranking', !!document.getElementById('vista-ranking')],
+                ['Academia', !!document.getElementById('vista-academia')],
+                ['Notificaciones', !!document.getElementById('vista-notificaciones')]
+            ];
+            const fallos = checks.filter(([,ok]) => !ok);
+            if (fallos.length) console.error('Autochequeo UI:', fallos);
+            else console.info('Autochequeo UI: OK');
+        }
+
         // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
             document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => el.style.display = 'none');
@@ -2914,8 +4338,19 @@ tr:hover td{background:#f9fafb}
             if (vista === 'inicio') { renderizarNotificaciones(); renderizarBanner(); }
             else if (vista === 'notificaciones') renderizarNotificaciones();
             else if (vista === 'ranking') renderizarRanking();
-            else if (vista === 'partidos') { renderizarMisPartidos(); renderizarPartidosAbiertos(); }
+            else if (vista === 'partidos') {
+                renderizarMisPartidos();
+                renderizarPartidosAbiertos();
+                actualizarContadoresPartidos();
+                inicializarSwipePartidos();
+            }
+            else if (vista === 'partido-detalle') renderizarDetallePartido();
+            else if (vista === 'buscar') renderizarBusquedaGlobal();
             else if (vista === 'torneos') renderizarTorneos();
+
+            actualizarNavegacionInferior(vista);
+            if (vista === 'perfil') actualizarPerfilResumen();
+            if (vista === 'inicio') renderizarHomePrioridad();
             else if (vista === 'amigos') renderizarAmigos();
             else if (vista === 'clubes') renderizarClubes();
             else if (vista === 'perfil') cargarDatosPerfilEnFormulario();
@@ -2934,13 +4369,162 @@ tr:hover td{background:#f9fafb}
             renderizarRanking();
         }
 
-        function cambiarPanelPartidos(panel) {
-            ['crear','unirse','curso','pendientes','historial'].forEach(nombre => {
+        const ordenPanelesPartidos = ['crear','unirse','curso','pendientes','historial'];
+        let panelPartidosActual = 'crear';
+        let swipePartidosInicioX = 0;
+        let swipePartidosInicioY = 0;
+        let swipePartidosInicioTiempo = 0;
+        let swipePartidosBloqueado = false;
+        let swipePartidosInicializado = false;
+
+        function elementoBloqueaSwipePartidos(elemento) {
+            if (!(elemento instanceof Element)) return false;
+
+            return Boolean(elemento.closest(
+                'input, select, textarea, option, button, a, summary, details, ' +
+                '.scrollable, .horarios-grid, .resultado-sets-grid, ' +
+                '.partidos-nav, .modal-overlay, [contenteditable="true"]'
+            ));
+        }
+
+        function marcarSwipePartidosUsado() {
+            document.getElementById('vista-partidos')?.classList.add('partidos-swipe-usado');
+            try { localStorage.setItem('circuito-swipe-partidos-usado', '1'); } catch(e) {}
+        }
+
+        function direccionEntrePanelesPartidos(panelAnterior, panelNuevo) {
+            const anterior = ordenPanelesPartidos.indexOf(panelAnterior);
+            const nuevo = ordenPanelesPartidos.indexOf(panelNuevo);
+            if (anterior < 0 || nuevo < 0 || anterior === nuevo) return '';
+            return nuevo > anterior ? 'izquierda' : 'derecha';
+        }
+
+        function animarEntradaPanelPartidos(panel, direccion) {
+            const elemento = document.getElementById(`panel-partidos-${panel}`);
+            if (!elemento || !direccion) return;
+
+            elemento.classList.remove('panel-entra-derecha','panel-entra-izquierda');
+            void elemento.offsetWidth;
+            elemento.classList.add(
+                direccion === 'izquierda' ? 'panel-entra-derecha' : 'panel-entra-izquierda'
+            );
+
+            setTimeout(() => {
+                elemento.classList.remove('panel-entra-derecha','panel-entra-izquierda');
+            }, 260);
+        }
+
+        function moverPanelPartidosPorSwipe(direccion) {
+            const indice = ordenPanelesPartidos.indexOf(panelPartidosActual);
+            if (indice < 0) return false;
+
+            const nuevoIndice = direccion === 'izquierda'
+                ? Math.min(indice + 1, ordenPanelesPartidos.length - 1)
+                : Math.max(indice - 1, 0);
+
+            if (nuevoIndice === indice) return false;
+
+            cambiarPanelPartidos(
+                ordenPanelesPartidos[nuevoIndice],
+                { desdeSwipe:true, direccion }
+            );
+            marcarSwipePartidosUsado();
+
+            // Feedback táctil sutil cuando el navegador lo permite.
+            try {
+                if (navigator.vibrate) navigator.vibrate(8);
+            } catch(e) {}
+
+            return true;
+        }
+
+        function inicializarSwipePartidos() {
+            if (swipePartidosInicializado) return;
+
+            const vista = document.getElementById('vista-partidos');
+            if (!vista) return;
+
+            swipePartidosInicializado = true;
+
+            try {
+                if (localStorage.getItem('circuito-swipe-partidos-usado') === '1') {
+                    vista.classList.add('partidos-swipe-usado');
+                }
+            } catch(e) {}
+
+            vista.addEventListener('touchstart', event => {
+                if (event.touches.length !== 1) {
+                    swipePartidosBloqueado = true;
+                    return;
+                }
+
+                swipePartidosBloqueado = elementoBloqueaSwipePartidos(event.target);
+                swipePartidosInicioX = event.touches[0].clientX;
+                swipePartidosInicioY = event.touches[0].clientY;
+                swipePartidosInicioTiempo = Date.now();
+            }, {passive:true});
+
+            vista.addEventListener('touchend', event => {
+                if (swipePartidosBloqueado || !event.changedTouches?.length) return;
+
+                const finX = event.changedTouches[0].clientX;
+                const finY = event.changedTouches[0].clientY;
+                const deltaX = finX - swipePartidosInicioX;
+                const deltaY = finY - swipePartidosInicioY;
+                const duracion = Date.now() - swipePartidosInicioTiempo;
+
+                const distanciaHorizontal = Math.abs(deltaX);
+                const distanciaVertical = Math.abs(deltaY);
+
+                // Debe ser un gesto horizontal claro. El umbral relativo ayuda
+                // tanto en teléfonos chicos como grandes.
+                const umbral = Math.max(48, Math.min(window.innerWidth * .14, 72));
+                const esHorizontal = distanciaHorizontal >= umbral &&
+                    distanciaHorizontal > distanciaVertical * 1.35 &&
+                    duracion < 700;
+
+                if (!esHorizontal) return;
+
+                moverPanelPartidosPorSwipe(deltaX < 0 ? 'izquierda' : 'derecha');
+            }, {passive:true});
+        }
+
+        function cambiarPanelPartidos(panel, opciones = {}) {
+            if (!ordenPanelesPartidos.includes(panel)) return;
+
+            const anterior = panelPartidosActual;
+            const cambioReal = anterior !== panel;
+            panelPartidosActual = panel;
+
+            ordenPanelesPartidos.forEach(nombre => {
                 document.getElementById(`panel-partidos-${nombre}`)?.classList.toggle('activo', nombre === panel);
-                document.getElementById(`partidos-tab-${nombre}`)?.classList.toggle('activo', nombre === panel);
+                const tab = document.getElementById(`partidos-tab-${nombre}`);
+                tab?.classList.toggle('activo', nombre === panel);
+                tab?.setAttribute('aria-selected', nombre === panel ? 'true' : 'false');
             });
-            if (panel === 'unirse') { actualizarModalidadesUnirse(); renderizarPartidosAbiertos(); }
-            if (['curso','pendientes','historial'].includes(panel)) renderizarMisPartidos();
+
+            if (cambioReal) {
+                const direccion = opciones.direccion ||
+                    direccionEntrePanelesPartidos(anterior, panel);
+                animarEntradaPanelPartidos(panel, direccion);
+            }
+
+            if (panel === 'unirse') {
+                actualizarModalidadesUnirse();
+                renderizarPartidosAbiertos();
+            }
+            if (['curso','pendientes','historial'].includes(panel)) {
+                renderizarMisPartidos();
+            }
+
+            actualizarContadoresPartidos();
+
+            // Mantiene la barra activa visible incluso en pantallas muy angostas.
+            document.getElementById(`partidos-tab-${panel}`)?.scrollIntoView({
+                behavior:'smooth',
+                block:'nearest',
+                inline:'center'
+            });
         }
 
         function cambiarAccionPartido(accion) {
@@ -2958,6 +4542,12 @@ tr:hover td{background:#f9fafb}
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
             renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
             renderizarAmigos(); renderizarClubes(); renderizarAcademia();
+            actualizarContadoresPartidos();
+            actualizarResumenAmigos();
+            actualizarModoProfesorUI();
+            actualizarPerfilResumen();
+            renderizarHomePrioridad();
+            actualizarChipsFiltrosUnirse();
         }
 
         function escaparAtributoJs(valor) {
@@ -3517,6 +5107,8 @@ tr:hover td{background:#f9fafb}
                 return tienePartidosJugados && coincideModalidad && coincideBusqueda;
             }).sort(compararJugadoresRanking);
 
+            renderizarRankingMovil(filtrados);
+
             document.getElementById('tabla-ranking').innerHTML = filtrados.length
                 ? filtrados.map((j, i) => {
                     const s = estadisticasNormalizadasJugador(j);
@@ -3882,14 +5474,14 @@ tr:hover td{background:#f9fafb}
                 const verificacion = estadoVerificacionResultado(partido);
 
                 if (!cargaPropia && partido.estado === 'Pendiente Resultado') {
-                    accion = `<button class="btn partido-minimal-action" onclick='abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
+                    accion = `<button class="btn partido-minimal-action" onclick='event.stopPropagation();abrirModalResultado(${JSON.stringify(partido.id)})'>Cargar resultado</button>`;
                 } else {
                     accion = `<span class="resultado-verificacion-pendiente">${escaparHtmlClub(verificacion.texto || 'Esperando verificación del resultado')}</span>`;
                 }
             } else if (invitacionUsuario) {
                 accion = `<span class="partido-invitacion-badge">Te han invitado</span>`;
             } else if (puedeInvitar) {
-                accion = `<button class="btn partido-minimal-action" onclick='abrirModalInvitarAmigoPartido(${JSON.stringify(partido.id)})'>Invitar un amigo</button>`;
+                accion = `<button class="btn partido-minimal-action" onclick='event.stopPropagation();abrirModalInvitarAmigoPartido(${JSON.stringify(partido.id)})'>Invitar un amigo</button>`;
             } else if (completo) {
                 accion = `<span class="partido-minimal-status">Partido completo</span>`;
             }
@@ -3906,16 +5498,17 @@ tr:hover td{background:#f9fafb}
                 : (opciones.invitar
                     ? `<div class="partido-minimal-actions">
                         ${accion}
-                        <button class="partido-salir-btn" onclick="window.salirDePartidoPendiente('${escaparAtributoJs(partido.id)}')">Salir del partido</button>
+                        <button class="partido-salir-btn" onclick="event.stopPropagation();window.salirDePartidoPendiente('${escaparAtributoJs(partido.id)}')">Salir del partido</button>
                        </div>`
                     : accion);
 
             return `
-                <article class="partido-minimal-card">
+                <article class="partido-minimal-card" data-partido-id="${escaparHtmlClub(String(partido.id))}" onclick="abrirDetallePartido('${escaparAtributoJs(partido.id)}','${opciones.resultado ? 'pendientes' : opciones.historial ? 'historial' : 'curso'}')">
                     <div class="partido-minimal-meta-top">
                         <span>${escaparHtmlClub(partido.fecha || '')}</span>
                         <span>${escaparHtmlClub(partido.hora || '')}</span>
                         <span>${escaparHtmlClub(partido.club || '')}</span>
+                        <span class="estado-badge ${estadoVisualPartido(partido).clase}">${estadoVisualPartido(partido).texto}</span>
                     </div>
 
                     <div class="partido-minimal-equipos">
@@ -3940,6 +5533,7 @@ tr:hover td{background:#f9fafb}
                         <span class="partido-minimal-detail">${escaparHtmlClub(categoriaPartido(partido))} · ${escaparHtmlClub(partido.modalidad || '')}${partido.cancha ? ` · Cancha ${escaparHtmlClub(partido.canchaNombre || partido.cancha)}` : ''}</span>
                         ${estadoHistorial}
                     </div>
+                    ${opciones.resultado ? progresoResultadosHtml(partido) : ''}
                     ${opciones.resultado && estadoVerificacionResultado(partido).estado === 'conflicto'
                         ? `<div class="resultado-verificacion-conflicto">Hay resultados diferentes cargados. Los demás jugadores deben cargar su versión para verificar el marcador.</div>`
                         : ''}
@@ -4167,7 +5761,17 @@ tr:hover td{background:#f9fafb}
             const ocupantes = new Set([partido.j1, partido.j2, partido.j3, partido.j4].filter(j => j && j !== 'Libre'));
             const amigosElegibles = amigosData.filter(amigo => {
                 const nombre = String(amigo.nombre || amigo.displayName || '').trim();
-                return nombre && nombre !== getNombreCompleto() && !ocupantes.has(nombre);
+                if (!nombre || nombre === getNombreCompleto() || ocupantes.has(nombre)) return false;
+
+                const uidAmigo = String(amigo.uid || amigo.usuarioUid || amigo.id || '');
+                const jugador = rankingData.find(j =>
+                    String(j.uid || j.id) === uidAmigo ||
+                    String(j.nombre || '').trim().toLowerCase() === nombre.toLowerCase()
+                );
+                const genero = normalizarGeneroCompetitivo(jugador?.genero || amigo.genero || '');
+
+                return Boolean(equipos.slotLibrePropio) &&
+                    slotCompatibleConGenero(partido, equipos.slotLibrePropio, genero);
             });
 
             const lista = document.getElementById('lista-amigos-invitar-partido');
@@ -4184,7 +5788,7 @@ tr:hover td{background:#f9fafb}
                             <strong>${escaparHtmlClub(nombre)}</strong>
                             <small>${amigo.dni ? `DNI ${escaparHtmlClub(amigo.dni)}` : 'Amigo agregado'}</small>
                         </div>
-                        <button class="amigo-invitar-btn" onclick="confirmarInvitacionAmigoPartido('${amigoId}')">Invitar</button>
+                        <button class="amigo-invitar-btn" onclick="ejecutarConBoton(this, () => confirmarInvitacionAmigoPartido('${amigoId}'), 'Invitando...')">Invitar</button>
                     </div>`;
             }).join('') : `<div class="amigos-invitar-empty">No tenés amigos disponibles para invitar a este partido.</div>`;
 
@@ -4559,20 +6163,24 @@ tr:hover td{background:#f9fafb}
             if (listaResultados) {
                 listaResultados.innerHTML = resultados.length
                     ? resultados.map(p => tarjetaPartidoMinimal(p, { resultado: true })).join('')
-                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay resultados pendientes.</p>`;
+                    : htmlEstadoVacio('✓','Sin resultados pendientes','Cuando juegues un partido, aparecerá acá para cargar o verificar el resultado.');
             }
 
             if (listaPendientes) {
                 listaPendientes.innerHTML = pendientes.length
                     ? pendientes.map(p => tarjetaPartidoMinimal(p, { invitar: true })).join('')
-                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">No hay partidos pendientes.</p>`;
+                    : htmlEstadoVacio('🎾','No tenés partidos próximos','Buscá un partido disponible o creá uno nuevo.','Buscar partido',"cambiarPanelPartidos('unirse')");
             }
 
             if (listaHistorial) {
                 listaHistorial.innerHTML = finalizados.length
                     ? finalizados.map(p => tarjetaPartidoMinimal(p, { historial: true })).join('')
-                    : `<p style="color:var(--muted);text-align:center;font-size:.88rem;">Todavía no hay partidos finalizados.</p>`;
+                    : htmlEstadoVacio('🏁','Todavía no hay historial','Tus partidos finalizados aparecerán acá.');
             }
+
+            actualizarContadoresPartidos();
+
+            if (partidoDetalleActualId) renderizarDetallePartido();
         }
 
         function slotsDisponiblesEquipo(partido, equipo) {
@@ -4658,7 +6266,7 @@ tr:hover td{background:#f9fafb}
                             title="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
                             aria-label="${invitacionUsuario ? 'Aceptar invitación' : 'Elegir equipo'}"
                             onclick="event.stopPropagation();${invitacionUsuario
-                                ? `window.unirsePartido('${idSeguro}')`
+                                ? `ejecutarConBoton(this, () => window.unirsePartido('${idSeguro}'), '')`
                                 : `abrirModalSeleccionarEquipo('${idSeguro}')`}">+</button>
                     </div>
                 </div>`;
@@ -4695,10 +6303,13 @@ tr:hover td{background:#f9fafb}
             });
 
             const contenedor = document.getElementById('lista-partidos-abiertos');
+            actualizarContadorTab('contador-tab-unirse', abiertos.length);
             if (!abiertos.length) {
-                contenedor.innerHTML = '<p style="color:var(--text-muted);text-align:center;">No hay partidos con lugares disponibles.</p>';
+                contenedor.innerHTML = htmlEstadoVacio('🎾','No hay partidos disponibles','Probá cambiar los filtros o creá uno nuevo.','Crear partido',"cambiarPanelPartidos('crear')");
                 return;
             }
+
+            if (partidoDetalleActualId) renderizarDetallePartido();
 
             contenedor.innerHTML = abiertos.map(p => {
                 const invitacionUsuario = invitacionUsuarioPartido(p);
@@ -4772,7 +6383,7 @@ tr:hover td{background:#f9fafb}
                         </div>
                     </div>
                 </div>`;
-            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos públicos disponibles.</p>';
+            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos públicos disponibles por el momento.</p>';
         }
 
         function normalizarTextoBusqueda(valor) {
@@ -4858,8 +6469,8 @@ tr:hover td{background:#f9fafb}
                             </div>
                         </div>
                         <div class="amigo-persona-acciones">
-                            <button class="amigo-mini-btn primario" onclick="aceptarSolicitudAmistad('${escaparAtributoJs(s.id)}')">Aceptar</button>
-                            <button class="amigo-mini-btn peligro" onclick="rechazarSolicitudAmistad('${escaparAtributoJs(s.id)}')">Rechazar</button>
+                            <button class="amigo-mini-btn primario" onclick="ejecutarConBoton(this, () => aceptarSolicitudAmistad('${escaparAtributoJs(s.id)}'), 'Aceptando...')">Aceptar</button>
+                            <button class="amigo-mini-btn peligro" onclick="ejecutarConBoton(this, () => rechazarSolicitudAmistad('${escaparAtributoJs(s.id)}'), 'Procesando...')">Rechazar</button>
                         </div>
                     </div>`).join('')
                 : `<p class="amigos-vacio">No tenés solicitudes pendientes.</p>`;
@@ -4883,7 +6494,7 @@ tr:hover td{background:#f9fafb}
                         </div>
                         <div class="amigo-persona-acciones">
                             <span class="amigo-estado-pendiente">Pendiente</span>
-                            <button class="amigo-mini-btn peligro" onclick="cancelarSolicitudAmistadEnviada('${escaparAtributoJs(s.id)}')">Cancelar</button>
+                            <button class="amigo-mini-btn peligro" onclick="ejecutarConBoton(this, () => cancelarSolicitudAmistadEnviada('${escaparAtributoJs(s.id)}'), 'Cancelando...')">Cancelar</button>
                         </div>
                     </div>`).join('')
                 : `<p class="amigos-vacio">No tenés solicitudes enviadas pendientes.</p>`;
@@ -4906,7 +6517,7 @@ tr:hover td{background:#f9fafb}
                             </div>
                         </div>
                         <div class="amigo-persona-acciones">
-                            <button class="amigo-mini-btn peligro" onclick="eliminarAmigo('${escaparAtributoJs(a.uid || a.id)}')">Eliminar</button>
+                            <button class="amigo-mini-btn peligro" onclick="ejecutarConBoton(this, () => eliminarAmigo('${escaparAtributoJs(a.uid || a.id)}'), 'Eliminando...')">Eliminar</button>
                         </div>
                     </div>`).join('')
                 : `<p class="amigos-vacio">Todavía no tenés amigos agregados.</p>`;
@@ -4914,6 +6525,7 @@ tr:hover td{background:#f9fafb}
             renderizarSolicitudesAmistad();
             renderizarSolicitudesEnviadas();
             renderizarResultadosBusquedaAmigos();
+            actualizarResumenAmigos();
         }
 
         function escaparHtmlClub(valor) {
@@ -5055,6 +6667,152 @@ tr:hover td{background:#f9fafb}
             `).join('');
         }
 
+        function usuarioEsProfesor() {
+            return perfilUsuario.rolProfesor === true || perfilUsuario.roles?.profesor === true;
+        }
+
+        function emailSolicitudProfesor() {
+            const subject = encodeURIComponent('Solicitud de rol Profesor - Circuito Competitivo');
+            const body = encodeURIComponent(
+                `Hola PRIC,\n\nQuiero solicitar el rol de Profesor en Circuito Competitivo.\n\n` +
+                `Nombre: ${getNombreCompleto() || 'Jugador'}\n` +
+                `DNI: ${perfilUsuario.dni || 'Sin DNI cargado'}\n` +
+                `Email: ${usuarioActual?.email || 'Sin email'}\n\n` +
+                `Quedo a disposición para enviar la información necesaria para validar mi perfil.\n\nSaludos.`
+            );
+            return `mailto:Pric.administracion@gmail.com?subject=${subject}&body=${body}`;
+        }
+
+        function accionMenuProfesor() {
+            if (usuarioEsProfesor()) {
+                cambiarVistaPrincipal('academia');
+                setTimeout(() => document.getElementById('panel-profesor-academia')?.scrollIntoView({behavior:'smooth',block:'start'}), 50);
+            } else {
+                window.location.href = emailSolicitudProfesor();
+            }
+        }
+
+        function actualizarModoProfesorUI() {
+            const activo = usuarioEsProfesor();
+            const panel = document.getElementById('panel-profesor-academia');
+            if (panel) panel.hidden = !activo;
+
+            const texto = document.getElementById('texto-boton-academia');
+            if (texto) texto.textContent = activo ? 'Academia · Profesor' : 'Academia';
+
+            const menu = document.getElementById('menu-profesor-btn');
+            if (menu) menu.textContent = activo ? '🧑‍🏫 Panel de profesor' : '🧑‍🏫 Profesores · Solicitar rol';
+
+            if (activo) {
+                inicializarFormularioProfesor();
+                const tel = document.getElementById('profe-clase-telefono');
+                if (tel && !tel.value) tel.value = perfilUsuario.telefono || '';
+                renderizarClasesPublicadasProfesor();
+            }
+        }
+
+        function inicializarFormularioProfesor() {
+            const select = document.getElementById('profe-clase-club');
+            if (!select) return;
+            const actual = select.value;
+            select.innerHTML = clubesData.length
+                ? clubesData.map(c => `<option value="${escaparHtmlClub(c.nombre)}">${escaparHtmlClub(c.nombre)}</option>`).join('')
+                : '<option value="">No hay clubes disponibles</option>';
+            if (actual && [...select.options].some(o => o.value === actual)) select.value = actual;
+        }
+
+        function obtenerProfesorActualData() {
+            const uid = String(usuarioActual?.uid || '');
+            return profesoresData.find(p =>
+                String(p.uid || p.id || '') === uid ||
+                String(p.nombre || '').trim().toLowerCase() === getNombreCompleto().trim().toLowerCase()
+            ) || null;
+        }
+
+        function clasesDisponiblesProfesorActual() {
+            const profesor = obtenerProfesorActualData();
+            return Array.isArray(profesor?.clasesDisponibles) ? profesor.clasesDisponibles : [];
+        }
+
+        async function publicarClaseProfesor() {
+            if (!usuarioEsProfesor()) return mostrarAviso('Tu cuenta no tiene activo el rol Profesor.', 'error');
+
+            const api = window.firebaseAPI;
+            if (!api || !usuarioActual) return mostrarAviso('Firebase todavía no está listo.', 'error');
+
+            const club = document.getElementById('profe-clase-club')?.value || '';
+            const modalidad = document.getElementById('profe-clase-modalidad')?.value || '';
+            const dia = document.getElementById('profe-clase-dia')?.value || '';
+            const hora = document.getElementById('profe-clase-hora')?.value || '';
+            const duracion = Number(document.getElementById('profe-clase-duracion')?.value || 60);
+            const precio = Number(document.getElementById('profe-clase-precio')?.value || 0);
+            const telefono = String(document.getElementById('profe-clase-telefono')?.value || '').trim();
+            const nivel = document.getElementById('profe-clase-nivel')?.value || 'Todos';
+            const detalle = String(document.getElementById('profe-clase-detalle')?.value || '').trim();
+
+            if (!club) return mostrarAviso('Seleccioná un club.', 'error');
+            if (!hora) return mostrarAviso('Seleccioná un horario.', 'error');
+            if (precio <= 0) return mostrarAviso('Ingresá un precio válido.', 'error');
+            if (!telefono) return mostrarAviso('Ingresá un teléfono de contacto.', 'error');
+
+            const actuales = clasesDisponiblesProfesorActual();
+            if (actuales.some(c => c.activa !== false && c.club === club && c.dia === dia && c.hora === hora && c.modalidad === modalidad)) {
+                return mostrarAviso('Ya tenés publicada una clase igual en ese horario.', 'warning');
+            }
+
+            const clase = {
+                id: crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+                club, modalidad, dia, hora, duracion, precio, telefono, nivel, detalle,
+                activa:true, creadaEnCliente:new Date().toISOString()
+            };
+
+            const profActual = obtenerProfesorActualData();
+            await api.setDoc(api.doc(api.db,'profesores',String(usuarioActual.uid)), {
+                uid:usuarioActual.uid,
+                nombre:getNombreCompleto(),
+                telefono,
+                clubes:Array.from(new Set([...(profActual?.clubes || []), club])),
+                modalidades:Array.from(new Set([...(profActual?.modalidades || []), modalidad])),
+                clasesDisponibles:[...actuales, clase],
+                activo:true,
+                actualizadoEn:api.serverTimestamp()
+            }, {merge:true});
+
+            document.getElementById('profe-clase-precio').value = '';
+            document.getElementById('profe-clase-detalle').value = '';
+            mostrarAviso('Clase publicada correctamente.', 'success');
+        }
+
+        async function eliminarClasePublicadaProfesor(claseId) {
+            if (!usuarioEsProfesor() || !confirm('¿Querés eliminar esta clase publicada?')) return;
+            const api = window.firebaseAPI;
+            if (!api || !usuarioActual) return;
+
+            const restantes = clasesDisponiblesProfesorActual().filter(c => String(c.id) !== String(claseId));
+            await api.setDoc(
+                api.doc(api.db,'profesores',String(usuarioActual.uid)),
+                {clasesDisponibles:restantes,actualizadoEn:api.serverTimestamp()},
+                {merge:true}
+            );
+            mostrarAviso('Clase eliminada.', 'success');
+        }
+
+        function renderizarClasesPublicadasProfesor() {
+            const div = document.getElementById('lista-clases-publicadas-profesor');
+            if (!div) return;
+            const clases = clasesDisponiblesProfesorActual().filter(c => c.activa !== false);
+
+            div.innerHTML = clases.length ? clases.map(c => `
+                <div class="clase-profesor-card">
+                    <div>
+                        <strong>${escaparHtmlClub(c.dia || '')} · ${escaparHtmlClub(c.hora || '')} · ${escaparHtmlClub(c.modalidad || '')}</strong>
+                        <small>${escaparHtmlClub(c.club || '')} · ${Number(c.duracion || 60)} min · $${Number(c.precio || 0).toLocaleString('es-AR')}</small>
+                    </div>
+                    <button class="clase-profesor-delete" onclick="eliminarClasePublicadaProfesor('${escaparAtributoJs(c.id)}')" aria-label="Eliminar">×</button>
+                </div>
+            `).join('') : '<p class="amigos-vacio">Todavía no publicaste clases disponibles.</p>';
+        }
+
         function inicializarFiltrosProfesores() {
             const selectClub = document.getElementById('filtro-profe-club');
             let html = '<option value="Todos">Todos los clubes</option>';
@@ -5063,42 +6821,85 @@ tr:hover td{background:#f9fafb}
         }
 
         function renderizarProfesores() {
-            const fClub = document.getElementById('filtro-profe-club').value;
-            const fCat = document.getElementById('filtro-profe-cat').value;
-            const fHor = document.getElementById('filtro-profe-horario').value;
+            const fClub = document.getElementById('filtro-profe-club')?.value || 'Todos';
+            const fCat = document.getElementById('filtro-profe-cat')?.value || 'Todas';
+            const fHor = document.getElementById('filtro-profe-horario')?.value || 'Todos';
 
-            const profesFiltrados = profesoresData.filter(p => {
-                if (fClub !== 'Todos' && !p.clubes.includes(fClub)) return false;
-                if (fCat !== 'Todas' && !p.categorias.includes(fCat)) return false;
-                if (fHor !== 'Todos' && !p.horarios.includes(fHor)) return false;
+            const items = [];
+            profesoresData.forEach(profesor => {
+                const clases = Array.isArray(profesor.clasesDisponibles)
+                    ? profesor.clasesDisponibles.filter(c => c.activa !== false)
+                    : [];
+                if (clases.length) clases.forEach(clase => items.push({profesor,clase}));
+                else items.push({profesor,clase:null});
+            });
+
+            const coincideHorario = hora => {
+                if (fHor === 'Todos' || !hora) return true;
+                const h = Number(String(hora).split(':')[0]);
+                if (fHor === 'Mañana') return h < 13;
+                if (fHor === 'Tarde') return h >= 13 && h < 19;
+                return h >= 19;
+            };
+
+            const filtrados = items.filter(({profesor,clase}) => {
+                const clubes = clase ? [clase.club] : profesor.clubes;
+                if (fClub !== 'Todos' && !clubes.includes(fClub)) return false;
+                if (fCat !== 'Todas' && profesor.categorias?.length && !profesor.categorias.includes(fCat)) return false;
+                if (clase && !coincideHorario(clase.hora)) return false;
+                if (!clase && fHor !== 'Todos' && !profesor.horarios.includes(fHor)) return false;
                 return true;
             });
 
             const div = document.getElementById('lista-profesores-academia');
-            if (profesFiltrados.length === 0) {
-                div.innerHTML = '<p style="color:var(--text-muted); text-align:center; font-size:0.9em;">No se encontraron profesores con estos filtros.</p>';
+            if (!div) return;
+
+            if (!filtrados.length) {
+                div.innerHTML = '<p style="color:var(--text-muted);text-align:center;font-size:.9em;">No hay clases o profesores disponibles con estos filtros.</p>';
                 return;
             }
 
-            div.innerHTML = profesFiltrados.map(p => `
-                <div class="tarjeta-item" style="background:var(--bg-card);">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div>
-                            <strong style="color:var(--success); font-size:1.1em;">🧑‍🏫 ${p.nombre}</strong>
-                            <div style="font-size:0.85em; color:var(--text-light); margin-top:5px;">Categorías: <strong>${p.categorias.join(', ')}</strong></div>
-                            <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">📍 ${p.clubes.join(' | ')}</div>
-                            <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">⌚ Horarios: ${p.horarios.join(', ')}</div>
+            div.innerHTML = filtrados.map(({profesor,clase}) => {
+                const telefono = clase?.telefono || profesor.telefono || '';
+                if (!clase) {
+                    return `<div class="profesor-clase-publica">
+                        <div class="profesor-clase-publica-head"><strong>🧑‍🏫 ${escaparHtmlClub(profesor.nombre)}</strong></div>
+                        <div class="profesor-clase-meta">
+                            ${profesor.clubes?.length ? `📍 ${profesor.clubes.map(escaparHtmlClub).join(' · ')}<br>` : ''}
+                            ${profesor.categorias?.length ? `Categorías: ${profesor.categorias.map(escaparHtmlClub).join(', ')}` : 'Profesor del circuito'}
                         </div>
-                        <button class="btn btn-secundario" style="width:auto; padding:8px 12px; font-size:0.85em;" onclick="window.open('https://wa.me/${p.telefono}', '_blank')">💬 Contactar</button>
+                        ${telefono ? `<button class="profesor-clase-contacto" onclick="contactarProfesorWhatsApp('${escaparAtributoJs(telefono)}')">Contactar</button>` : ''}
+                    </div>`;
+                }
+
+                return `<div class="profesor-clase-publica">
+                    <div class="profesor-clase-publica-head">
+                        <div>
+                            <strong>🧑‍🏫 ${escaparHtmlClub(profesor.nombre)}</strong>
+                            <div style="margin-top:3px;font-size:.78rem;font-weight:850;">${escaparHtmlClub(clase.dia)} ${escaparHtmlClub(clase.hora)} · ${escaparHtmlClub(clase.modalidad)}</div>
+                        </div>
+                        <span class="profesor-clase-precio">$${Number(clase.precio || 0).toLocaleString('es-AR')}</span>
                     </div>
-                </div>
-            `).join('');
+                    <div class="profesor-clase-meta">
+                        📍 ${escaparHtmlClub(clase.club)} · ${Number(clase.duracion || 60)} min · Nivel ${escaparHtmlClub(clase.nivel || 'Todos')}
+                        ${clase.detalle ? `<br>${escaparHtmlClub(clase.detalle)}` : ''}
+                    </div>
+                    ${telefono ? `<button class="profesor-clase-contacto" onclick="contactarProfesorWhatsApp('${escaparAtributoJs(telefono)}')">Contactar por WhatsApp</button>` : ''}
+                </div>`;
+            }).join('');
         }
-        
+
+        function contactarProfesorWhatsApp(telefono) {
+            const limpio = String(telefono || '').replace(/\D/g,'');
+            if (!limpio) return mostrarAviso('Este profesor no cargó un teléfono válido.', 'error');
+            window.open(`https://wa.me/${limpio}`, '_blank');
+        }
+
         function renderizarAcademia() {
             renderizarMisClases();
             inicializarFiltrosProfesores();
             renderizarProfesores();
+            actualizarModoProfesorUI();
         }
 
         // --- ACCIONES GENERALES ---
@@ -5890,14 +7691,39 @@ tr:hover td{background:#f9fafb}
             let procesarSnapshotClubes = null;
             let authModoActual = "login";
             let unsubscribeFirebase = [];
+            const unsubscribeTorneosPorClub = new Map();
+            const torneosPorClubCache = new Map();
+            const erroresFirebaseMostrados = new Set();
 
             function normalizarIdFirestore(valor) {
                 return String(valor || "Club Central").trim().replace(/[\/#[\]?]/g, "_") || "Club Central";
             }
 
-            function logFirebaseError(contexto, error) {
+            function logFirebaseError(contexto, error, opciones = {}) {
                 console.error(`Firebase ${contexto}:`, error);
-                alert(`No se pudo conectar con Firebase (${contexto}). Revisa las reglas de Firestore y que estés usando el proyecto correcto.`);
+
+                const esLecturaOpcional = opciones.opcional === true ||
+                    [
+                        'lectura de torneos',
+                        'lectura de profesores',
+                        'lectura de configuración general'
+                    ].includes(contexto);
+
+                // Las fuentes opcionales no deben bloquear la aplicación con alert().
+                if (esLecturaOpcional) {
+                    console.warn(`La sección "${contexto}" no está disponible en este momento.`);
+                    return;
+                }
+
+                // Evita mensajes repetidos por el mismo listener.
+                if (erroresFirebaseMostrados.has(contexto)) return;
+                erroresFirebaseMostrados.add(contexto);
+
+                // Para lecturas principales se informa en consola y la aplicación sigue funcionando.
+                // Solo inicialización/autenticación pueden mostrar un aviso visible.
+                if (contexto === 'inicialización') {
+                    alert('No se pudo iniciar la conexión con Firebase. Revisá la configuración del proyecto y las reglas de Firestore.');
+                }
             }
 
             async function inicializarFirebase() {
@@ -5948,6 +7774,13 @@ tr:hover td{background:#f9fafb}
                     try { if (typeof fn === "function") fn(); } catch(e) {}
                 });
                 unsubscribeFirebase = [];
+
+                unsubscribeTorneosPorClub.forEach(fn => {
+                    try { if (typeof fn === "function") fn(); } catch(e) {}
+                });
+                unsubscribeTorneosPorClub.clear();
+                torneosPorClubCache.clear();
+                erroresFirebaseMostrados.clear();
             }
 
             function mostrarPantallaAuth() {
@@ -6005,7 +7838,9 @@ tr:hover td{background:#f9fafb}
                         telefono: data.telefono || "",
                         dni: data.dni || "",
                         preferencia: data.preferencia || "Drive",
-                        foto: data.foto || ""
+                        foto: data.foto || "",
+                        rolProfesor: data.rolProfesor === true || data.esProfesor === true || data.rol === "Profesor" || data.roles?.profesor === true,
+                        roles: data.roles && typeof data.roles === "object" ? data.roles : {}
                     };
                 } else {
                     perfilUsuario = {
@@ -6016,7 +7851,9 @@ tr:hover td{background:#f9fafb}
                         telefono: "",
                         dni: "",
                         preferencia: "Drive",
-                        foto: ""
+                        foto: "",
+                        rolProfesor: false,
+                        roles: {}
                     };
                     await firebaseAPI.setDoc(ref, {
                         uid: user.uid,
@@ -6127,6 +7964,81 @@ tr:hover td{background:#f9fafb}
                 return snapshot.docs.map(docSnap => ({ id: docSnap.id, _firestorePath: docSnap.ref.path, ...docSnap.data() }));
             }
 
+            function normalizarTorneoPublico(torneo, clubId, clubNombre) {
+                return {
+                    ...torneo,
+                    nombre: torneo.nombre || torneo.titulo || "Torneo",
+                    fecha: torneo.fecha || "",
+                    club: torneo.club || torneo.clubNombre || clubNombre || clubId || "",
+                    clubId: torneo.clubId || clubId || "",
+                    cupo: torneo.cupo || torneo.cupos || "",
+                    inscriptos: Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [],
+                    visibilidad: torneo.visibilidad ?? torneo.publico ?? torneo.esPublico ?? torneo.isPublic ?? "Publico"
+                };
+            }
+
+            function reconstruirTorneosDesdeCache() {
+                const combinados = [];
+                torneosPorClubCache.forEach(lista => {
+                    if (Array.isArray(lista)) combinados.push(...lista);
+                });
+
+                torneosData = combinados.sort((a, b) => {
+                    const fa = `${a.fecha || ''} ${a.hora || ''}`;
+                    const fb = `${b.fecha || ''} ${b.hora || ''}`;
+                    return fa.localeCompare(fb);
+                });
+
+                renderizarTorneos();
+                renderizarBanner();
+            }
+
+            function sincronizarEscuchasTorneosPorClub(snapshotClubes) {
+                if (!firebaseAPI || !snapshotClubes?.docs) return;
+
+                const clubesActuales = new Set(snapshotClubes.docs.map(docSnap => docSnap.id));
+
+                // Quitar listeners de clubes eliminados.
+                [...unsubscribeTorneosPorClub.keys()].forEach(clubId => {
+                    if (clubesActuales.has(clubId)) return;
+                    try { unsubscribeTorneosPorClub.get(clubId)?.(); } catch(e) {}
+                    unsubscribeTorneosPorClub.delete(clubId);
+                    torneosPorClubCache.delete(clubId);
+                });
+
+                snapshotClubes.docs.forEach(docSnap => {
+                    const clubId = docSnap.id;
+                    if (unsubscribeTorneosPorClub.has(clubId)) return;
+
+                    const raiz = docSnap.data() || {};
+                    const datosClub = raiz.datosClub && typeof raiz.datosClub === "object"
+                        ? raiz.datosClub
+                        : {};
+                    const clubNombre = raiz.nombre || datosClub.nombre || raiz.clubId || datosClub.clubId || clubId;
+
+                    const unsubscribe = firebaseAPI.onSnapshot(
+                        firebaseAPI.collection(firebaseAPI.db, "clubs", clubId, "torneos"),
+                        snapshot => {
+                            const torneosClub = docsToArray(snapshot).map(t =>
+                                normalizarTorneoPublico(t, clubId, clubNombre)
+                            );
+                            torneosPorClubCache.set(clubId, torneosClub);
+                            reconstruirTorneosDesdeCache();
+                        },
+                        error => {
+                            // Un club sin permiso de lectura de torneos no debe bloquear toda la web.
+                            console.warn(`No se pudieron leer los torneos de ${clubNombre}:`, error);
+                            torneosPorClubCache.set(clubId, []);
+                            reconstruirTorneosDesdeCache();
+                        }
+                    );
+
+                    unsubscribeTorneosPorClub.set(clubId, unsubscribe);
+                });
+
+                reconstruirTorneosDesdeCache();
+            }
+
             function actualizarSelectorClubes() {
                 const select = document.getElementById("input-club-crear");
                 if (!select) return;
@@ -6141,7 +8053,8 @@ tr:hover td{background:#f9fafb}
             }
 
             function iniciarEscuchasFirebase() {
-                if (!firebaseAPI || unsubscribeFirebase.length || !usuarioActual) return;
+                if (!firebaseAPI || !usuarioActual) return;
+                if (unsubscribeFirebase.length || unsubscribeTorneosPorClub.size) return;
 
                 const unsubReservas = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
                     reservasCompartidasCache = docsToArray(snapshot);
@@ -6237,6 +8150,7 @@ tr:hover td{background:#f9fafb}
                     actualizarSelectorClubes();
                     renderizarClubes();
                     window.actualizarHorariosDisponibles();
+                    sincronizarEscuchasTorneosPorClub(snapshot);
                 };
 
                 const unsubClubes = firebaseAPI.onSnapshot(
@@ -6261,7 +8175,7 @@ tr:hover td{background:#f9fafb}
                             procesarSnapshotClubes(ultimoSnapshotClubes);
                         }
                     },
-                    (error) => logFirebaseError("lectura de configuración general", error)
+                    (error) => logFirebaseError("lectura de configuración general", error, {opcional:true})
                 );
 
                 const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
@@ -6315,31 +8229,21 @@ tr:hover td{background:#f9fafb}
                     renderizarRanking();
                 }, (error) => logFirebaseError("lectura de usuarios/ranking", error));
 
-                const unsubTorneos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "torneos"), (snapshot) => {
-                    torneosData = docsToArray(snapshot).map(t => ({
-                        ...t,
-                        nombre: t.nombre || t.titulo || "Torneo",
-                        fecha: t.fecha || "",
-                        club: t.club || t.clubNombre || "",
-                        cupo: t.cupo || t.cupos || "",
-                        inscriptos: Array.isArray(t.inscriptos) ? t.inscriptos : [],
-                        visibilidad: t.visibilidad ?? t.publico ?? t.esPublico ?? t.isPublic ?? "Publico"
-                    }));
-                    renderizarTorneos();
-                    renderizarBanner();
-                }, (error) => logFirebaseError("lectura de torneos", error));
 
                 const unsubProfesores = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "profesores"), (snapshot) => {
                     profesoresData = docsToArray(snapshot).map(p => ({
                         ...p,
                         nombre: p.nombre || p.displayName || "Profesor",
+                        uid: p.uid || p.id || "",
                         telefono: p.telefono || p.whatsapp || "",
                         clubes: Array.isArray(p.clubes) ? p.clubes : (p.club ? [p.club] : []),
                         categorias: Array.isArray(p.categorias) ? p.categorias : [],
-                        horarios: Array.isArray(p.horarios) ? p.horarios : []
+                        horarios: Array.isArray(p.horarios) ? p.horarios : [],
+                        modalidades: Array.isArray(p.modalidades) ? p.modalidades : [],
+                        clasesDisponibles: Array.isArray(p.clasesDisponibles) ? p.clasesDisponibles : []
                     }));
                     renderizarAcademia();
-                }, (error) => logFirebaseError("lectura de profesores", error));
+                }, (error) => logFirebaseError("lectura de profesores", error, {opcional:true}));
 
                 const unsubNotificaciones = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones"), (snapshot) => {
                     notificacionesData = docsToArray(snapshot).sort((a,b) => String(b.fecha || b.creadoEn || "").localeCompare(String(a.fecha || a.creadoEn || "")));
@@ -6358,6 +8262,7 @@ tr:hover td{background:#f9fafb}
                             .filter(s => (s.estado || "pendiente") === "pendiente");
                         renderizarSolicitudesAmistad();
                         renderizarResultadosBusquedaAmigos();
+                        actualizarResumenAmigos();
                     },
                     (error) => logFirebaseError("lectura de solicitudes de amistad", error)
                 );
@@ -6369,6 +8274,7 @@ tr:hover td{background:#f9fafb}
                             .filter(s => (s.estado || "pendiente") === "pendiente");
                         renderizarSolicitudesEnviadas();
                         renderizarResultadosBusquedaAmigos();
+                        actualizarResumenAmigos();
                     },
                     (error) => logFirebaseError("lectura de solicitudes de amistad enviadas", error)
                 );
@@ -6384,7 +8290,6 @@ tr:hover td{background:#f9fafb}
                     unsubConfiguracion,
                     unsubPartidos,
                     unsubUsuarios,
-                    unsubTorneos,
                     unsubProfesores,
                     unsubNotificaciones,
                     unsubAmigos,
@@ -7361,6 +9266,13 @@ tr:hover td{background:#f9fafb}
         window.addEventListener('error', event => {
             console.error('Error de aplicación:', event.error || event.message);
         });
-    </script>
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            configurarEstadoConexion();
+            instalarPWAListeners();
+            ejecutarAutochequeosUI();
+            actualizarNavegacionInferior('inicio');
+        });
+</script>
 </body>
 </html>
