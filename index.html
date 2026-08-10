@@ -2816,6 +2816,293 @@ img[data-club-image]{background:#e4e7ec}
 }
 </style>
 
+
+<style id="amigos-torneos-minimal-css">
+/* Amigos */
+.amigos-busqueda-fija{
+  margin:12px auto 12px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#fff;
+}
+.amigos-busqueda-fija label{
+  display:block;
+  margin-bottom:7px;
+  color:#101828;
+  font-size:.76rem;
+  font-weight:850;
+}
+.amigos-busqueda-fija .input-form{
+  width:min(100%,350px)!important;
+  min-height:44px!important;
+  margin:0!important;
+  padding:10px 12px!important;
+  border-radius:12px!important;
+}
+.amigos-busqueda-fija .resultados-busqueda-amigos{
+  width:min(100%,480px);
+  margin-top:8px;
+}
+.amigos-acordeon-simple>summary{
+  padding:13px 15px!important;
+  min-height:58px!important;
+}
+.amigos-acordeon-simple .amigos-chevron{
+  color:#667085;
+  font-size:1.35rem;
+  line-height:1;
+  transition:transform .16s ease;
+}
+.amigos-acordeon-simple[open] .amigos-chevron{
+  transform:rotate(90deg);
+}
+.amigos-acordeon-simple .amigos-acordeon-body{
+  padding:10px 12px 12px!important;
+}
+.amigos-acordeon-flecha,.amigos-contador{display:none!important}
+
+/* Torneos */
+.torneos-tabs{
+  width:min(100%,360px);
+  margin:0 auto 14px;
+  padding:4px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:#f9fafb;
+}
+.torneos-tabs button{
+  min-height:40px;
+  padding:8px 10px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#667085;
+  font-size:.76rem;
+  font-weight:850;
+  cursor:pointer;
+}
+.torneos-tabs button.activo{
+  background:#101828;
+  color:#fff;
+}
+.torneos-panel{display:none}
+.torneos-panel.activo{display:block}
+.torneos-panel-head{
+  margin-bottom:10px;
+  text-align:left;
+}
+.torneos-panel-head h4{
+  margin:0 0 3px;
+  color:#101828;
+  font-size:1rem;
+}
+.torneos-panel-head p{
+  margin:0;
+  color:#667085;
+  font-size:.76rem;
+  line-height:1.4;
+}
+.torneos-lista{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.torneo-card{
+  padding:14px;
+  border:1px solid #e4e7ec;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 3px 10px rgba(16,24,40,.035);
+}
+.torneo-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.torneo-card-title{
+  min-width:0;
+}
+.torneo-card-title strong{
+  display:block;
+  color:#101828;
+  font-size:.9rem;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.torneo-card-title span{
+  display:block;
+  margin-top:4px;
+  color:#667085;
+  font-size:.7rem;
+}
+.torneo-estado{
+  flex:none;
+  display:inline-flex;
+  min-height:26px;
+  padding:5px 8px;
+  align-items:center;
+  border:1px solid #d0d5dd;
+  border-radius:999px;
+  background:#f9fafb;
+  color:#475467;
+  font-size:.62rem;
+  font-weight:850;
+}
+.torneo-card-info{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:12px;
+}
+.torneo-card-info div{
+  padding:8px;
+  border-radius:10px;
+  background:#f9fafb;
+  text-align:center;
+}
+.torneo-card-info strong{
+  display:block;
+  color:#101828;
+  font-size:.75rem;
+}
+.torneo-card-info span{
+  display:block;
+  margin-top:2px;
+  color:#98a2b3;
+  font-size:.58rem;
+  font-weight:750;
+}
+.torneo-card-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+  padding-top:11px;
+  border-top:1px solid #f2f4f7;
+}
+.torneo-btn{
+  width:auto!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:7px 11px!important;
+  border-radius:10px!important;
+  border:1px solid #d0d5dd!important;
+  background:#fff!important;
+  color:#344054!important;
+  font-size:.7rem!important;
+  font-weight:850!important;
+  box-shadow:none!important;
+}
+.torneo-btn.primario{
+  border-color:#101828!important;
+  background:#101828!important;
+  color:#fff!important;
+}
+.torneo-btn.suave{
+  background:#f9fafb!important;
+}
+.torneo-inscripto{
+  display:inline-flex;
+  min-height:32px;
+  padding:6px 9px;
+  align-items:center;
+  border-radius:9px;
+  background:#ecfdf3;
+  color:#067647;
+  font-size:.7rem;
+  font-weight:850;
+}
+.torneo-card.destacado-invitacion{
+  border-color:#344054;
+  box-shadow:0 0 0 2px rgba(52,64,84,.08);
+}
+.torneo-historial-posicion{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:11px;
+  padding:10px 11px;
+  border-radius:11px;
+  background:#f9fafb;
+}
+.torneo-historial-posicion span{
+  color:#667085;
+  font-size:.7rem;
+}
+.torneo-historial-posicion strong{
+  color:#101828;
+  font-size:.84rem;
+}
+.modal-torneo-invitar{max-width:390px!important}
+.modal-torneo-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.modal-torneo-head h3{margin:3px 0 4px}
+.modal-torneo-head p{margin:0;color:#667085;font-size:.75rem}
+.modal-torneo-kicker{font-size:.58rem;font-weight:900;color:#667085;letter-spacing:.08em}
+.lista-amigos-invitar-torneo{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-height:340px;
+  overflow:auto;
+  margin-bottom:12px;
+}
+.torneo-amigo-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:9px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+.torneo-amigo-row-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.torneo-amigo-row-info img{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.torneo-amigo-row-info strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:.76rem;
+}
+.torneo-amigo-row-info small{
+  display:block;
+  margin-top:2px;
+  color:#98a2b3;
+  font-size:.62rem;
+}
+@media(max-width:420px){
+  .torneo-card-info{grid-template-columns:1fr 1fr 1fr}
+  .torneo-card-actions{justify-content:stretch}
+  .torneo-card-actions .torneo-btn{flex:1}
+}
+</style>
+
 </head>
 <body>
 
@@ -3264,11 +3551,34 @@ img[data-club-image]{background:#e4e7ec}
         <div id="vista-torneos" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('inicio')">⬅</button>
-                <h3 style="margin: 0;">🏅 Torneos</h3>
-                <div style="width: 30px;"></div>
+                <h3 style="margin:0;">Torneos</h3>
+                <div style="width:30px;"></div>
             </div>
-            <p style="color: var(--text-muted); font-size: 0.9em; text-align: center;">Torneos disponibles para inscripción:</p>
-            <div id="lista-torneos" class="scrollable" style="display: flex; flex-direction: column; gap: 10px;"></div>
+
+            <div class="torneos-tabs">
+                <button id="torneos-tab-activos" class="activo" onclick="cambiarVistaTorneos('activos')">Disponibles</button>
+                <button id="torneos-tab-historial" onclick="cambiarVistaTorneos('historial')">Historial</button>
+            </div>
+
+            <section id="torneos-panel-activos" class="torneos-panel activo">
+                <div class="torneos-panel-head">
+                    <div>
+                        <h4>Torneos disponibles</h4>
+                        <p>Inscribite y participá en los torneos activos del circuito.</p>
+                    </div>
+                </div>
+                <div id="lista-torneos" class="torneos-lista"></div>
+            </section>
+
+            <section id="torneos-panel-historial" class="torneos-panel">
+                <div class="torneos-panel-head">
+                    <div>
+                        <h4>Historial de torneos</h4>
+                        <p>Torneos finalizados en los que participaste.</p>
+                    </div>
+                </div>
+                <div id="lista-historial-torneos" class="torneos-lista"></div>
+            </section>
         </div>
 
         <!-- VISTA AMIGOS -->
@@ -3294,56 +3604,42 @@ img[data-club-image]{background:#e4e7ec}
                 </button>
             </div>
 
-            <details class="amigos-acordeon" open>
-                <summary>
-                    <span>Buscar personas</span>
-                    <span class="amigos-acordeon-flecha">⌄</span>
-                </summary>
-                <div class="amigos-acordeon-body">
-                    <input
-                        type="text"
-                        id="input-buscar-amigo"
-                        class="input-form"
-                        placeholder="Escribí un DNI o nombre"
-                        autocomplete="off"
-                        oninput="renderizarResultadosBusquedaAmigos()">
-                    <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
-                </div>
-            </details>
+            <section class="amigos-busqueda-fija">
+                <label for="input-buscar-amigo">Buscar personas</label>
+                <input
+                    type="text"
+                    id="input-buscar-amigo"
+                    class="input-form"
+                    placeholder="DNI o nombre"
+                    autocomplete="off"
+                    oninput="renderizarResultadosBusquedaAmigos()">
+                <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
+            </section>
 
-            <details class="amigos-acordeon" id="acordeon-solicitudes-recibidas">
+            <details class="amigos-acordeon amigos-acordeon-simple" id="acordeon-solicitudes-recibidas">
                 <summary>
                     <span>Solicitudes recibidas</span>
-                    <span class="amigos-summary-right">
-                        <span id="contador-solicitudes-amistad" class="amigos-contador">0</span>
-                        <span class="amigos-acordeon-flecha">⌄</span>
-                    </span>
+                    <span class="amigos-chevron">›</span>
                 </summary>
                 <div class="amigos-acordeon-body">
                     <div id="lista-solicitudes-amistad" class="amigos-lista"></div>
                 </div>
             </details>
 
-            <details class="amigos-acordeon" id="acordeon-solicitudes-enviadas">
+            <details class="amigos-acordeon amigos-acordeon-simple" id="acordeon-solicitudes-enviadas">
                 <summary>
                     <span>Solicitudes enviadas</span>
-                    <span class="amigos-summary-right">
-                        <span id="contador-solicitudes-enviadas" class="amigos-contador">0</span>
-                        <span class="amigos-acordeon-flecha">⌄</span>
-                    </span>
+                    <span class="amigos-chevron">›</span>
                 </summary>
                 <div class="amigos-acordeon-body">
                     <div id="lista-solicitudes-enviadas" class="amigos-lista"></div>
                 </div>
             </details>
 
-            <details class="amigos-acordeon" id="acordeon-mis-amigos" open>
+            <details class="amigos-acordeon amigos-acordeon-simple" id="acordeon-mis-amigos">
                 <summary>
                     <span>Mis amigos</span>
-                    <span class="amigos-summary-right">
-                        <span id="contador-amigos" class="amigos-contador">0</span>
-                        <span class="amigos-acordeon-flecha">⌄</span>
-                    </span>
+                    <span class="amigos-chevron">›</span>
                 </summary>
                 <div class="amigos-acordeon-body">
                     <div id="lista-amigos" class="amigos-lista"></div>
@@ -3446,6 +3742,22 @@ img[data-club-image]{background:#e4e7ec}
 
     <div id="offline-banner" class="offline-banner" hidden>Sin conexión · mostrando los últimos datos disponibles</div>
     <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- MODAL INVITAR AMIGO A TORNEO -->
+    <div id="modal-invitar-amigo-torneo" class="modal-overlay">
+        <div class="modal-content modal-torneo-invitar">
+            <div class="modal-torneo-head">
+                <div>
+                    <span class="modal-torneo-kicker">TORNEO</span>
+                    <h3>Invitar a un amigo</h3>
+                    <p id="modal-torneo-invitar-subtitulo">Elegí un amigo para enviarle una invitación.</p>
+                </div>
+                <button class="btn-cerrar-modal-x" onclick="cerrarModalInvitarAmigoTorneo()">×</button>
+            </div>
+            <div id="lista-amigos-invitar-torneo" class="lista-amigos-invitar-torneo"></div>
+            <button class="btn btn-cerrar" onclick="cerrarModalInvitarAmigoTorneo()">Cerrar</button>
+        </div>
+    </div>
 
     <!-- MODAL SELECCIONAR EQUIPO -->
     <div id="modal-seleccionar-equipo" class="modal-overlay">
@@ -3616,6 +3928,9 @@ img[data-club-image]{background:#e4e7ec}
         let rankingData = [];
         let partidosData = [];
         let torneosData = [];
+        let torneoInvitacionActualId = null;
+        let torneoDestacadoId = null;
+        let vistaTorneosActual = 'activos';
         let clasesUsuario = [];
         let profesoresData = [];
 
@@ -3714,7 +4029,8 @@ img[data-club-image]{background:#e4e7ec}
             container.innerHTML = notificacionesData.length
                 ? notificacionesData.map(n => {
                     const esInvitacionPartido = n.tipo === 'invitacion_partido';
-                    const accion = n.accion || (esInvitacionPartido ? 'unirse' : '');
+                    const esInvitacionTorneo = n.tipo === 'invitacion_torneo';
+                    const accion = n.accion || (esInvitacionPartido ? 'unirse' : (esInvitacionTorneo ? 'torneo' : ''));
                     const clickeable = Boolean(accion);
                     const idSeguro = String(n.id || '').replace(/'/g, "\\'");
                     const partidoSeguro = String(n.partidoId || '').replace(/'/g, "\\'");
@@ -6352,38 +6668,287 @@ img[data-club-image]{background:#e4e7ec}
             return ['publico', 'público', 'public', 'true', '1', 'si', 'sí'].includes(texto);
         }
 
-        function invitarAmigoATorneo(id) {
-            const torneo = torneosData.find(t => String(t.id) === String(id));
-            if (!torneo) return alert('No encontré ese torneo.');
-            const texto = `¡Te invito al torneo ${torneo.nombre} en ${torneo.club}, el ${torneo.fecha}! Inscribite desde Circuito Competitivo.`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+        function torneoEstaFinalizado(torneo) {
+            const estado = String(torneo?.estado || '').trim().toLowerCase();
+            return torneo?.finalizado === true ||
+                torneo?.terminado === true ||
+                torneo?.cerrado === true ||
+                ['finalizado','terminado','cerrado','jugado','completado'].includes(estado);
+        }
+
+        function usuarioInscriptoTorneo(torneo) {
+            const nombre = getNombreCompleto().trim().toLowerCase();
+            const uid = String(usuarioActual?.uid || '');
+            return (Array.isArray(torneo?.inscriptos) ? torneo.inscriptos : []).some(i => {
+                if (i && typeof i === 'object') {
+                    return String(i.uid || i.userId || '') === uid ||
+                        String(i.nombre || '').trim().toLowerCase() === nombre;
+                }
+                const texto = String(i || '');
+                return texto === uid || texto.toLowerCase().includes(nombre) || texto.includes(uid);
+            });
+        }
+
+        function usuarioFueInvitadoTorneo(torneo) {
+            const uid = String(usuarioActual?.uid || '');
+            const nombre = getNombreCompleto().trim().toLowerCase();
+            return (torneo?.invitacionesPendientes || []).some(inv =>
+                String(inv.uid || '') === uid ||
+                String(inv.nombre || '').trim().toLowerCase() === nombre
+            );
+        }
+
+        function posicionUsuarioTorneo(torneo) {
+            const uid = String(usuarioActual?.uid || '');
+            const nombre = getNombreCompleto().trim().toLowerCase();
+
+            const directos = [
+                torneo?.puestoPorUid?.[uid],
+                torneo?.posicionesPorUid?.[uid],
+                torneo?.clasificacionPorUid?.[uid],
+                torneo?.puestoUsuario
+            ];
+            for (const valor of directos) {
+                const n = Number(valor);
+                if (Number.isFinite(n) && n > 0) return n;
+            }
+
+            const listas = [
+                torneo?.posiciones,
+                torneo?.clasificacion,
+                torneo?.tablaFinal,
+                torneo?.resultadosFinales,
+                torneo?.rankingFinal
+            ];
+
+            for (const lista of listas) {
+                if (!Array.isArray(lista)) continue;
+                const index = lista.findIndex(item => {
+                    if (typeof item === 'string') {
+                        return item.trim().toLowerCase() === nombre || item.includes(uid);
+                    }
+                    return String(item?.uid || item?.userId || '') === uid ||
+                        String(item?.nombre || item?.jugador || '').trim().toLowerCase() === nombre;
+                });
+                if (index >= 0) {
+                    const item = lista[index];
+                    const puesto = Number(item?.puesto || item?.posicion || item?.posición || index + 1);
+                    return Number.isFinite(puesto) ? puesto : index + 1;
+                }
+            }
+
+            return null;
+        }
+
+        function textoPosicionTorneo(posicion) {
+            if (!posicion) return 'Posición pendiente';
+            if (posicion === 1) return '1° puesto';
+            if (posicion === 2) return '2° puesto';
+            if (posicion === 3) return '3° puesto';
+            return `${posicion}° puesto`;
+        }
+
+        function cambiarVistaTorneos(vista) {
+            vistaTorneosActual = vista === 'historial' ? 'historial' : 'activos';
+            document.getElementById('torneos-tab-activos')?.classList.toggle('activo', vistaTorneosActual === 'activos');
+            document.getElementById('torneos-tab-historial')?.classList.toggle('activo', vistaTorneosActual === 'historial');
+            document.getElementById('torneos-panel-activos')?.classList.toggle('activo', vistaTorneosActual === 'activos');
+            document.getElementById('torneos-panel-historial')?.classList.toggle('activo', vistaTorneosActual === 'historial');
+            renderizarTorneos();
+        }
+
+        function tarjetaTorneoActivo(torneo) {
+            const inscriptos = Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [];
+            const inscripto = usuarioInscriptoTorneo(torneo);
+            const invitado = usuarioFueInvitadoTorneo(torneo);
+            const idSeguro = escaparAtributoJs(torneo.id);
+            const cupoTexto = torneo.cupo ? `${inscriptos.length}/${torneo.cupo}` : `${inscriptos.length}`;
+            const sinCupo = Boolean(torneo.cupo && inscriptos.length >= Number(torneo.cupo));
+
+            return `
+                <article class="torneo-card ${String(torneoDestacadoId) === String(torneo.id) ? 'destacado-invitacion' : ''}" data-torneo-id="${escaparHtmlClub(torneo.id)}">
+                    <div class="torneo-card-head">
+                        <div class="torneo-card-title">
+                            <strong>${escaparHtmlClub(torneo.nombre)}</strong>
+                            <span>${escaparHtmlClub(torneo.club)}${torneo.fecha ? ` · ${escaparHtmlClub(torneo.fecha)}` : ''}${torneo.hora ? ` · ${escaparHtmlClub(torneo.hora)}` : ''}</span>
+                        </div>
+                        <span class="torneo-estado">${invitado && !inscripto ? 'Te invitaron' : 'Abierto'}</span>
+                    </div>
+
+                    <div class="torneo-card-info">
+                        <div><strong>${cupoTexto}</strong><span>Inscriptos</span></div>
+                        <div><strong>${torneo.cupo || '∞'}</strong><span>Cupo</span></div>
+                        <div><strong>${escaparHtmlClub(torneo.modalidad || torneo.categoria || 'Circuito')}</strong><span>Modalidad</span></div>
+                    </div>
+
+                    <div class="torneo-card-actions">
+                        ${inscripto
+                            ? `<span class="torneo-inscripto">Inscripto</span>
+                               <button class="btn torneo-btn suave" onclick="abrirModalInvitarAmigoTorneo('${idSeguro}')">Invitar amigo</button>`
+                            : `<button class="btn torneo-btn primario" ${sinCupo ? 'disabled' : ''} onclick="ejecutarConBoton(this, () => inscribirseTorneo('${idSeguro}'), 'Inscribiendo...')">${sinCupo ? 'Sin cupos' : 'Inscribirse'}</button>`}
+                    </div>
+                </article>`;
+        }
+
+        function tarjetaTorneoHistorial(torneo) {
+            const posicion = posicionUsuarioTorneo(torneo);
+            return `
+                <article class="torneo-card">
+                    <div class="torneo-card-head">
+                        <div class="torneo-card-title">
+                            <strong>${escaparHtmlClub(torneo.nombre)}</strong>
+                            <span>${escaparHtmlClub(torneo.club)}${torneo.fecha ? ` · ${escaparHtmlClub(torneo.fecha)}` : ''}</span>
+                        </div>
+                        <span class="torneo-estado">Finalizado</span>
+                    </div>
+                    <div class="torneo-historial-posicion">
+                        <span>Tu resultado</span>
+                        <strong>${textoPosicionTorneo(posicion)}</strong>
+                    </div>
+                </article>`;
         }
 
         function renderizarTorneos() {
-            const torneosPublicos = torneosData
+            const activos = torneosData
                 .filter(torneoEsPublico)
-                .sort((a, b) => String(a.fecha || '').localeCompare(String(b.fecha || '')));
+                .filter(t => !torneoEstaFinalizado(t))
+                .sort((a,b) => `${a.fecha || ''} ${a.hora || ''}`.localeCompare(`${b.fecha || ''} ${b.hora || ''}`));
 
-            document.getElementById('lista-torneos').innerHTML = torneosPublicos.length ? torneosPublicos.map(t => {
-                const inscriptos = Array.isArray(t.inscriptos) ? t.inscriptos : [];
-                const inscripto = inscriptos.some(i => String(i).includes(getNombreCompleto()) || String(i) === String(usuarioActual?.uid));
-                const idSeguro = String(t.id).replace(/'/g, "\\'");
-                const btnInscripcion = inscripto
-                    ? `<span style="color:var(--success); font-size:0.85em; font-weight:bold;">✅ Inscripto</span>`
-                    : `<button class="btn btn-primario" style="padding:7px 10px; font-size:0.85em; width:auto;" onclick="inscribirseTorneo('${idSeguro}')">Inscribirse</button>`;
-                return `
-                <div class="tarjeta-item">
-                    <div style="color:var(--warning); font-weight:bold; font-size:1.1em;">🏆 ${t.nombre}</div>
-                    <div style="color:var(--text-light); font-size:0.85em; margin-bottom:8px;">📅 ${t.fecha} | 📍 ${t.club}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--border-base); padding-top:10px; margin-top:5px; gap:8px;">
-                        <small style="color:var(--text-muted);">Cupos: ${inscriptos.length}/${t.cupo || 'Sin límite'}</small>
-                        <div style="display:flex; align-items:center; gap:7px;">
-                            ${btnInscripcion}
-                            <button class="btn btn-secundario" style="padding:7px 10px; font-size:0.85em; width:auto;" onclick="invitarAmigoATorneo('${idSeguro}')">💬 Invitar</button>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('') : '<p style="color:var(--text-muted); text-align:center;">No hay torneos públicos disponibles por el momento.</p>';
+            const historial = torneosData
+                .filter(torneoEsPublico)
+                .filter(t => torneoEstaFinalizado(t) && usuarioInscriptoTorneo(t))
+                .sort((a,b) => `${b.fecha || ''} ${b.hora || ''}`.localeCompare(`${a.fecha || ''} ${a.hora || ''}`));
+
+            const listaActivos = document.getElementById('lista-torneos');
+            const listaHistorial = document.getElementById('lista-historial-torneos');
+
+            if (listaActivos) {
+                listaActivos.innerHTML = activos.length
+                    ? activos.map(tarjetaTorneoActivo).join('')
+                    : htmlEstadoVacio('🏆','No hay torneos abiertos','Cuando un club publique un torneo disponible, aparecerá acá.');
+            }
+
+            if (listaHistorial) {
+                listaHistorial.innerHTML = historial.length
+                    ? historial.map(tarjetaTorneoHistorial).join('')
+                    : htmlEstadoVacio('🏁','Todavía no tenés historial','Los torneos finalizados en los que participaste aparecerán acá.');
+            }
+
+            if (torneoDestacadoId) {
+                setTimeout(() => {
+                    document.querySelector(`[data-torneo-id="${CSS.escape(String(torneoDestacadoId))}"]`)?.scrollIntoView({
+                        behavior:'smooth',block:'center'
+                    });
+                },50);
+            }
+        }
+
+        function abrirModalInvitarAmigoTorneo(id) {
+            const torneo = torneosData.find(t => String(t.id) === String(id));
+            if (!torneo) return mostrarAviso('No se encontró el torneo.', 'error');
+
+            torneoInvitacionActualId = torneo.id;
+            const subtitulo = document.getElementById('modal-torneo-invitar-subtitulo');
+            if (subtitulo) subtitulo.textContent = `${torneo.nombre} · ${torneo.club}`;
+
+            const inscriptos = Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [];
+            const invitaciones = Array.isArray(torneo.invitacionesPendientes) ? torneo.invitacionesPendientes : [];
+
+            const disponibles = amigosData.filter(amigo => {
+                const uid = String(amigo.uid || amigo.id || '');
+                const nombre = String(amigo.nombre || '').trim().toLowerCase();
+                const yaInscripto = inscriptos.some(i => {
+                    if (i && typeof i === 'object') {
+                        return String(i.uid || '') === uid || String(i.nombre || '').trim().toLowerCase() === nombre;
+                    }
+                    return String(i || '').includes(uid) || String(i || '').toLowerCase().includes(nombre);
+                });
+                const yaInvitado = invitaciones.some(inv =>
+                    String(inv.uid || '') === uid ||
+                    String(inv.nombre || '').trim().toLowerCase() === nombre
+                );
+                return !yaInscripto && !yaInvitado;
+            });
+
+            const lista = document.getElementById('lista-amigos-invitar-torneo');
+            if (lista) {
+                lista.innerHTML = disponibles.length
+                    ? disponibles.map(amigo => {
+                        const uid = escaparAtributoJs(amigo.uid || amigo.id);
+                        return `<div class="torneo-amigo-row">
+                            <div class="torneo-amigo-row-info">
+                                <img src="${obtenerAvatarUrl(amigo.nombre || 'Jugador')}" alt="">
+                                <div><strong>${escaparHtmlClub(amigo.nombre || 'Jugador')}</strong><small>Amigo</small></div>
+                            </div>
+                            <button class="btn torneo-btn" onclick="ejecutarConBoton(this, () => confirmarInvitacionAmigoTorneo('${uid}'), 'Enviando...')">Invitar</button>
+                        </div>`;
+                    }).join('')
+                    : `<p class="amigos-vacio">No tenés amigos disponibles para invitar a este torneo.</p>`;
+            }
+
+            document.getElementById('modal-invitar-amigo-torneo').style.display = 'flex';
+        }
+
+        function cerrarModalInvitarAmigoTorneo() {
+            torneoInvitacionActualId = null;
+            const modal = document.getElementById('modal-invitar-amigo-torneo');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function confirmarInvitacionAmigoTorneo(amigoUid) {
+            const api = window.firebaseAPI;
+            const torneo = torneosData.find(t => String(t.id) === String(torneoInvitacionActualId));
+            const amigo = amigosData.find(a => String(a.uid || a.id) === String(amigoUid));
+            if (!api || !torneo || !amigo) return mostrarAviso('No se pudo enviar la invitación.', 'error');
+
+            const ruta = String(torneo._firestorePath || '').split('/').filter(Boolean);
+            if (!ruta.length) return mostrarAviso('No se encontró la ruta del torneo.', 'error');
+
+            const invitacion = {
+                id:`${torneo.id}-${amigoUid}-${Date.now()}`,
+                uid:String(amigoUid),
+                nombre:amigo.nombre || 'Jugador',
+                invitadoPorUid:String(usuarioActual?.uid || ''),
+                invitadoPor:getNombreCompleto(),
+                estado:'pendiente',
+                creadaEnCliente:new Date().toISOString()
+            };
+
+            const refTorneo = api.doc(api.db,...ruta);
+            await api.runTransaction(api.db, async transaction => {
+                const snap = await transaction.get(refTorneo);
+                if (!snap.exists()) throw new Error('El torneo ya no existe.');
+                const data = snap.data() || {};
+                if (torneoEstaFinalizado(data)) throw new Error('El torneo ya fue finalizado.');
+
+                const invitaciones = Array.isArray(data.invitacionesPendientes) ? data.invitacionesPendientes : [];
+                const yaExiste = invitaciones.some(inv => String(inv.uid || '') === String(amigoUid));
+                if (!yaExiste) {
+                    transaction.set(refTorneo,{
+                        invitacionesPendientes:[...invitaciones,invitacion],
+                        actualizadoEn:api.serverTimestamp()
+                    },{merge:true});
+                }
+            });
+
+            const notifId = `invitacion-torneo-${torneo.id}-${amigoUid}`;
+            await api.setDoc(
+                api.doc(api.db,'users',String(amigoUid),'notificaciones',notifId),
+                {
+                    id:notifId,
+                    tipo:'invitacion_torneo',
+                    accion:'torneo',
+                    titulo:'Invitación a un torneo',
+                    texto:`Has sido invitado por ${getNombreCompleto()} al torneo ${torneo.nombre} en ${torneo.club}${torneo.fecha ? `, el ${torneo.fecha}` : ''}.`,
+                    torneoId:String(torneo.id),
+                    leida:false,
+                    creadoEn:api.serverTimestamp()
+                },
+                {merge:true}
+            );
+
+            cerrarModalInvitarAmigoTorneo();
+            mostrarAviso(`Invitación enviada a ${amigo.nombre}.`,'success');
         }
 
         function normalizarTextoBusqueda(valor) {
@@ -6454,10 +7019,7 @@ img[data-club-image]{background:#e4e7ec}
 
         function renderizarSolicitudesAmistad() {
             const lista = document.getElementById('lista-solicitudes-amistad');
-            const contador = document.getElementById('contador-solicitudes-amistad');
-            if (!lista || !contador) return;
-
-            contador.textContent = solicitudesAmistadData.length;
+            if (!lista) return;
             lista.innerHTML = solicitudesAmistadData.length
                 ? solicitudesAmistadData.map(s => `
                     <div class="amigo-persona-row">
@@ -6478,10 +7040,7 @@ img[data-club-image]{background:#e4e7ec}
 
         function renderizarSolicitudesEnviadas() {
             const lista = document.getElementById('lista-solicitudes-enviadas');
-            const contador = document.getElementById('contador-solicitudes-enviadas');
-            if (!lista || !contador) return;
-
-            contador.textContent = solicitudesAmistadEnviadasData.length;
+            if (!lista) return;
             lista.innerHTML = solicitudesAmistadEnviadasData.length
                 ? solicitudesAmistadEnviadasData.map(s => `
                     <div class="amigo-persona-row">
@@ -6502,10 +7061,7 @@ img[data-club-image]{background:#e4e7ec}
 
         function renderizarAmigos() {
             const lista = document.getElementById('lista-amigos');
-            const contador = document.getElementById('contador-amigos');
-            if (!lista || !contador) return;
-
-            contador.textContent = amigosData.length;
+            if (!lista) return;
             lista.innerHTML = amigosData.length
                 ? amigosData.map(a => `
                     <div class="amigo-persona-row">
@@ -7969,11 +8525,15 @@ img[data-club-image]{background:#e4e7ec}
                     ...torneo,
                     nombre: torneo.nombre || torneo.titulo || "Torneo",
                     fecha: torneo.fecha || "",
+                    hora: torneo.hora || torneo.horario || "",
                     club: torneo.club || torneo.clubNombre || clubNombre || clubId || "",
                     clubId: torneo.clubId || clubId || "",
                     cupo: torneo.cupo || torneo.cupos || "",
                     inscriptos: Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [],
-                    visibilidad: torneo.visibilidad ?? torneo.publico ?? torneo.esPublico ?? torneo.isPublic ?? "Publico"
+                    invitacionesPendientes: Array.isArray(torneo.invitacionesPendientes) ? torneo.invitacionesPendientes : [],
+                    visibilidad: torneo.visibilidad ?? torneo.publico ?? torneo.esPublico ?? torneo.isPublic ?? "Publico",
+                    estado: torneo.estado || (torneo.finalizado || torneo.terminado ? "Finalizado" : "Abierto"),
+                    finalizado: torneo.finalizado === true || torneo.terminado === true || torneo.cerrado === true
                 };
             }
 
@@ -9007,6 +9567,13 @@ img[data-club-image]{background:#e4e7ec}
                     }, 80);
                 }
 
+                if (accion === "torneo" || notif?.tipo === "invitacion_torneo") {
+                    torneoDestacadoId = String(notif?.torneoId || '');
+                    cambiarVistaPrincipal("torneos");
+                    cambiarVistaTorneos("activos");
+                    renderizarTorneos();
+                }
+
                 renderizarNotificaciones();
             };
 
@@ -9216,22 +9783,60 @@ img[data-club-image]{background:#e4e7ec}
             };;
 
             window.inscribirseTorneo = async function(id) {
-                if (!firebaseAPI || !usuarioActual) return alert("Iniciá sesión para inscribirte.");
+                const api = window.firebaseAPI || firebaseAPI;
+                if (!api || !usuarioActual) return mostrarAviso('Iniciá sesión para inscribirte.','error');
+
                 const torneo = torneosData.find(t => String(t.id) === String(id));
-                if (!torneo) return alert("No encontré ese torneo en la base de datos.");
+                if (!torneo) return mostrarAviso('No se encontró ese torneo.','error');
+                if (torneoEstaFinalizado(torneo)) return mostrarAviso('Este torneo ya finalizó.','warning');
+                if (usuarioInscriptoTorneo(torneo)) return mostrarAviso('Ya estás inscripto.','warning');
 
-                const inscriptos = Array.isArray(torneo.inscriptos) ? torneo.inscriptos : [];
-                const yaInscripto = inscriptos.some(i => String(i).includes(getNombreCompleto()) || String(i) === String(usuarioActual.uid));
-                if (yaInscripto) return alert("Ya estás inscripto.");
+                const ruta = String(torneo._firestorePath || '').split('/').filter(Boolean);
+                if (!ruta.length) return mostrarAviso('No se encontró la ruta del torneo.','error');
+                const ref = api.doc(api.db,...ruta);
 
-                if (torneo.cupo && inscriptos.length >= Number(torneo.cupo)) return alert("El torneo no tiene cupos disponibles.");
+                await api.runTransaction(api.db, async transaction => {
+                    const snap = await transaction.get(ref);
+                    if (!snap.exists()) throw new Error('El torneo ya no existe.');
 
-                const nuevoValor = `${getNombreCompleto()}|${usuarioActual.uid}`;
-                const rutaTorneo = torneo._firestorePath || `torneos/${String(id)}`;
-                await firebaseAPI.updateDoc(firebaseAPI.doc(firebaseAPI.db, ...rutaTorneo.split("/")), {
-                    inscriptos: firebaseAPI.arrayUnion(nuevoValor),
-                    actualizadoEn: firebaseAPI.serverTimestamp()
-                }).catch(error => logFirebaseError("inscripción a torneo", error));
+                    const data = snap.data() || {};
+                    if (torneoEstaFinalizado(data)) throw new Error('Este torneo ya finalizó.');
+
+                    const inscriptos = Array.isArray(data.inscriptos) ? data.inscriptos : [];
+                    const uid = String(usuarioActual.uid);
+                    const nombre = getNombreCompleto();
+                    const ya = inscriptos.some(i => {
+                        if (i && typeof i === 'object') {
+                            return String(i.uid || '') === uid ||
+                                String(i.nombre || '').trim().toLowerCase() === nombre.trim().toLowerCase();
+                        }
+                        const txt = String(i || '');
+                        return txt === uid || txt.includes(uid) || txt.toLowerCase().includes(nombre.trim().toLowerCase());
+                    });
+
+                    if (ya) throw new Error('Ya estás inscripto.');
+                    if (data.cupo && inscriptos.length >= Number(data.cupo)) throw new Error('El torneo no tiene cupos disponibles.');
+
+                    const nuevoValor = `${nombre}|${uid}`;
+                    const invitaciones = Array.isArray(data.invitacionesPendientes) ? data.invitacionesPendientes : [];
+                    const invitacionesRestantes = invitaciones.filter(inv =>
+                        String(inv.uid || '') !== uid &&
+                        String(inv.nombre || '').trim().toLowerCase() !== nombre.trim().toLowerCase()
+                    );
+
+                    transaction.set(ref,{
+                        inscriptos:[...inscriptos,nuevoValor],
+                        invitacionesPendientes:invitacionesRestantes,
+                        actualizadoEn:api.serverTimestamp()
+                    },{merge:true});
+                });
+
+                mostrarAviso('Inscripción confirmada.','success');
+
+                setTimeout(() => {
+                    const actualizado = torneosData.find(t => String(t.id) === String(id));
+                    if (actualizado) abrirModalInvitarAmigoTorneo(String(id));
+                },180);
             };
 
             window.enviarDenuncia = async function() {
