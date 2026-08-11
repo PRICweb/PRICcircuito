@@ -4907,10 +4907,46 @@ window.CIRCUITO_SINGLE_FILE = true;
             });
         }
 
+
+        // --- PROTECCIÓN GENERAL DE INTERFAZ ---
+        function reportarErrorUI(contexto, error, mostrar = true) {
+            console.error(`[Circuito UI] ${contexto}:`, error);
+            if (mostrar && typeof mostrarAviso === 'function') {
+                mostrarAviso('No se pudo completar esa acción. Intentá nuevamente.', 'error');
+            }
+        }
+
+        function ejecutarSeguroUI(contexto, funcion, opciones = {}) {
+            try {
+                const resultado = funcion();
+                if (resultado && typeof resultado.then === 'function') {
+                    return resultado.catch(error => {
+                        reportarErrorUI(contexto, error, opciones.mostrar !== false);
+                        return null;
+                    });
+                }
+                return resultado;
+            } catch(error) {
+                reportarErrorUI(contexto, error, opciones.mostrar !== false);
+                return null;
+            }
+        }
+
+        window.addEventListener('error', event => {
+            console.error('[Circuito] Error no controlado:', event.error || event.message);
+        });
+
+        window.addEventListener('unhandledrejection', event => {
+            console.error('[Circuito] Promise rechazada:', event.reason);
+        });
+
         // --- SISTEMA DE NAVEGACIÓN ---
         function cambiarVistaPrincipal(vista) {
             const destino = document.getElementById(`vista-${vista}`);
-            if (!destino) return;
+            if (!destino) {
+                reportarErrorUI(`vista inexistente: ${vista}`, new Error(`No existe vista-${vista}`), false);
+                return;
+            }
 
             if (!navegacionDesdePopstate && historialNavegacionPreparado && vista !== vistaPrincipalActual) {
                 try {
@@ -4919,30 +4955,53 @@ window.CIRCUITO_SINGLE_FILE = true;
             }
 
             vistaPrincipalActual = vista;
-            document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => el.style.display = 'none');
+
+            document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => {
+                el.style.display = 'none';
+            });
+
             destino.style.display = 'block';
             window.scrollTo(0, 0);
-            if (vista === 'inicio') { renderizarNotificaciones(); renderizarBanner(); }
-            else if (vista === 'notificaciones') renderizarNotificaciones();
-            else if (vista === 'ranking') renderizarRanking();
-            else if (vista === 'partidos') {
-                renderizarMisPartidos();
-                renderizarPartidosAbiertos();
-                actualizarContadoresPartidos();
-                inicializarSwipePartidos();
-            }
-            else if (vista === 'partido-detalle') renderizarDetallePartido();
-            else if (vista === 'buscar') renderizarBusquedaGlobal();
-            else if (vista === 'torneos') renderizarTorneos();
 
-            actualizarNavegacionInferior(vista);
-            if (vista === 'perfil') actualizarPerfilResumen();
-            if (vista === 'inicio') renderizarHomePrioridad();
-            else if (vista === 'amigos') renderizarAmigos();
-            else if (vista === 'clubes') renderizarClubes();
-            else if (vista === 'perfil') cargarDatosPerfilEnFormulario();
-            else if (vista === 'academia') renderizarAcademia();
+            // Render específico aislado. Un error en una vista no rompe la navegación.
+            if (vista === 'inicio') {
+                ejecutarSeguroUI('Notificaciones Inicio', () => renderizarNotificaciones(), {mostrar:false});
+                ejecutarSeguroUI('Banner Inicio', () => renderizarBanner(), {mostrar:false});
+                ejecutarSeguroUI('Prioridad Inicio', () => renderizarHomePrioridad(), {mostrar:false});
+                ejecutarSeguroUI('Patrocinadores Inicio', () => renderizarPatrocinadores(), {mostrar:false});
+                if (typeof renderizarActividadHome === 'function') {
+                    ejecutarSeguroUI('Actividad Inicio', () => renderizarActividadHome(), {mostrar:false});
+                }
+            } else if (vista === 'notificaciones') {
+                ejecutarSeguroUI('Notificaciones', () => renderizarNotificaciones(), {mostrar:false});
+            } else if (vista === 'ranking') {
+                ejecutarSeguroUI('Ranking', () => renderizarRanking(), {mostrar:false});
+            } else if (vista === 'partidos') {
+                ejecutarSeguroUI('Mis Partidos', () => renderizarMisPartidos(), {mostrar:false});
+                ejecutarSeguroUI('Partidos Abiertos', () => renderizarPartidosAbiertos(), {mostrar:false});
+                ejecutarSeguroUI('Contadores Partidos', () => actualizarContadoresPartidos(), {mostrar:false});
+                ejecutarSeguroUI('Swipe Partidos', () => inicializarSwipePartidos(), {mostrar:false});
+            } else if (vista === 'partido-detalle') {
+                ejecutarSeguroUI('Detalle Partido', () => renderizarDetallePartido(), {mostrar:false});
+            } else if (vista === 'buscar') {
+                ejecutarSeguroUI('Búsqueda', () => renderizarBusquedaGlobal(), {mostrar:false});
+            } else if (vista === 'torneos') {
+                ejecutarSeguroUI('Torneos', () => renderizarTorneos(), {mostrar:false});
+            } else if (vista === 'amigos') {
+                ejecutarSeguroUI('Amigos', () => renderizarAmigos(), {mostrar:false});
+            } else if (vista === 'clubes') {
+                ejecutarSeguroUI('Clubes', () => renderizarClubes(), {mostrar:false});
+            } else if (vista === 'perfil') {
+                ejecutarSeguroUI('Perfil', () => cargarDatosPerfilEnFormulario(), {mostrar:false});
+                ejecutarSeguroUI('Resumen Perfil', () => actualizarPerfilResumen(), {mostrar:false});
+            } else if (vista === 'academia') {
+                ejecutarSeguroUI('Academia', () => renderizarAcademia(), {mostrar:false});
+            }
+
+            ejecutarSeguroUI('Navegación inferior', () => actualizarNavegacionInferior(vista), {mostrar:false});
         }
+
+        window.cambiarVistaPrincipal = cambiarVistaPrincipal;
 
         function cerrarModales() {
             const confirmacionFinal = document.getElementById('modal-confirmacion-final-resultado');
@@ -5177,16 +5236,27 @@ window.CIRCUITO_SINGLE_FILE = true;
 
 
         function renderizarTodo() {
-            renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
-            renderizarMisPartidos(); renderizarPartidosAbiertos(); renderizarTorneos();
-            renderizarAmigos(); renderizarClubes(); renderizarAcademia(); renderizarPatrocinadores();
-            actualizarContadoresPartidos();
-            actualizarResumenAmigos();
-            actualizarModoProfesorUI();
-            actualizarPerfilResumen();
-            renderizarHomePrioridad();
-            actualizarChipsFiltrosUnirse();
-            
+            const tareas = [
+                ['Perfil', () => cargarDatosPerfilEnFormulario()],
+                ['Banner', () => renderizarBanner()],
+                ['Prioridad Inicio', () => renderizarHomePrioridad()],
+                ['Ranking', () => renderizarRanking()],
+                ['Partidos abiertos', () => renderizarPartidosAbiertos()],
+                ['Mis partidos', () => renderizarMisPartidos()],
+                ['Contadores Partidos', () => actualizarContadoresPartidos()],
+                ['Torneos', () => renderizarTorneos()],
+                ['Notificaciones', () => renderizarNotificaciones()],
+                ['Amigos', () => renderizarAmigos()],
+                ['Clubes', () => renderizarClubes()],
+                ['Academia', () => renderizarAcademia()],
+                ['Patrocinadores', () => renderizarPatrocinadores()],
+                ['Rol Academia', () => actualizarBotonAcademiaSegunRol()],
+                ['Filtros Partidos', () => actualizarChipsFiltrosUnirse()]
+            ];
+
+            tareas.forEach(([nombre, tarea]) => {
+                ejecutarSeguroUI(nombre, tarea, {mostrar:false});
+            });
         }
 
         function escaparAtributoJs(valor) {
@@ -8601,7 +8671,12 @@ window.CIRCUITO_SINGLE_FILE = true;
                 // Para lecturas principales se informa en consola y la aplicación sigue funcionando.
                 // Solo inicialización/autenticación pueden mostrar un aviso visible.
                 if (contexto === 'inicialización') {
-                    alert('No se pudo iniciar la conexión con Firebase. Revisá la configuración del proyecto y las reglas de Firestore.');
+                    const mensaje = 'No se pudo iniciar la conexión con Firebase. Revisá tu conexión e intentá nuevamente.';
+                    console.error(mensaje);
+                    try {
+                        setAuthMensaje(mensaje);
+                        mostrarPantallaAuth();
+                    } catch(e) {}
                 }
             }
 
@@ -8641,47 +8716,51 @@ window.CIRCUITO_SINGLE_FILE = true;
                             return;
                         }
 
-                        // Durante la validación no mostramos ni login ni aplicación,
-                        // evitando flashes y rebotes visuales.
                         ocultarPantallasDuranteValidacion();
                         usuarioActual = user;
 
+                        let plataforma = 'circuito';
+
+                        // Validamos el perfil, pero un fallo temporal de Firestore
+                        // no destruye una sesión Firebase válida.
                         try {
-                            const plataforma = await cargarOCrearPerfilUsuario(user);
-
-                            if (plataforma !== 'circuito') {
-                                const mensaje = mensajePlataformaIncorrecta(plataforma);
-
-                                usuarioActual = null;
-                                detenerEscuchasFirebase();
-
-                                // Guardamos el mensaje para mostrarlo después del cambio
-                                // de estado de autenticación generado por signOut().
-                                sessionStorage.setItem('circuito-auth-mensaje', mensaje);
-                                await firebaseAPI.signOut(firebaseAPI.auth);
-                                return;
-                            }
-
-                            mostrarAppAutenticada();
-                            iniciarEscuchasFirebase();
-                            iniciarControlAutomaticoPartidosCompetitivos();
-                            renderizarTodo();
-                            window.actualizarHorariosDisponibles();
-                            window.scrollTo(0, 0);
+                            plataforma = await cargarOCrearPerfilUsuario(user);
                         } catch(error) {
-                            console.error('Error validando acceso al Circuito:', error);
-                            detenerEscuchasFirebase();
-
-                            // No cerramos una sesión válida por un fallo temporal de Firestore.
-                            // El usuario puede reintentar sin tener que autenticarse otra vez.
-                            usuarioActual = user;
-                            mostrarPantallaAuth();
-                            setAuthMensaje(
-                                error?.code === 'permission-denied'
-                                    ? 'No se pudo leer tu perfil. Revisá los permisos de Firestore.'
-                                    : 'No se pudo cargar tu perfil. Revisá la conexión e intentá nuevamente.'
-                            );
+                            console.error('No se pudo cargar el perfil completo:', error);
+                            plataforma = 'circuito';
                         }
+
+                        if (plataforma !== 'circuito') {
+                            const mensaje = mensajePlataformaIncorrecta(plataforma);
+                            usuarioActual = null;
+                            detenerEscuchasFirebase();
+                            sessionStorage.setItem('circuito-auth-mensaje', mensaje);
+
+                            try {
+                                await firebaseAPI.signOut(firebaseAPI.auth);
+                            } catch(error) {
+                                console.error('Error cerrando sesión:', error);
+                                mostrarPantallaAuth();
+                                setAuthMensaje(mensaje);
+                            }
+                            return;
+                        }
+
+                        // Desde acá la sesión está aceptada. Cualquier fallo posterior
+                        // se aísla por módulo y nunca devuelve automáticamente al login.
+                        mostrarAppAutenticada();
+                        setAuthMensaje('');
+
+                        ejecutarSeguroUI('Listeners Firebase', () => iniciarEscuchasFirebase(), {mostrar:false});
+                        ejecutarSeguroUI('Control Partidos', () => iniciarControlAutomaticoPartidosCompetitivos(), {mostrar:false});
+                        ejecutarSeguroUI('Render General', () => renderizarTodo(), {mostrar:false});
+                        ejecutarSeguroUI('Horarios', () => window.actualizarHorariosDisponibles(), {mostrar:false});
+
+                        if (typeof verificarOnboarding === 'function') {
+                            ejecutarSeguroUI('Onboarding', () => verificarOnboarding(), {mostrar:false});
+                        }
+
+                        window.scrollTo(0, 0);
                     });
                 } catch(error) {
                     logFirebaseError("inicialización", error);
@@ -10397,10 +10476,12 @@ window.CIRCUITO_SINGLE_FILE = true;
     actualizarAccionesContextuales();
   };
 
-  const oldCambiar = window.cambiarVistaPrincipal;
+  const oldCambiarCircuito = window.cambiarVistaPrincipal;
   window.cambiarVistaPrincipal = function(vista){
-    oldCambiar(vista);
-    if (vista === 'perfil') renderizarPerfilCompetitivoExtra();
+    oldCambiarCircuito(vista);
+    if (vista === 'perfil' && typeof renderizarPerfilCompetitivoExtra === 'function') {
+      ejecutarSeguroUI('Perfil competitivo', () => renderizarPerfilCompetitivoExtra(), {mostrar:false});
+    }
   };
 })();
 
