@@ -4975,6 +4975,7 @@ window.CIRCUITO_SINGLE_FILE = true;
             } else if (vista === 'notificaciones') {
                 ejecutarSeguroUI('Notificaciones', () => renderizarNotificaciones(), {mostrar:false});
             } else if (vista === 'ranking') {
+                ejecutarSeguroUI('Carga Ranking', () => cargarRankingBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Ranking', () => renderizarRanking(), {mostrar:false});
             } else if (vista === 'partidos') {
                 ejecutarSeguroUI('Mis Partidos', () => renderizarMisPartidos(), {mostrar:false});
@@ -4986,8 +4987,10 @@ window.CIRCUITO_SINGLE_FILE = true;
             } else if (vista === 'buscar') {
                 ejecutarSeguroUI('Búsqueda', () => renderizarBusquedaGlobal(), {mostrar:false});
             } else if (vista === 'torneos') {
+                ejecutarSeguroUI('Carga Torneos', () => cargarTorneosBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Torneos', () => renderizarTorneos(), {mostrar:false});
             } else if (vista === 'amigos') {
+                ejecutarSeguroUI('Usuarios para Amigos', () => cargarRankingBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Amigos', () => renderizarAmigos(), {mostrar:false});
             } else if (vista === 'clubes') {
                 ejecutarSeguroUI('Clubes', () => renderizarClubes(), {mostrar:false});
@@ -4995,6 +4998,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 ejecutarSeguroUI('Perfil', () => cargarDatosPerfilEnFormulario(), {mostrar:false});
                 ejecutarSeguroUI('Resumen Perfil', () => actualizarPerfilResumen(), {mostrar:false});
             } else if (vista === 'academia') {
+                ejecutarSeguroUI('Carga Profesores', () => cargarProfesoresBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Academia', () => renderizarAcademia(), {mostrar:false});
             }
 
@@ -5240,20 +5244,19 @@ window.CIRCUITO_SINGLE_FILE = true;
                 ['Perfil', () => cargarDatosPerfilEnFormulario()],
                 ['Banner', () => renderizarBanner()],
                 ['Prioridad Inicio', () => renderizarHomePrioridad()],
-                ['Ranking', () => renderizarRanking()],
                 ['Partidos abiertos', () => renderizarPartidosAbiertos()],
                 ['Mis partidos', () => renderizarMisPartidos()],
                 ['Contadores Partidos', () => actualizarContadoresPartidos()],
-                ['Torneos', () => renderizarTorneos()],
                 ['Notificaciones', () => renderizarNotificaciones()],
                 ['Amigos', () => renderizarAmigos()],
                 ['Clubes', () => renderizarClubes()],
-                ['Academia', () => renderizarAcademia()],
                 ['Patrocinadores', () => renderizarPatrocinadores()],
                 ['Rol Academia', () => actualizarBotonAcademiaSegunRol()],
                 ['Filtros Partidos', () => actualizarChipsFiltrosUnirse()]
             ];
 
+            // Ranking, profesores y torneos NO se cargan acá.
+            // Se solicitan solamente cuando el usuario abre esas vistas.
             tareas.forEach(([nombre, tarea]) => {
                 ejecutarSeguroUI(nombre, tarea, {mostrar:false});
             });
@@ -6412,8 +6415,6 @@ window.CIRCUITO_SINGLE_FILE = true;
 
         window.salirDePartidoPendiente = salirDePartidoPendiente;
 
-        window.salirDePartidoPendiente = salirDePartidoPendiente;
-
         async function cancelarInvitacionPartido(partidoId, slot) {
             const claveOperacion = `cancelar-invitacion-${partidoId}-${slot}`;
             return ejecutarOperacionPartido(claveOperacion, async () => {
@@ -6752,6 +6753,29 @@ window.CIRCUITO_SINGLE_FILE = true;
             });
         }
 
+
+        function usuarioResponsableTransicionPartido(partido) {
+            const uidActual = String(usuarioActual?.uid || '');
+            if (!uidActual) return false;
+
+            // El creador procesa el vencimiento. Si falta creadorUid, se utiliza
+            // de forma determinista el UID menor entre participantes.
+            if (partido?.creadorUid) {
+                return String(partido.creadorUid) === uidActual;
+            }
+
+            const uids = Array.isArray(partido?.jugadoresUid)
+                ? partido.jugadoresUid.filter(Boolean).map(String).sort()
+                : [];
+
+            if (uids.length) return uids[0] === uidActual;
+
+            // Compatibilidad con documentos muy antiguos sin UIDs:
+            // únicamente el primer jugador procesa la transición.
+            return String(partido?.j1 || '').trim().toLowerCase()
+                === getNombreCompleto().trim().toLowerCase();
+        }
+
         async function procesarEstadosPartidosCompetitivos() {
             const api = window.firebaseAPI;
             if (!api || !partidosData.length) return;
@@ -6760,9 +6784,12 @@ window.CIRCUITO_SINGLE_FILE = true;
             const candidatos = partidosData.filter(p => {
                 if (String(p.tipo || 'Competitivo').toLowerCase() !== 'competitivo') return false;
                 if (!['Buscando Rival','Partido Confirmado'].includes(p.estado)) return false;
+                if (!usuarioResponsableTransicionPartido(p)) return false;
                 const inicio = fechaHoraPartidoMs(p);
                 return Number.isFinite(inicio) && ahora >= inicio;
             });
+
+            if (!candidatos.length) return;
 
             for (const local of candidatos) {
                 const clave = `vencimiento-${local.id}`;
@@ -6843,9 +6870,16 @@ window.CIRCUITO_SINGLE_FILE = true;
         }
 
         function iniciarControlAutomaticoPartidosCompetitivos() {
-            clearInterval(controlPartidosInterval);
+            if (controlPartidosInterval) {
+                clearInterval(controlPartidosInterval);
+                controlPartidosInterval = null;
+            }
             procesarEstadosPartidosCompetitivos();
-            controlPartidosInterval = setInterval(procesarEstadosPartidosCompetitivos, 15 * 1000);
+            controlPartidosInterval = setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    procesarEstadosPartidosCompetitivos();
+                }
+            }, 60 * 1000);
         }
 
         function renderizarMisPartidos() {
@@ -8638,6 +8672,38 @@ window.CIRCUITO_SINGLE_FILE = true;
             let configuracionGeneralPorClub = {};
             let ultimoSnapshotClubes = null;
             let procesarSnapshotClubes = null;
+
+            // Optimización Firestore: los datos amplios dejan de mantenerse todos
+            // en tiempo real. Se cargan bajo demanda y se reutilizan durante la sesión.
+            const cacheFirebaseTTL = {
+                clubes: 15 * 60 * 1000,
+                ranking: 5 * 60 * 1000,
+                profesores: 10 * 60 * 1000,
+                torneos: 5 * 60 * 1000,
+                patrocinadores: 30 * 60 * 1000
+            };
+            const cacheFirebaseTiempo = {
+                clubes: 0,
+                ranking: 0,
+                profesores: 0,
+                torneos: 0,
+                patrocinadores: 0
+            };
+            const cargasFirebaseEnCurso = new Map();
+
+            function cacheFirebaseVigente(tipo) {
+                const ttl = cacheFirebaseTTL[tipo] || 0;
+                return ttl > 0 && Date.now() - (cacheFirebaseTiempo[tipo] || 0) < ttl;
+            }
+
+            async function ejecutarCargaFirebaseUnica(clave, tarea) {
+                if (cargasFirebaseEnCurso.has(clave)) return cargasFirebaseEnCurso.get(clave);
+                const promesa = Promise.resolve()
+                    .then(tarea)
+                    .finally(() => cargasFirebaseEnCurso.delete(clave));
+                cargasFirebaseEnCurso.set(clave, promesa);
+                return promesa;
+            }
             let authModoActual = "login";
             let unsubscribeFirebase = [];
             const unsubscribeTorneosPorClub = new Map();
@@ -9155,268 +9221,309 @@ window.CIRCUITO_SINGLE_FILE = true;
                 actualizarModalidadesUnirse();
             }
 
-            function iniciarEscuchasFirebase() {
-                if (!firebaseAPI || !usuarioActual) return;
-                if (unsubscribeFirebase.length || unsubscribeTorneosPorClub.size) return;
 
-                const unsubReservas = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "reservas"), (snapshot) => {
-                    reservasCompartidasCache = docsToArray(snapshot);
-                    window.renderizarPantallas();
-                }, (error) => logFirebaseError("lectura de reservas", error));
+            async function cargarClubesBajoDemanda(force = false) {
+                if (!firebaseAPI) return;
+                if (!force && cacheFirebaseVigente('clubes') && clubesData.length) return;
 
-                procesarSnapshotClubes = (snapshot) => {
-                    ultimoSnapshotClubes = snapshot;
-                    configsClubesCache = {};
-                    clubesData = snapshot.docs.map(docSnap => {
-                        const raiz = docSnap.data() || {};
-                        // El panel administrador guarda la configuración operativa dentro de datosClub.
-                        // Se combinan los campos raíz con datosClub, dando prioridad a datosClub.
-                        const datosClub = raiz.datosClub && typeof raiz.datosClub === "object"
-                            ? raiz.datosClub
-                            : {};
-                        const configGeneral = configuracionGeneralPorClub[docSnap.id] || {};
-                        const data = { ...raiz, ...datosClub, ...configGeneral };
-                        const nombre = raiz.nombre || data.nombre || raiz.clubId || data.clubId || docSnap.id;
-                        const leerNumero = (...valores) => {
-                            for (const valor of valores) {
-                                const n = Number(valor);
-                                if (Number.isFinite(n) && n >= 0) return n;
-                            }
-                            return 0;
-                        };
-                        const normalizarTexto = v => String(v || "").trim().toLowerCase();
-                        const listaCanchas = Array.isArray(data.canchas)
-                            ? data.canchas
-                            : Array.isArray(data.listaCanchas)
-                                ? data.listaCanchas
-                                : Array.isArray(data.courts)
-                                    ? data.courts
-                                    : [];
-                        const contarLista = tipo => listaCanchas.filter(cancha => {
-                            const texto = normalizarTexto(cancha?.modalidad || cancha?.tipo || cancha?.categoria || cancha?.nombre || cancha);
-                            if (tipo === "Indoor") return texto.includes("indoor") || texto.includes("cubierta") || texto.includes("techada");
-                            if (tipo === "Outdoor") return texto.includes("outdoor") || texto.includes("descubierta") || texto.includes("aire libre");
-                            return texto.includes("tenis") || texto.includes("tennis");
-                        }).length;
-                        const modalidadesObj = data.modalidades && typeof data.modalidades === "object" && !Array.isArray(data.modalidades) ? data.modalidades : {};
-                        const modalidadesLista = Array.isArray(data.modalidades) ? data.modalidades.map(normalizarTexto) : [];
-                        const canchasIndoor = leerNumero(data.canchasIndoor, data.indoor, data.cantidadIndoor, data.canchas_indoor, modalidadesObj.Indoor, modalidadesObj.indoor) || contarLista("Indoor") || (modalidadesLista.includes("indoor") ? 1 : 0);
-                        const canchasOutdoor = leerNumero(data.canchasOutdoor, data.outdoor, data.cantidadOutdoor, data.canchas_outdoor, modalidadesObj.Outdoor, modalidadesObj.outdoor) || contarLista("Outdoor") || (modalidadesLista.includes("outdoor") ? 1 : 0);
-                        const canchasTenis = leerNumero(data.canchasTenis, data.tenis, data.cantidadTenis, data.canchas_tenis, modalidadesObj.Tenis, modalidadesObj.tenis) || contarLista("Tenis") || (modalidadesLista.some(m => m === "tenis" || m === "tennis") ? 1 : 0);
-                        const totalCanchas = canchasIndoor + canchasOutdoor + canchasTenis;
-                        const apertura = data.primerTurno || data.apertura || data.horaApertura || data.horarioApertura || data.desde || "08:00";
-                        const cierre = data.ultimoTurno || data.cierre || data.horaCierre || data.horarioCierre || data.hasta || "23:30";
+                return ejecutarCargaFirebaseUnica('clubes', async () => {
+                    const snapshot = await firebaseAPI.getDocs(
+                        firebaseAPI.collection(firebaseAPI.db, 'clubs')
+                    );
+                    if (typeof procesarSnapshotClubes === 'function') {
+                        procesarSnapshotClubes(snapshot);
+                    }
+                    cacheFirebaseTiempo.clubes = Date.now();
+                });
+            }
 
-                        const club = {
-                            id: docSnap.id,
-                            ...data,
-                            nombre,
-                            ubicacion: data.ubicacion || data.direccion || "",
-                            contacto: data.contacto || data.whatsapp || data.telefono || "",
-                            fotoClub: data.fotoClub || "",
-                            imagen: data.fotoClub || data.imagen || data.imagenUrl || data.foto || data.imagenClub || data.portada || data.logo || data.logoUrl || "",
-                            apertura,
-                            cierre,
-                            canchasIndoor,
-                            canchasOutdoor,
-                            canchasTenis,
-                            canchas: data.canchasTexto || (totalCanchas ? `${totalCanchas}` : "")
-                        };
+            async function cargarPatrocinadoresBajoDemanda(force = false) {
+                if (!firebaseAPI) return;
+                if (!force && cacheFirebaseVigente('patrocinadores') && patrocinadoresData.length) return;
 
-                        configsClubesCache[nombre] = {
-                            ...raiz,
-                            ...data,
-                            clubId: docSnap.id,
-                            nombre,
-                            primerTurno: apertura,
-                            ultimoTurno: cierre,
-                            horarios: data.horarios || data.horariosPorDia || data.horarioSemanal || null,
-                            duracionDefault: Number(data.duracionDefault ?? data.duracionGlobal ?? data.duracionTurno ?? data.duracionReserva) || DURACION_PARTIDO_DEFAULT,
-                            duracionIndoor: Number(data.duracionIndoor) || Number(data.duracionDefault ?? data.duracionGlobal) || 90,
-                            duracionOutdoor: Number(data.duracionOutdoor) || Number(data.duracionDefault ?? data.duracionGlobal) || 90,
-                            duracionTenis: Number(data.duracionTenis) || 60,
-                            diasAbiertos: Array.isArray(data.diasAbiertos)
-                                ? data.diasAbiertos.map(Number).filter(Number.isFinite)
-                                : [0,1,2,3,4,5,6],
-                            canchasIndoor,
-                            canchasOutdoor,
-                            canchasTenis,
-                            nombresIndoor: Array.isArray(data.nombresIndoor) ? data.nombresIndoor : [],
-                            nombresOutdoor: Array.isArray(data.nombresOutdoor) ? data.nombresOutdoor : [],
-                            nombresTenis: Array.isArray(data.nombresTenis) ? data.nombresTenis : [],
-                            nombresCanchas: Array.isArray(data.nombresCanchas) ? data.nombresCanchas : []
-                        };
-                        configsClubesCache[docSnap.id] = configsClubesCache[nombre];
-                        return club;
-                    });
+                return ejecutarCargaFirebaseUnica('patrocinadores', async () => {
+                    const docSnap = await firebaseAPI.getDoc(
+                        firebaseAPI.doc(firebaseAPI.db, 'configuracion', 'inicio')
+                    );
+                    const datos = docSnap.exists() ? docSnap.data()?.patrocinadores : null;
+                    patrocinadoresData = Array.isArray(datos)
+                        ? normalizarPatrocinadores(datos)
+                        : normalizarPatrocinadores([]);
+                    cacheFirebaseTiempo.patrocinadores = Date.now();
+                    renderizarPatrocinadores();
+                });
+            }
 
-                    actualizarSelectorClubes();
-                    renderizarClubes();
-                    window.actualizarHorariosDisponibles();
-                    sincronizarEscuchasTorneosPorClub(snapshot);
-                };
+            async function cargarRankingBajoDemanda(force = false) {
+                if (!firebaseAPI) return;
+                if (!force && cacheFirebaseVigente('ranking') && rankingData.length) return;
 
-                const unsubClubes = firebaseAPI.onSnapshot(
-                    firebaseAPI.collection(firebaseAPI.db, "clubs"),
-                    procesarSnapshotClubes,
-                    (error) => logFirebaseError("lectura de clubes", error)
-                );
+                return ejecutarCargaFirebaseUnica('ranking', async () => {
+                    // Acotado a los usuarios con más puntos. Esto evita descargar
+                    // indefinidamente toda la base cada vez que cambia un perfil.
+                    let snapshot;
+                    try {
+                        snapshot = await firebaseAPI.getDocs(
+                            firebaseAPI.query(
+                                firebaseAPI.collection(firebaseAPI.db, 'users'),
+                                firebaseAPI.orderBy('puntos', 'desc'),
+                                firebaseAPI.limit(250)
+                            )
+                        );
+                    } catch(error) {
+                        // Compatibilidad con bases antiguas sin índice/valor puntos.
+                        snapshot = await firebaseAPI.getDocs(
+                            firebaseAPI.query(
+                                firebaseAPI.collection(firebaseAPI.db, 'users'),
+                                firebaseAPI.limit(250)
+                            )
+                        );
+                    }
 
-
-                const unsubPatrocinadores = firebaseAPI.onSnapshot(
-                    firebaseAPI.doc(firebaseAPI.db, 'configuracion', 'inicio'),
-                    (docSnap) => {
-                        const datosServidor = docSnap.exists() ? docSnap.data()?.patrocinadores : null;
-                        if (Array.isArray(datosServidor)) {
-                            patrocinadoresData = normalizarPatrocinadores(datosServidor);
-                        } else if (!patrocinadoresData.length) {
-                            patrocinadoresData = normalizarPatrocinadores([]);
-                        }
-                        renderizarPatrocinadores();
-
-                        // No pisar lo que el administrador está escribiendo.
-                    },
-                    (error) => logFirebaseError('lectura de patrocinadores', error, {opcional:true})
-                );
-
-                const unsubConfiguracion = firebaseAPI.onSnapshot(
-                    firebaseAPI.collectionGroup(firebaseAPI.db, "configuracion"),
-                    (snapshot) => {
-                        const nuevoMapa = {};
-                        snapshot.docs.forEach(docSnap => {
-                            if (docSnap.id !== "general") return;
-                            const partes = String(docSnap.ref.path || "").split("/").filter(Boolean);
-                            const indiceClubs = partes.indexOf("clubs");
-                            const clubId = indiceClubs >= 0 ? partes[indiceClubs + 1] : "";
-                            if (clubId) nuevoMapa[clubId] = docSnap.data() || {};
-                        });
-                        configuracionGeneralPorClub = nuevoMapa;
-                        if (ultimoSnapshotClubes && typeof procesarSnapshotClubes === "function") {
-                            procesarSnapshotClubes(ultimoSnapshotClubes);
-                        }
-                    },
-                    (error) => logFirebaseError("lectura de configuración general", error, {opcional:true})
-                );
-
-                const unsubPartidos = firebaseAPI.onSnapshot(firebaseAPI.collectionGroup(firebaseAPI.db, "partidos"), (snapshot) => {
-                    const todosPartidos = docsToArray(snapshot).map(p => ({
-                        ...p,
-                        j1: p.j1 || p.jugador1 || p.creador || "Libre",
-                        j2: p.j2 || p.jugador2 || "Libre",
-                        j3: p.j3 || p.jugador3 || "Libre",
-                        j4: p.j4 || p.jugador4 || "Libre",
-                        estado: p.estado || "Buscando Rival",
-                        tipo: "Competitivo",
-                        categoria: ["Masculino","Femenino","Mixto"].includes(p.categoria) ? p.categoria : "Masculino",
-                        visibilidad: "Publico",
-                        modalidad: p.modalidad || "Outdoor"
-                    }));
-
-                    // La aplicación queda exclusivamente competitiva.
-                    // Los documentos casuales heredados se eliminan de Firestore y no se muestran.
-                    const casualesLegados = docsToArray(snapshot).filter(p => String(p.tipo || '').toLowerCase() === 'casual');
-                    casualesLegados.forEach(p => {
-                        if (!p._firestorePath) return;
-                        const partes = String(p._firestorePath).split('/').filter(Boolean);
-                        firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, ...partes)).catch(() => {});
-                        const reservaId = p.reservaId || p.reserva?.id || '';
-                        if (reservaId && partes[1]) {
-                            firebaseAPI.deleteDoc(firebaseAPI.doc(firebaseAPI.db, 'clubs', partes[1], 'reservas', String(reservaId))).catch(() => {});
-                        }
-                    });
-
-                    partidosData = todosPartidos.filter(p => String(p.tipo || '').toLowerCase() !== 'casual');
-                    renderizarTodo();
-                    window.actualizarHorariosDisponibles();
-                    procesarEstadosPartidosCompetitivos();
-                }, (error) => logFirebaseError("lectura de partidos", error));
-
-                const unsubUsuarios = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users"), (snapshot) => {
                     rankingData = snapshot.docs.map(docSnap => {
-                        const data = docSnap.data();
-                        const nombre = `${data.nombre || ""} ${data.apellido || ""}`.trim() || data.displayName || data.email || "Jugador";
+                        const data = docSnap.data() || {};
+                        const nombre = `${data.nombre || ''} ${data.apellido || ''}`.trim()
+                            || data.displayName || data.email || 'Jugador';
                         return {
-                            id: docSnap.id,
-                            uid: docSnap.id,
+                            id:docSnap.id,
+                            uid:docSnap.id,
                             ...data,
                             nombre,
-                            dni: data.dni || "",
-                            modalidad: data.modalidad || data.genero || "Masculino",
-                            puntos: Number(data.puntos) || 0,
-                            pj: Number(data.pj) || Number(data.partidosJugados) || 0
+                            dni:data.dni || '',
+                            modalidad:data.modalidad || data.genero || 'Masculino',
+                            puntos:Number(data.puntos) || 0,
+                            pj:Number(data.pj) || Number(data.partidosJugados) || 0
                         };
                     });
+                    cacheFirebaseTiempo.ranking = Date.now();
                     renderizarRanking();
-                }, (error) => logFirebaseError("lectura de usuarios/ranking", error));
+                    renderizarResultadosBusquedaAmigos();
+                });
+            }
 
+            async function cargarProfesoresBajoDemanda(force = false) {
+                if (!firebaseAPI) return;
+                if (!force && cacheFirebaseVigente('profesores') && profesoresData.length) return;
 
-                const unsubProfesores = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "profesores"), (snapshot) => {
+                return ejecutarCargaFirebaseUnica('profesores', async () => {
+                    const snapshot = await firebaseAPI.getDocs(
+                        firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db, 'profesores'),
+                            firebaseAPI.limit(100)
+                        )
+                    );
                     profesoresData = docsToArray(snapshot).map(p => ({
                         ...p,
-                        nombre: p.nombre || p.displayName || "Profesor",
-                        uid: p.uid || p.id || "",
-                        telefono: p.telefono || p.whatsapp || "",
-                        clubes: Array.isArray(p.clubes) ? p.clubes : (p.club ? [p.club] : []),
-                        categorias: Array.isArray(p.categorias) ? p.categorias : [],
-                        horarios: Array.isArray(p.horarios) ? p.horarios : [],
-                        modalidades: Array.isArray(p.modalidades) ? p.modalidades : [],
-                        clasesDisponibles: Array.isArray(p.clasesDisponibles) ? p.clasesDisponibles : []
+                        nombre:p.nombre || p.displayName || 'Profesor',
+                        uid:p.uid || p.id || '',
+                        telefono:p.telefono || p.whatsapp || '',
+                        clubes:Array.isArray(p.clubes) ? p.clubes : (p.club ? [p.club] : []),
+                        categorias:Array.isArray(p.categorias) ? p.categorias : [],
+                        horarios:Array.isArray(p.horarios) ? p.horarios : [],
+                        modalidades:Array.isArray(p.modalidades) ? p.modalidades : [],
+                        clasesDisponibles:Array.isArray(p.clasesDisponibles) ? p.clasesDisponibles : []
                     }));
+                    cacheFirebaseTiempo.profesores = Date.now();
                     renderizarAcademia();
-                }, (error) => logFirebaseError("lectura de profesores", error, {opcional:true}));
+                });
+            }
 
-                const unsubNotificaciones = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "notificaciones"), (snapshot) => {
-                    notificacionesData = docsToArray(snapshot).sort((a,b) => String(b.fecha || b.creadoEn || "").localeCompare(String(a.fecha || a.creadoEn || "")));
-                    renderizarNotificaciones();
-                }, (error) => logFirebaseError("lectura de notificaciones", error));
+            async function cargarTorneosBajoDemanda(force = false) {
+                if (!firebaseAPI) return;
+                if (!force && cacheFirebaseVigente('torneos') && torneosData.length) return;
 
-                const unsubAmigos = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "amigos"), (snapshot) => {
-                    amigosData = docsToArray(snapshot);
-                    renderizarAmigos();
-                }, (error) => logFirebaseError("lectura de amigos", error));
+                return ejecutarCargaFirebaseUnica('torneos', async () => {
+                    let snapshot;
+                    try {
+                        snapshot = await firebaseAPI.getDocs(
+                            firebaseAPI.query(
+                                firebaseAPI.collectionGroup(firebaseAPI.db, 'torneos'),
+                                firebaseAPI.limit(100)
+                            )
+                        );
+                    } catch(error) {
+                        console.warn('No se pudieron cargar los torneos:', error);
+                        torneosData = [];
+                        renderizarTorneos();
+                        return;
+                    }
+
+                    torneosData = snapshot.docs.map(docSnap => {
+                        const data = docSnap.data() || {};
+                        const partes = String(docSnap.ref.path || '').split('/').filter(Boolean);
+                        const clubId = partes[0] === 'clubs' ? partes[1] : '';
+                        const club = clubesData.find(c => String(c.id) === String(clubId));
+                        return normalizarTorneoPublico(
+                            {id:docSnap.id,_firestorePath:docSnap.ref.path,...data},
+                            clubId,
+                            club?.nombre || data.club || clubId
+                        );
+                    });
+                    cacheFirebaseTiempo.torneos = Date.now();
+                    renderizarTorneos();
+                });
+            }
+
+            window.cargarRankingBajoDemanda = cargarRankingBajoDemanda;
+            window.cargarProfesoresBajoDemanda = cargarProfesoresBajoDemanda;
+            window.cargarTorneosBajoDemanda = cargarTorneosBajoDemanda;
+            window.cargarClubesBajoDemanda = cargarClubesBajoDemanda;
+
+            function iniciarEscuchasFirebase() {
+                if (!firebaseAPI || !usuarioActual) return;
+                if (unsubscribeFirebase.length) return;
+
+                // Datos relativamente estáticos: una sola lectura por sesión/TTL.
+                cargarClubesBajoDemanda().catch(error =>
+                    logFirebaseError('lectura de clubes', error, {opcional:true})
+                );
+                cargarPatrocinadoresBajoDemanda().catch(error =>
+                    logFirebaseError('lectura de patrocinadores', error, {opcional:true})
+                );
+
+                const hoy = new Date();
+                hoy.setDate(hoy.getDate() - 1);
+                const desdeFecha = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+
+                // RESERVAS: antes se escuchaba collectionGroup('reservas') completo.
+                // Ahora solo se mantienen hasta 200 reservas recientes/futuras.
+                let reservasQuery = firebaseAPI.query(
+                    firebaseAPI.collectionGroup(firebaseAPI.db, 'reservas'),
+                    firebaseAPI.where('fecha', '>=', desdeFecha),
+                    firebaseAPI.orderBy('fecha', 'asc'),
+                    firebaseAPI.limit(200)
+                );
+
+                const unsubReservas = firebaseAPI.onSnapshot(
+                    reservasQuery,
+                    snapshot => {
+                        reservasCompartidasCache = docsToArray(snapshot);
+                        // Solo disponibilidad, no toda la interfaz.
+                        ejecutarSeguroUI('Horarios tras reservas', () => window.actualizarHorariosDisponibles(), {mostrar:false});
+                    },
+                    error => {
+                        console.warn('Consulta acotada de reservas no disponible:', error);
+                        reservasCompartidasCache = [];
+                    }
+                );
+
+                // PARTIDOS: snapshot acotado a los 150 documentos con fecha más reciente.
+                // Esto mantiene sincronización entre jugadores sin descargar el histórico completo.
+                let partidosQuery = firebaseAPI.query(
+                    firebaseAPI.collectionGroup(firebaseAPI.db, 'partidos'),
+                    firebaseAPI.orderBy('fecha', 'desc'),
+                    firebaseAPI.limit(150)
+                );
+
+                const unsubPartidos = firebaseAPI.onSnapshot(
+                    partidosQuery,
+                    snapshot => {
+                        const todos = docsToArray(snapshot).map(p => ({
+                            ...p,
+                            j1:p.j1 || p.jugador1 || p.creador || 'Libre',
+                            j2:p.j2 || p.jugador2 || 'Libre',
+                            j3:p.j3 || p.jugador3 || 'Libre',
+                            j4:p.j4 || p.jugador4 || 'Libre',
+                            estado:p.estado || 'Buscando Rival',
+                            tipo:'Competitivo',
+                            categoria:['Masculino','Femenino','Mixto'].includes(p.categoria) ? p.categoria : 'Masculino',
+                            visibilidad:'Publico',
+                            modalidad:p.modalidad || 'Outdoor'
+                        }));
+
+                        // Documentos casuales históricos se ignoran, pero NO se borran
+                        // automáticamente desde cada cliente.
+                        partidosData = todos.filter(p =>
+                            String(p.tipo || 'Competitivo').toLowerCase() !== 'casual'
+                        );
+
+                        ejecutarSeguroUI('Mis partidos realtime', () => renderizarMisPartidos(), {mostrar:false});
+                        ejecutarSeguroUI('Partidos abiertos realtime', () => renderizarPartidosAbiertos(), {mostrar:false});
+                        ejecutarSeguroUI('Banner realtime', () => renderizarBanner(), {mostrar:false});
+                        ejecutarSeguroUI('Contadores realtime', () => actualizarContadoresPartidos(), {mostrar:false});
+                        ejecutarSeguroUI('Horarios partidos realtime', () => window.actualizarHorariosDisponibles(), {mostrar:false});
+                        procesarEstadosPartidosCompetitivos();
+                    },
+                    error => logFirebaseError('lectura acotada de partidos', error)
+                );
+
+                // Datos personales sí permanecen en tiempo real: son colecciones pequeñas
+                // y el usuario espera cambios inmediatos.
+                const unsubNotificaciones = firebaseAPI.onSnapshot(
+                    firebaseAPI.query(
+                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'notificaciones'),
+                        firebaseAPI.limit(60)
+                    ),
+                    snapshot => {
+                        notificacionesData = docsToArray(snapshot)
+                            .sort((a,b) => String(b.fecha || b.creadoEn || '').localeCompare(String(a.fecha || a.creadoEn || '')));
+                        renderizarNotificaciones();
+                    },
+                    error => logFirebaseError('lectura de notificaciones', error)
+                );
+
+                const unsubAmigos = firebaseAPI.onSnapshot(
+                    firebaseAPI.query(
+                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'amigos'),
+                        firebaseAPI.limit(200)
+                    ),
+                    snapshot => {
+                        amigosData = docsToArray(snapshot);
+                        renderizarAmigos();
+                    },
+                    error => logFirebaseError('lectura de amigos', error)
+                );
 
                 const unsubSolicitudesAmistad = firebaseAPI.onSnapshot(
-                    firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistad"),
-                    (snapshot) => {
+                    firebaseAPI.query(
+                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'solicitudesAmistad'),
+                        firebaseAPI.limit(50)
+                    ),
+                    snapshot => {
                         solicitudesAmistadData = docsToArray(snapshot)
-                            .filter(s => (s.estado || "pendiente") === "pendiente");
+                            .filter(s => (s.estado || 'pendiente') === 'pendiente');
                         renderizarSolicitudesAmistad();
                         renderizarResultadosBusquedaAmigos();
                         actualizarResumenAmigos();
                     },
-                    (error) => logFirebaseError("lectura de solicitudes de amistad", error)
+                    error => logFirebaseError('lectura de solicitudes de amistad', error)
                 );
 
                 const unsubSolicitudesAmistadEnviadas = firebaseAPI.onSnapshot(
-                    firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "solicitudesAmistadEnviadas"),
-                    (snapshot) => {
+                    firebaseAPI.query(
+                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'solicitudesAmistadEnviadas'),
+                        firebaseAPI.limit(50)
+                    ),
+                    snapshot => {
                         solicitudesAmistadEnviadasData = docsToArray(snapshot)
-                            .filter(s => (s.estado || "pendiente") === "pendiente");
+                            .filter(s => (s.estado || 'pendiente') === 'pendiente');
                         renderizarSolicitudesEnviadas();
                         renderizarResultadosBusquedaAmigos();
                         actualizarResumenAmigos();
                     },
-                    (error) => logFirebaseError("lectura de solicitudes de amistad enviadas", error)
+                    error => logFirebaseError('lectura de solicitudes de amistad enviadas', error)
                 );
 
-                const unsubClases = firebaseAPI.onSnapshot(firebaseAPI.collection(firebaseAPI.db, "users", usuarioActual.uid, "clases"), (snapshot) => {
-                    clasesUsuario = docsToArray(snapshot);
-                    renderizarMisClases();
-                }, (error) => logFirebaseError("lectura de clases", error));
+                const unsubClases = firebaseAPI.onSnapshot(
+                    firebaseAPI.query(
+                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'clases'),
+                        firebaseAPI.limit(50)
+                    ),
+                    snapshot => {
+                        clasesUsuario = docsToArray(snapshot);
+                        renderizarMisClases();
+                    },
+                    error => logFirebaseError('lectura de clases', error)
+                );
 
                 unsubscribeFirebase = [
                     unsubReservas,
-                    unsubClubes,
-                    unsubConfiguracion,
                     unsubPartidos,
-                    unsubUsuarios,
-                    unsubProfesores,
                     unsubNotificaciones,
                     unsubAmigos,
                     unsubSolicitudesAmistad,
                     unsubSolicitudesAmistadEnviadas,
-                    unsubClases,
-                    unsubPatrocinadores
+                    unsubClases
                 ];
             }
 
@@ -9975,23 +10082,36 @@ window.CIRCUITO_SINGLE_FILE = true;
 
 
             window.guardarPerfil = async function() {
+                const cambios = {};
                 ["nombre","apellido","edad","genero","telefono","dni","preferencia","foto"].forEach(k => {
                     const el = document.getElementById(`perfil-${k}`);
-                    if (el) perfilUsuario[k] = el.value.trim();
+                    if (!el) return;
+                    const nuevo = el.value.trim();
+                    if (String(perfilUsuario[k] ?? '') !== nuevo) {
+                        cambios[k] = nuevo;
+                    }
                 });
 
-                if (firebaseAPI && usuarioActual) {
-                    await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", usuarioActual.uid), {
-                        uid: usuarioActual.uid,
-                        email: usuarioActual.email || "",
-                        ...perfilUsuario,
-                        actualizadoEn: firebaseAPI.serverTimestamp()
-                    }, { merge: true });
+                if (!Object.keys(cambios).length) {
+                    mostrarAviso('No hay cambios para guardar.','info');
+                    cambiarVistaPrincipal('inicio');
+                    return;
                 }
 
-                alert("Perfil guardado");
-                cambiarVistaPrincipal("inicio");
-                renderizarTodo();
+                Object.assign(perfilUsuario, cambios);
+
+                if (firebaseAPI && usuarioActual) {
+                    await firebaseAPI.updateDoc(
+                        firebaseAPI.doc(firebaseAPI.db, 'users', usuarioActual.uid),
+                        {
+                            ...cambios,
+                            actualizadoEn:firebaseAPI.serverTimestamp()
+                        }
+                    );
+                }
+
+                mostrarAviso('Perfil guardado.','success');
+                cambiarVistaPrincipal('inicio');
             };
 
             window.unirsePartido = async function(id, equipoElegido = '') {
