@@ -3485,7 +3485,7 @@ img[data-club-image]{background:#e4e7ec}
                     <tbody id="tabla-ranking"></tbody>
                 </table>
             </div>
-        </div>
+</div>
 
 
         <div id="vista-partidos" class="vista-interna">
@@ -4188,6 +4188,22 @@ window.CIRCUITO_SINGLE_FILE = true;
 
         // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const input =
+                    document.getElementById('buscador-ranking') ||
+                    document.getElementById('ranking-buscar') ||
+                    document.querySelector('#vista-ranking input[type="search"]') ||
+                    document.querySelector('#vista-ranking input[placeholder*="Buscar"]');
+                if (input && !input.dataset.optimizadoRanking) {
+                    input.dataset.optimizadoRanking = '1';
+                    let timer = null;
+                    input.addEventListener('input', () => {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => buscarRankingOptimizado(), 350);
+                    });
+                }
+            }, 0);
+
             fechaSeleccionadaCrear.setHours(0,0,0,0);
             inicializarFormularioCrear();
             cargarDatosPerfilEnFormulario();
@@ -4956,6 +4972,8 @@ window.CIRCUITO_SINGLE_FILE = true;
 
             vistaPrincipalActual = vista;
 
+            ejecutarSeguroUI(`Datos vista ${vista}`, () => activarDatosVista(vista), {mostrar:false});
+
             document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => {
                 el.style.display = 'none';
             });
@@ -4975,7 +4993,6 @@ window.CIRCUITO_SINGLE_FILE = true;
             } else if (vista === 'notificaciones') {
                 ejecutarSeguroUI('Notificaciones', () => renderizarNotificaciones(), {mostrar:false});
             } else if (vista === 'ranking') {
-                ejecutarSeguroUI('Carga Ranking', () => cargarRankingBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Ranking', () => renderizarRanking(), {mostrar:false});
             } else if (vista === 'partidos') {
                 ejecutarSeguroUI('Mis Partidos', () => renderizarMisPartidos(), {mostrar:false});
@@ -4987,10 +5004,8 @@ window.CIRCUITO_SINGLE_FILE = true;
             } else if (vista === 'buscar') {
                 ejecutarSeguroUI('Búsqueda', () => renderizarBusquedaGlobal(), {mostrar:false});
             } else if (vista === 'torneos') {
-                ejecutarSeguroUI('Carga Torneos', () => cargarTorneosBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Torneos', () => renderizarTorneos(), {mostrar:false});
             } else if (vista === 'amigos') {
-                ejecutarSeguroUI('Usuarios para Amigos', () => cargarRankingBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Amigos', () => renderizarAmigos(), {mostrar:false});
             } else if (vista === 'clubes') {
                 ejecutarSeguroUI('Clubes', () => renderizarClubes(), {mostrar:false});
@@ -4998,7 +5013,6 @@ window.CIRCUITO_SINGLE_FILE = true;
                 ejecutarSeguroUI('Perfil', () => cargarDatosPerfilEnFormulario(), {mostrar:false});
                 ejecutarSeguroUI('Resumen Perfil', () => actualizarPerfilResumen(), {mostrar:false});
             } else if (vista === 'academia') {
-                ejecutarSeguroUI('Carga Profesores', () => cargarProfesoresBajoDemanda(), {mostrar:false});
                 ejecutarSeguroUI('Academia', () => renderizarAcademia(), {mostrar:false});
             }
 
@@ -5803,6 +5817,40 @@ window.CIRCUITO_SINGLE_FILE = true;
                 String(a.nombre || '').localeCompare(String(b.nombre || ''))
             );
         }
+
+
+        async function buscarRankingOptimizado() {
+            const input =
+                document.getElementById('buscador-ranking') ||
+                document.getElementById('ranking-buscar') ||
+                document.querySelector('#vista-ranking input[type="search"]') ||
+                document.querySelector('#vista-ranking input[placeholder*="Buscar"]');
+
+            if (!input) return;
+
+            const termino = input.value.trim();
+            if (!termino) {
+                rankingBusquedaResultados = [];
+                renderizarRanking();
+                return;
+            }
+
+            const locales = rankingData.filter(u =>
+                `${u.nombre || ''} ${u.email || ''} ${u.dni || ''}`
+                    .toLowerCase()
+                    .includes(termino.toLowerCase())
+            );
+
+            if (locales.length) {
+                rankingBusquedaResultados = locales;
+                renderizarRanking();
+                return;
+            }
+
+            await buscarUsuarioRankingEspecifico(termino);
+            renderizarRanking();
+        }
+        window.buscarRankingOptimizado = buscarRankingOptimizado;
 
         function renderizarRanking() {
             const busqueda = document.getElementById('input-buscar-ranking')
@@ -8691,6 +8739,40 @@ window.CIRCUITO_SINGLE_FILE = true;
             };
             const cargasFirebaseEnCurso = new Map();
 
+            // Listeners y lecturas se administran por vista.
+            // Al salir de una vista se cierran sus listeners para evitar consumo oculto.
+            const listenersPorVista = new Map();
+            let vistaFirebaseActiva = null;
+
+            // Ranking paginado: 50 usuarios por bloque.
+            let rankingUltimoDocumento = null;
+            let rankingTieneMas = true;
+            let rankingCargandoMas = false;
+            let rankingBusquedaResultados = [];
+            const RANKING_PAGE_SIZE = 50;
+
+            function cerrarListenersVista(vista) {
+                const lista = listenersPorVista.get(vista) || [];
+                lista.forEach(unsub => {
+                    try { if (typeof unsub === 'function') unsub(); } catch(e) {}
+                });
+                listenersPorVista.delete(vista);
+            }
+
+            function registrarListenerVista(vista, unsub) {
+                if (typeof unsub !== 'function') return;
+                const lista = listenersPorVista.get(vista) || [];
+                lista.push(unsub);
+                listenersPorVista.set(vista, lista);
+            }
+
+            function cambiarVistaFirebaseActiva(vista) {
+                if (vistaFirebaseActiva && vistaFirebaseActiva !== vista) {
+                    cerrarListenersVista(vistaFirebaseActiva);
+                }
+                vistaFirebaseActiva = vista;
+            }
+
             function cacheFirebaseVigente(tipo) {
                 const ttl = cacheFirebaseTTL[tipo] || 0;
                 return ttl > 0 && Date.now() - (cacheFirebaseTiempo[tipo] || 0) < ttl;
@@ -8834,17 +8916,18 @@ window.CIRCUITO_SINGLE_FILE = true;
             }
 
             function detenerEscuchasFirebase() {
-                unsubscribeFirebase.forEach(fn => {
-                    try { if (typeof fn === "function") fn(); } catch(e) {}
+                unsubscribeFirebase.forEach(unsub => {
+                    try { if (typeof unsub === 'function') unsub(); } catch(e) {}
                 });
                 unsubscribeFirebase = [];
 
-                unsubscribeTorneosPorClub.forEach(fn => {
-                    try { if (typeof fn === "function") fn(); } catch(e) {}
+                Array.from(listenersPorVista.keys()).forEach(cerrarListenersVista);
+                vistaFirebaseActiva = null;
+
+                escuchasTorneosPorClub.forEach(unsub => {
+                    try { if (typeof unsub === 'function') unsub(); } catch(e) {}
                 });
-                unsubscribeTorneosPorClub.clear();
-                torneosPorClubCache.clear();
-                erroresFirebaseMostrados.clear();
+                escuchasTorneosPorClub.clear();
             }
 
             function ocultarPantallasDuranteValidacion() {
@@ -9113,6 +9196,8 @@ window.CIRCUITO_SINGLE_FILE = true;
                 }
 
                 detenerEscuchasFirebase();
+                Array.from(listenersPorVista.keys()).forEach(cerrarListenersVista);
+                vistaFirebaseActiva = null;
 
                 try {
                     await firebaseAPI.signOut(firebaseAPI.auth);
@@ -9254,33 +9339,47 @@ window.CIRCUITO_SINGLE_FILE = true;
                 });
             }
 
-            async function cargarRankingBajoDemanda(force = false) {
+            async function cargarRankingBajoDemanda(force = false, cargarMas = false) {
                 if (!firebaseAPI) return;
-                if (!force && cacheFirebaseVigente('ranking') && rankingData.length) return;
 
-                return ejecutarCargaFirebaseUnica('ranking', async () => {
-                    // Acotado a los usuarios con más puntos. Esto evita descargar
-                    // indefinidamente toda la base cada vez que cambia un perfil.
-                    let snapshot;
-                    try {
-                        snapshot = await firebaseAPI.getDocs(
-                            firebaseAPI.query(
-                                firebaseAPI.collection(firebaseAPI.db, 'users'),
-                                firebaseAPI.orderBy('puntos', 'desc'),
-                                firebaseAPI.limit(250)
-                            )
+                if (!force && !cargarMas && cacheFirebaseVigente('ranking') && rankingData.length) {
+                    return;
+                }
+
+                if (rankingCargandoMas) return;
+                rankingCargandoMas = true;
+
+                try {
+                    let q;
+
+                    if (cargarMas && rankingUltimoDocumento) {
+                        q = firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db, 'users'),
+                            firebaseAPI.orderBy('puntos', 'desc'),
+                            firebaseAPI.startAfter(rankingUltimoDocumento),
+                            firebaseAPI.limit(RANKING_PAGE_SIZE)
                         );
-                    } catch(error) {
-                        // Compatibilidad con bases antiguas sin índice/valor puntos.
-                        snapshot = await firebaseAPI.getDocs(
-                            firebaseAPI.query(
-                                firebaseAPI.collection(firebaseAPI.db, 'users'),
-                                firebaseAPI.limit(250)
-                            )
+                    } else {
+                        q = firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db, 'users'),
+                            firebaseAPI.orderBy('puntos', 'desc'),
+                            firebaseAPI.limit(RANKING_PAGE_SIZE)
                         );
                     }
 
-                    rankingData = snapshot.docs.map(docSnap => {
+                    let snapshot;
+                    try {
+                        snapshot = await firebaseAPI.getDocs(q);
+                    } catch(error) {
+                        // Compatibilidad si todavía no existe el índice/orden esperado.
+                        const fallback = firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db, 'users'),
+                            firebaseAPI.limit(RANKING_PAGE_SIZE)
+                        );
+                        snapshot = await firebaseAPI.getDocs(fallback);
+                    }
+
+                    const nuevos = snapshot.docs.map(docSnap => {
                         const data = docSnap.data() || {};
                         const nombre = `${data.nombre || ''} ${data.apellido || ''}`.trim()
                             || data.displayName || data.email || 'Jugador';
@@ -9295,11 +9394,97 @@ window.CIRCUITO_SINGLE_FILE = true;
                             pj:Number(data.pj) || Number(data.partidosJugados) || 0
                         };
                     });
+
+                    if (cargarMas) {
+                        const existentes = new Set(rankingData.map(x => String(x.id || x.uid)));
+                        rankingData = [
+                            ...rankingData,
+                            ...nuevos.filter(x => !existentes.has(String(x.id || x.uid)))
+                        ].slice(0, RANKING_PAGE_SIZE);
+                    } else {
+                        rankingData = nuevos.slice(0, RANKING_PAGE_SIZE);
+                    }
+
+                    rankingUltimoDocumento = snapshot.docs[snapshot.docs.length - 1] || null;
+                    rankingTieneMas = snapshot.docs.length === RANKING_PAGE_SIZE;
                     cacheFirebaseTiempo.ranking = Date.now();
+
                     renderizarRanking();
                     renderizarResultadosBusquedaAmigos();
-                });
+                    actualizarBotonCargarMasRanking();
+                } finally {
+                    rankingCargandoMas = false;
+                }
             }
+
+            window.cargarMasRanking = async function() { return; };
+
+            function actualizarBotonCargarMasRanking() {}
+
+
+            async function completarRankingHasta50SiHaceFalta(filtroFn) {
+                if (!firebaseAPI || !rankingTieneMas || rankingCargandoMas) return;
+
+                let visibles = rankingData.filter(filtroFn);
+                while (visibles.length < 50 && rankingTieneMas && rankingData.length < 50) {
+                    await cargarRankingBajoDemanda(false, true);
+                    visibles = rankingData.filter(filtroFn);
+                }
+            }
+
+            async function buscarUsuarioRankingEspecifico(termino) {
+                const q = String(termino || '').trim();
+                if (!q || !firebaseAPI) {
+                    rankingBusquedaResultados = [];
+                    return [];
+                }
+
+                const local = rankingData.filter(u => {
+                    const texto = `${u.nombre || ''} ${u.email || ''} ${u.dni || ''}`.toLowerCase();
+                    return texto.includes(q.toLowerCase());
+                });
+                if (local.length) {
+                    rankingBusquedaResultados = local.slice(0, 20);
+                    return rankingBusquedaResultados;
+                }
+
+                // Búsqueda puntual: primero DNI exacto (1 lectura aprox. si existe).
+                const resultados = [];
+                try {
+                    const porDni = await firebaseAPI.getDocs(
+                        firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db, 'users'),
+                            firebaseAPI.where('dni', '==', q),
+                            firebaseAPI.limit(5)
+                        )
+                    );
+                    porDni.docs.forEach(docSnap => resultados.push({id:docSnap.id,uid:docSnap.id,...docSnap.data()}));
+                } catch(e) {}
+
+                // Si parece email, búsqueda exacta por email.
+                if (!resultados.length && q.includes('@')) {
+                    try {
+                        const porEmail = await firebaseAPI.getDocs(
+                            firebaseAPI.query(
+                                firebaseAPI.collection(firebaseAPI.db, 'users'),
+                                firebaseAPI.where('email', '==', q),
+                                firebaseAPI.limit(5)
+                            )
+                        );
+                        porEmail.docs.forEach(docSnap => resultados.push({id:docSnap.id,uid:docSnap.id,...docSnap.data()}));
+                    } catch(e) {}
+                }
+
+                rankingBusquedaResultados = resultados.map(u => ({
+                    ...u,
+                    nombre:`${u.nombre || ''} ${u.apellido || ''}`.trim() || u.displayName || u.email || 'Jugador',
+                    puntos:Number(u.puntos) || 0,
+                    pj:Number(u.pj) || Number(u.partidosJugados) || 0
+                }));
+                return rankingBusquedaResultados;
+            }
+
+            window.buscarUsuarioRankingEspecifico = buscarUsuarioRankingEspecifico;
 
             async function cargarProfesoresBajoDemanda(force = false) {
                 if (!firebaseAPI) return;
@@ -9309,7 +9494,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                     const snapshot = await firebaseAPI.getDocs(
                         firebaseAPI.query(
                             firebaseAPI.collection(firebaseAPI.db, 'profesores'),
-                            firebaseAPI.limit(100)
+                            firebaseAPI.limit(40)
                         )
                     );
                     profesoresData = docsToArray(snapshot).map(p => ({
@@ -9328,6 +9513,27 @@ window.CIRCUITO_SINGLE_FILE = true;
                 });
             }
 
+
+            async function asegurarDatosVistaHastaLimite(tipo, visiblesActuales) {
+                // Cada vista tiene un techo duro. Nunca se supera.
+                const limites = {
+                    ranking:50,
+                    torneos:40,
+                    profesores:40
+                };
+                const limite = limites[tipo] || 0;
+                if (!limite || visiblesActuales >= limite) return;
+
+                if (tipo === 'ranking' && rankingTieneMas && rankingData.length < limite) {
+                    await cargarRankingBajoDemanda(false, true);
+                } else if (tipo === 'torneos' && torneosData.length < limite) {
+                    await cargarTorneosBajoDemanda(true);
+                } else if (tipo === 'profesores' && profesoresData.length < limite) {
+                    await cargarProfesoresBajoDemanda(true);
+                }
+            }
+            window.asegurarDatosVistaHastaLimite = asegurarDatosVistaHastaLimite;
+
             async function cargarTorneosBajoDemanda(force = false) {
                 if (!firebaseAPI) return;
                 if (!force && cacheFirebaseVigente('torneos') && torneosData.length) return;
@@ -9338,7 +9544,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                         snapshot = await firebaseAPI.getDocs(
                             firebaseAPI.query(
                                 firebaseAPI.collectionGroup(firebaseAPI.db, 'torneos'),
-                                firebaseAPI.limit(100)
+                                firebaseAPI.limit(40)
                             )
                         );
                     } catch(error) {
@@ -9369,162 +9575,216 @@ window.CIRCUITO_SINGLE_FILE = true;
             window.cargarTorneosBajoDemanda = cargarTorneosBajoDemanda;
             window.cargarClubesBajoDemanda = cargarClubesBajoDemanda;
 
+
+            async function activarDatosVista(vista) {
+                if (!firebaseAPI || !usuarioActual) return;
+
+                cambiarVistaFirebaseActiva(vista);
+
+                if (vista === 'inicio') {
+                    // Inicio mínimo: patrocinadores + notificaciones.
+                    // Perfil ya fue leído durante la validación de sesión.
+                    cargarPatrocinadoresBajoDemanda().catch(e =>
+                        logFirebaseError('patrocinadores inicio', e, {opcional:true})
+                    );
+
+                    const unsubNotificacionesInicio = firebaseAPI.onSnapshot(
+                        firebaseAPI.query(
+                            firebaseAPI.collection(
+                                firebaseAPI.db,
+                                'users',
+                                usuarioActual.uid,
+                                'notificaciones'
+                            ),
+                            firebaseAPI.limit(20)
+                        ),
+                        snapshot => {
+                            notificacionesData = docsToArray(snapshot)
+                                .sort((a,b) =>
+                                    String(b.fecha || b.creadoEn || '')
+                                        .localeCompare(String(a.fecha || a.creadoEn || ''))
+                                );
+                            renderizarNotificaciones();
+                            if (typeof renderizarActividadHome === 'function') {
+                                renderizarActividadHome();
+                            }
+                        },
+                        e => logFirebaseError('notificaciones inicio', e, {opcional:true})
+                    );
+                    registrarListenerVista('inicio', unsubNotificacionesInicio);
+                    return;
+                }
+
+                if (vista === 'partidos' || vista === 'partido-detalle') {
+                    const panelActivo =
+                        document.querySelector('[data-panel-partidos].activo')?.dataset?.panelPartidos ||
+                        document.querySelector('.partidos-tab.activo')?.dataset?.tab ||
+                        panelPartidosActual ||
+                        'unirse';
+
+                    let limitePartidos = 10;
+                    if (panelActivo === 'crear') limitePartidos = 0;
+                    else if (panelActivo === 'unirse') limitePartidos = 40;
+                    else limitePartidos = 10;
+
+                    if (limitePartidos > 0) {
+                        const q = firebaseAPI.query(
+                            firebaseAPI.collectionGroup(firebaseAPI.db, 'partidos'),
+                            firebaseAPI.orderBy('fecha', 'desc'),
+                            firebaseAPI.limit(limitePartidos)
+                        );
+                        const unsub = firebaseAPI.onSnapshot(
+                            q,
+                            snapshot => {
+                                partidosData = docsToArray(snapshot)
+                                    .filter(p => String(p.tipo || 'Competitivo').toLowerCase() !== 'casual')
+                                    .map(p => ({
+                                        ...p,
+                                        j1:p.j1 || p.jugador1 || p.creador || 'Libre',
+                                        j2:p.j2 || p.jugador2 || 'Libre',
+                                        j3:p.j3 || p.jugador3 || 'Libre',
+                                        j4:p.j4 || p.jugador4 || 'Libre',
+                                        estado:p.estado || 'Buscando Rival',
+                                        tipo:'Competitivo',
+                                        categoria:['Masculino','Femenino','Mixto'].includes(p.categoria) ? p.categoria : 'Masculino',
+                                        modalidad:p.modalidad || 'Outdoor'
+                                    }));
+                                renderizarMisPartidos();
+                                renderizarPartidosAbiertos();
+                                actualizarContadoresPartidos();
+                                if (vista === 'partido-detalle') renderizarDetallePartido();
+                            },
+                            error => logFirebaseError('partidos vista', error)
+                        );
+                        registrarListenerVista(vista, unsub);
+                    }
+
+                    // Reservas se descargan únicamente al entrar en Crear, porque son
+                    // necesarias para calcular disponibilidad. No se descargan en las
+                    // demás pestañas de Partidos.
+                    if (panelActivo === 'crear') {
+                        cargarClubesBajoDemanda().catch(e =>
+                            logFirebaseError('clubes crear partido', e, {opcional:true})
+                        );
+                        const hoy = new Date();
+                        const desde = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+                        const reservasQ = firebaseAPI.query(
+                            firebaseAPI.collectionGroup(firebaseAPI.db, 'reservas'),
+                            firebaseAPI.where('fecha', '>=', desde),
+                            firebaseAPI.orderBy('fecha', 'asc'),
+                            firebaseAPI.limit(40)
+                        );
+                        const unsubReservas = firebaseAPI.onSnapshot(
+                            reservasQ,
+                            snapshot => {
+                                reservasCompartidasCache = docsToArray(snapshot);
+                                window.actualizarHorariosDisponibles();
+                            },
+                            error => {
+                                console.warn('reservas crear partido', error);
+                                reservasCompartidasCache = [];
+                            }
+                        );
+                        registrarListenerVista(vista, unsubReservas);
+                    }
+                    return;
+                }
+
+                if (vista === 'ranking') {
+                    await cargarRankingBajoDemanda(false, false);
+                    return;
+                }
+
+                if (vista === 'amigos') {
+                    // Solo subcolecciones personales en tiempo real.
+                    const specs = [
+                        ['amigos',50,snapshot => { amigosData=docsToArray(snapshot); renderizarAmigos(); }],
+                        ['solicitudesAmistad',15,snapshot => {
+                            solicitudesAmistadData=docsToArray(snapshot).filter(s => (s.estado||'pendiente')==='pendiente');
+                            renderizarSolicitudesAmistad(); actualizarResumenAmigos();
+                        }],
+                        ['solicitudesAmistadEnviadas',15,snapshot => {
+                            solicitudesAmistadEnviadasData=docsToArray(snapshot).filter(s => (s.estado||'pendiente')==='pendiente');
+                            renderizarSolicitudesEnviadas(); actualizarResumenAmigos();
+                        }]
+                    ];
+                    specs.forEach(([coleccion,limite,cb]) => {
+                        const unsub=firebaseAPI.onSnapshot(
+                            firebaseAPI.query(
+                                firebaseAPI.collection(firebaseAPI.db,'users',usuarioActual.uid,coleccion),
+                                firebaseAPI.limit(limite)
+                            ),
+                            cb,
+                            e=>logFirebaseError(`amigos/${coleccion}`,e,{opcional:true})
+                        );
+                        registrarListenerVista('amigos',unsub);
+                    });
+                    return;
+                }
+
+                if (vista === 'notificaciones') {
+                    const unsub=firebaseAPI.onSnapshot(
+                        firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db,'users',usuarioActual.uid,'notificaciones'),
+                            firebaseAPI.limit(20)
+                        ),
+                        snapshot => {
+                            notificacionesData=docsToArray(snapshot)
+                                .sort((a,b)=>String(b.fecha||b.creadoEn||'').localeCompare(String(a.fecha||a.creadoEn||'')));
+                            renderizarNotificaciones();
+                        },
+                        e=>logFirebaseError('notificaciones vista',e,{opcional:true})
+                    );
+                    registrarListenerVista('notificaciones',unsub);
+                    return;
+                }
+
+                if (vista === 'academia') {
+                    await cargarProfesoresBajoDemanda();
+                    const unsub=firebaseAPI.onSnapshot(
+                        firebaseAPI.query(
+                            firebaseAPI.collection(firebaseAPI.db,'users',usuarioActual.uid,'clases'),
+                            firebaseAPI.limit(20)
+                        ),
+                        snapshot => {
+                            clasesUsuario=docsToArray(snapshot);
+                            renderizarMisClases();
+                        },
+                        e=>logFirebaseError('clases vista',e,{opcional:true})
+                    );
+                    registrarListenerVista('academia',unsub);
+                    return;
+                }
+
+                if (vista === 'torneos') {
+                    await cargarClubesBajoDemanda();
+                    await cargarTorneosBajoDemanda();
+                    return;
+                }
+
+                if (vista === 'clubes') {
+                    await cargarClubesBajoDemanda();
+                    return;
+                }
+
+                if (vista === 'buscar') {
+                    // La búsqueda global usa los datos ya cacheados.
+                    // No descarga usuarios automáticamente.
+                    return;
+                }
+
+                // Perfil y Menú no requieren listeners.
+            }
+
+            window.activarDatosVista = activarDatosVista;
+
             function iniciarEscuchasFirebase() {
                 if (!firebaseAPI || !usuarioActual) return;
-                if (unsubscribeFirebase.length) return;
 
-                // Datos relativamente estáticos: una sola lectura por sesión/TTL.
-                cargarClubesBajoDemanda().catch(error =>
-                    logFirebaseError('lectura de clubes', error, {opcional:true})
-                );
-                cargarPatrocinadoresBajoDemanda().catch(error =>
-                    logFirebaseError('lectura de patrocinadores', error, {opcional:true})
-                );
-
-                const hoy = new Date();
-                hoy.setDate(hoy.getDate() - 1);
-                const desdeFecha = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-
-                // RESERVAS: antes se escuchaba collectionGroup('reservas') completo.
-                // Ahora solo se mantienen hasta 200 reservas recientes/futuras.
-                let reservasQuery = firebaseAPI.query(
-                    firebaseAPI.collectionGroup(firebaseAPI.db, 'reservas'),
-                    firebaseAPI.where('fecha', '>=', desdeFecha),
-                    firebaseAPI.orderBy('fecha', 'asc'),
-                    firebaseAPI.limit(200)
-                );
-
-                const unsubReservas = firebaseAPI.onSnapshot(
-                    reservasQuery,
-                    snapshot => {
-                        reservasCompartidasCache = docsToArray(snapshot);
-                        // Solo disponibilidad, no toda la interfaz.
-                        ejecutarSeguroUI('Horarios tras reservas', () => window.actualizarHorariosDisponibles(), {mostrar:false});
-                    },
-                    error => {
-                        console.warn('Consulta acotada de reservas no disponible:', error);
-                        reservasCompartidasCache = [];
-                    }
-                );
-
-                // PARTIDOS: snapshot acotado a los 150 documentos con fecha más reciente.
-                // Esto mantiene sincronización entre jugadores sin descargar el histórico completo.
-                let partidosQuery = firebaseAPI.query(
-                    firebaseAPI.collectionGroup(firebaseAPI.db, 'partidos'),
-                    firebaseAPI.orderBy('fecha', 'desc'),
-                    firebaseAPI.limit(150)
-                );
-
-                const unsubPartidos = firebaseAPI.onSnapshot(
-                    partidosQuery,
-                    snapshot => {
-                        const todos = docsToArray(snapshot).map(p => ({
-                            ...p,
-                            j1:p.j1 || p.jugador1 || p.creador || 'Libre',
-                            j2:p.j2 || p.jugador2 || 'Libre',
-                            j3:p.j3 || p.jugador3 || 'Libre',
-                            j4:p.j4 || p.jugador4 || 'Libre',
-                            estado:p.estado || 'Buscando Rival',
-                            tipo:'Competitivo',
-                            categoria:['Masculino','Femenino','Mixto'].includes(p.categoria) ? p.categoria : 'Masculino',
-                            visibilidad:'Publico',
-                            modalidad:p.modalidad || 'Outdoor'
-                        }));
-
-                        // Documentos casuales históricos se ignoran, pero NO se borran
-                        // automáticamente desde cada cliente.
-                        partidosData = todos.filter(p =>
-                            String(p.tipo || 'Competitivo').toLowerCase() !== 'casual'
-                        );
-
-                        ejecutarSeguroUI('Mis partidos realtime', () => renderizarMisPartidos(), {mostrar:false});
-                        ejecutarSeguroUI('Partidos abiertos realtime', () => renderizarPartidosAbiertos(), {mostrar:false});
-                        ejecutarSeguroUI('Banner realtime', () => renderizarBanner(), {mostrar:false});
-                        ejecutarSeguroUI('Contadores realtime', () => actualizarContadoresPartidos(), {mostrar:false});
-                        ejecutarSeguroUI('Horarios partidos realtime', () => window.actualizarHorariosDisponibles(), {mostrar:false});
-                        procesarEstadosPartidosCompetitivos();
-                    },
-                    error => logFirebaseError('lectura acotada de partidos', error)
-                );
-
-                // Datos personales sí permanecen en tiempo real: son colecciones pequeñas
-                // y el usuario espera cambios inmediatos.
-                const unsubNotificaciones = firebaseAPI.onSnapshot(
-                    firebaseAPI.query(
-                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'notificaciones'),
-                        firebaseAPI.limit(60)
-                    ),
-                    snapshot => {
-                        notificacionesData = docsToArray(snapshot)
-                            .sort((a,b) => String(b.fecha || b.creadoEn || '').localeCompare(String(a.fecha || a.creadoEn || '')));
-                        renderizarNotificaciones();
-                    },
-                    error => logFirebaseError('lectura de notificaciones', error)
-                );
-
-                const unsubAmigos = firebaseAPI.onSnapshot(
-                    firebaseAPI.query(
-                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'amigos'),
-                        firebaseAPI.limit(200)
-                    ),
-                    snapshot => {
-                        amigosData = docsToArray(snapshot);
-                        renderizarAmigos();
-                    },
-                    error => logFirebaseError('lectura de amigos', error)
-                );
-
-                const unsubSolicitudesAmistad = firebaseAPI.onSnapshot(
-                    firebaseAPI.query(
-                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'solicitudesAmistad'),
-                        firebaseAPI.limit(50)
-                    ),
-                    snapshot => {
-                        solicitudesAmistadData = docsToArray(snapshot)
-                            .filter(s => (s.estado || 'pendiente') === 'pendiente');
-                        renderizarSolicitudesAmistad();
-                        renderizarResultadosBusquedaAmigos();
-                        actualizarResumenAmigos();
-                    },
-                    error => logFirebaseError('lectura de solicitudes de amistad', error)
-                );
-
-                const unsubSolicitudesAmistadEnviadas = firebaseAPI.onSnapshot(
-                    firebaseAPI.query(
-                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'solicitudesAmistadEnviadas'),
-                        firebaseAPI.limit(50)
-                    ),
-                    snapshot => {
-                        solicitudesAmistadEnviadasData = docsToArray(snapshot)
-                            .filter(s => (s.estado || 'pendiente') === 'pendiente');
-                        renderizarSolicitudesEnviadas();
-                        renderizarResultadosBusquedaAmigos();
-                        actualizarResumenAmigos();
-                    },
-                    error => logFirebaseError('lectura de solicitudes de amistad enviadas', error)
-                );
-
-                const unsubClases = firebaseAPI.onSnapshot(
-                    firebaseAPI.query(
-                        firebaseAPI.collection(firebaseAPI.db, 'users', usuarioActual.uid, 'clases'),
-                        firebaseAPI.limit(50)
-                    ),
-                    snapshot => {
-                        clasesUsuario = docsToArray(snapshot);
-                        renderizarMisClases();
-                    },
-                    error => logFirebaseError('lectura de clases', error)
-                );
-
-                unsubscribeFirebase = [
-                    unsubReservas,
-                    unsubPartidos,
-                    unsubNotificaciones,
-                    unsubAmigos,
-                    unsubSolicitudesAmistad,
-                    unsubSolicitudesAmistadEnviadas,
-                    unsubClases
-                ];
+                // Ya no se abren listeners globales al iniciar sesión.
+                // Solo se cargan los datos mínimos de la vista inicial.
+                cambiarVistaFirebaseActiva('inicio');
+                activarDatosVista('inicio');
             }
 
 
