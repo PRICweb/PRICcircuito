@@ -20,6 +20,138 @@
 .toasts{position:fixed;right:16px;bottom:16px;z-index:2000;display:flex;flex-direction:column;gap:7px}.toast{max-width:350px;padding:10px 12px;border-radius:10px;background:#101828;color:#fff;font-size:.68rem;font-weight:750}.toast.error{background:#b42318}.toast.success{background:#067647}
 @media(max-width:800px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;z-index:1000;left:0;top:0;bottom:0;width:245px;transform:translateX(-100%);transition:.2s;box-shadow:18px 0 40px rgba(16,24,40,.12)}.sidebar.open{transform:none}.mobile-menu{display:inline-flex}.main{padding:13px 12px 34px}.grid2{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:480px){.user-row{align-items:stretch;flex-direction:column}}
 </style>
+
+<style id="admin-funcional-css">
+html,body{scroll-behavior:auto!important}
+body.auth-mode{
+  overflow:hidden!important;
+  height:100vh!important;
+}
+body.admin-mode{
+  overflow:auto!important;
+  min-height:100vh!important;
+}
+.auth{
+  position:fixed!important;
+  inset:0!important;
+  z-index:3000!important;
+  overflow:hidden!important;
+}
+.auth[hidden]{display:none!important}
+.shell[hidden]{display:none!important}
+
+.btn{
+  transition:background .14s ease,border-color .14s ease,color .14s ease,transform .14s ease,opacity .14s ease;
+}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn.loading{pointer-events:none;opacity:.62}
+.nav button:focus-visible,.btn:focus-visible,.input:focus-visible{
+  outline:3px solid rgba(16,24,40,.12);
+  outline-offset:2px;
+}
+
+.app-modal{
+  position:fixed;
+  inset:0;
+  z-index:4000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(16,24,40,.42);
+  backdrop-filter:blur(3px);
+}
+.app-modal[hidden]{display:none!important}
+.app-modal-card{
+  width:min(100%,420px);
+  max-height:min(88vh,680px);
+  overflow:auto;
+  padding:18px;
+  border:1px solid #e4e7ec;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 24px 60px rgba(16,24,40,.18);
+}
+.app-modal-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:13px;
+}
+.app-modal-head h3{
+  margin:0;
+  font-size:1rem;
+  letter-spacing:-.02em;
+}
+.app-modal-head p{
+  margin:4px 0 0;
+  color:#667085;
+  font-size:.7rem;
+  line-height:1.45;
+}
+.app-modal-close{
+  width:34px;
+  height:34px;
+  min-height:34px;
+  border:0;
+  border-radius:50%;
+  background:#f2f4f7;
+  color:#344054;
+  font-size:1.1rem;
+  cursor:pointer;
+}
+.app-modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:14px;
+}
+.app-modal-actions .btn{width:auto!important}
+.modal-field{margin-bottom:9px}
+.modal-field label{
+  display:block;
+  margin-bottom:5px;
+  color:#475467;
+  font-size:.65rem;
+  font-weight:800;
+}
+.modal-help{
+  margin:8px 0 0;
+  color:#667085;
+  font-size:.65rem;
+  line-height:1.4;
+}
+.modal-error{
+  min-height:18px;
+  margin-top:7px;
+  color:#b42318;
+  font-size:.66rem;
+  font-weight:750;
+}
+.toast{
+  animation:toastIn .16s ease;
+}
+@keyframes toastIn{
+  from{opacity:0;transform:translateY(5px)}
+  to{opacity:1;transform:none}
+}
+.toast.info{background:#344054}
+
+.sidebar-overlay{
+  display:none;
+}
+@media(max-width:800px){
+  .sidebar-overlay{
+    position:fixed;
+    inset:0;
+    z-index:900;
+    background:rgba(16,24,40,.32);
+  }
+  .sidebar-overlay.visible{display:block}
+}
+</style>
+
 </head>
 <body>
 <section id="auth" class="auth"><div class="auth-card"><h1>Administración PRIC</h1><p>Acceso exclusivo para cuentas con rol administrador.</p><div class="field"><label>Email</label><input id="email" class="input" type="email"></div><div class="field"><label>Contraseña</label><input id="password" class="input" type="password"></div><button id="login" class="btn primary" style="width:100%" onclick="loginAdmin()">Ingresar</button><div id="auth-error" class="auth-error"></div></div></section>
@@ -42,6 +174,25 @@
 <section id="v-patrocinadores" class="view"><div class="view-head"><h2>Patrocinadores</h2><p>Configuración de los cinco logos de Inicio.</p></div><div id="sponsor-preview" class="sponsor-preview"></div><div class="card"><div id="sponsor-form"></div><div style="display:flex;justify-content:flex-end;margin-top:9px"><button class="btn primary" onclick="guardarSponsors()">Guardar cambios</button></div></div></section>
 <section id="v-actividad" class="view"><div class="view-head"><h2>Actividad</h2><p>Últimos movimientos administrativos.</p></div><div id="actividad" class="list"></div></section>
 </main></div><div id="toasts" class="toasts"></div>
+
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="cerrarMenuMovil()"></div>
+
+<div id="app-modal" class="app-modal" hidden aria-modal="true" role="dialog">
+  <div class="app-modal-card">
+    <div class="app-modal-head">
+      <div>
+        <h3 id="modal-title">Confirmación</h3>
+        <p id="modal-text"></p>
+      </div>
+      <button class="app-modal-close" type="button" onclick="cerrarModalAdmin()" aria-label="Cerrar">×</button>
+    </div>
+    <div id="modal-body"></div>
+    <div id="modal-error" class="modal-error"></div>
+    <div id="modal-actions" class="app-modal-actions"></div>
+  </div>
+</div>
+
+
 <script type="module">
 const firebaseConfig={apiKey: "AIzaSyDqWKo3ZtPChbtf38osMiKwQpCRNvsN7ak",
                 authDomain: "pric-60f50.firebaseapp.com",
@@ -50,20 +201,763 @@ const firebaseConfig={apiKey: "AIzaSyDqWKo3ZtPChbtf38osMiKwQpCRNvsN7ak",
                 messagingSenderId: "475470852361",
                 appId: "1:475470852361:web:8acfa8b1e2963426ef23d8",
                 measurementId: "G-ZXLT15L9JR"};
-const VER="10.12.5";const [appMod,fs,authMod]=await Promise.all([import(`https://www.gstatic.com/firebasejs/${VER}/firebase-app.js`),import(`https://www.gstatic.com/firebasejs/${VER}/firebase-firestore.js`),import(`https://www.gstatic.com/firebasejs/${VER}/firebase-auth.js`)]);
-const app=appMod.getApps().length?appMod.getApp():appMod.initializeApp(firebaseConfig),db=fs.getFirestore(app),auth=authMod.getAuth(app);let user=null,perfil=null,D={users:[],den:[],inc:[],partidos:[],sponsors:[],act:[]};
-const labels={resumen:["Resumen","Estado general del Circuito."],revisiones:["Revisiones","Resultados e incidentes pendientes."],denuncias:["Denuncias","Reportes de jugadores."],profesores:["Roles Profesor","Administración de profesores."],sanciones:["Sanciones","Restricciones competitivas."],patrocinadores:["Patrocinadores","Contenido mostrado en Inicio."],actividad:["Actividad","Últimos movimientos relevantes."]};
-const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));const nombre=u=>`${u?.nombre||""} ${u?.apellido||""}`.trim()||u?.email||u?.id||"Usuario";const isAdmin=p=>p?.esAdmin===true||p?.rol==="Admin"||p?.roles?.admin===true;const vacio=t=>`<div class="empty">${esc(t)}</div>`;const ftxt=v=>{try{const d=v?.toDate?v.toDate():new Date(v);return isNaN(d)?"":d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"})}catch{return""}};
-function toast(t,tipo=""){const e=document.createElement("div");e.className="toast "+tipo;e.textContent=t;toasts.appendChild(e);setTimeout(()=>e.remove(),3600)}window.toggleMenu=()=>sidebar.classList.toggle("open");window.vista=v=>{document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===`v-${v}`));document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===v));title.textContent=labels[v][0];subtitle.textContent=labels[v][1];sidebar.classList.remove("open")};
-window.loginAdmin=async()=>{login.disabled=true;login.textContent="Ingresando...";authError("");try{await authMod.signInWithEmailAndPassword(auth,email.value.trim(),password.value)}catch(e){authError("Email o contraseña incorrectos.")}finally{login.disabled=false;login.textContent="Ingresar"}};window.logoutAdmin=()=>authMod.signOut(auth);function authError(t){document.getElementById("auth-error").textContent=t}
-authMod.onAuthStateChanged(auth,async u=>{if(!u){user=null;perfil=null;auth.hidden=false;shell.hidden=true;return}try{const s=await fs.getDoc(fs.doc(db,"users",u.uid)),p=s.exists()?{id:s.id,...s.data()}:null;if(!isAdmin(p)){await authMod.signOut(auth);authError("Esta cuenta no tiene rol administrador.");return}user=u;perfil=p;document.getElementById("admin-name").textContent=nombre(p);document.getElementById("admin-email").textContent=u.email||"";auth.hidden=true;shell.hidden=false;await cargarAdmin()}catch(e){console.error(e);toast("No se pudo validar el administrador.","error")}});
-async function col(n){const s=await fs.getDocs(fs.collection(db,n));return s.docs.map(d=>({id:d.id,...d.data()}))}async function getPartidos(){try{const s=await fs.getDocs(fs.collectionGroup(db,"partidos"));return s.docs.map(d=>({id:d.id,_path:d.ref.path,...d.data()}))}catch(e){return[]}}async function getSponsors(){try{const s=await fs.getDoc(fs.doc(db,"configuracion","inicio")),a=s.exists()&&Array.isArray(s.data().patrocinadores)?s.data().patrocinadores:[];return[0,1,2,3,4].map(i=>{const x=a.find(v=>Number(v?.slot)===i)||a[i]||{};return{slot:i,nombre:x.nombre||"",logoUrl:x.logoUrl||"",link:x.link||"",activo:x.activo!==false&&!!x.logoUrl}})}catch{return[0,1,2,3,4].map(i=>({slot:i,nombre:"",logoUrl:"",link:"",activo:false}))}}
-window.cargarAdmin=async()=>{try{const [users,den,inc,parts,sp]=await Promise.all([col("users"),col("denuncias").catch(()=>[]),col("incidentes").catch(()=>[]),getPartidos(),getSponsors()]);D={...D,users,den,inc,partidos:parts,sponsors:sp};buildAct();render();toast("Datos actualizados.","success")}catch(e){toast(e.code==="permission-denied"?"Firestore bloqueó la lectura. Revisá las reglas Admin.":"No se pudo cargar Administración.","error")}};
-const rev=()=>({p:D.partidos.filter(x=>x.pendienteRevision===true||x.resultadoIncongruente===true),i:D.inc.filter(x=>String(x.estado||"pendiente")!=="resuelto")});const denA=()=>D.den.filter(x=>!["cerrada","resuelta"].includes(String(x.estado||"").toLowerCase()));const profA=()=>D.users.filter(x=>x.rolProfesor===true||x.esProfesor===true||x.rol==="Profesor"||x.roles?.profesor===true);const sancA=()=>{const n=Date.now(),r=[];D.users.forEach(u=>(Array.isArray(u.sanciones)?u.sanciones:[]).forEach(s=>{if(s?.activa!==false&&(!s.hasta||new Date(s.hasta).getTime()>n))r.push({u,s})}));return r};
-function render(){renderResumen();renderRev();renderDen();renderProfes();renderSanc();renderSponsors();renderAct()}function renderResumen(){const r=rev(),d=denA();stats.innerHTML=[["Usuarios",D.users.length],["Profesores",profA().length],["Revisiones",r.p.length+r.i.length],["Denuncias",d.length]].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");const p=[...r.p.slice(0,3).map(x=>`<div class="item"><strong>Resultado · ${esc(x.club||"Club")}</strong><small>${esc(`${x.fecha||""} ${x.hora||""}`)}</small></div>`),...r.i.slice(0,3).map(x=>`<div class="item"><strong>Incidente · ${esc(x.tipo||"")}</strong><small>${esc(x.detalle||"")}</small></div>`),...d.slice(0,2).map(x=>`<div class="item"><strong>Denuncia</strong><small>${esc(x.detalle||x.descripcion||"")}</small></div>`)];document.getElementById("res-pendientes").innerHTML=p.length?`<div class="list">${p.join("")}</div>`:vacio("No hay acciones pendientes.");document.getElementById("res-actividad").innerHTML=D.act.length?`<div class="list">${D.act.slice(0,6).map(actCard).join("")}</div>`:vacio("Sin actividad reciente.")}
-function renderRev(){const r=rev(),rows=[...r.p.map(x=>`<div class="item"><strong>Resultado incongruente · ${esc(x.club||"Club")}</strong><small>${esc(`${x.fecha||""} · ${x.hora||""}`)}</small><span class="badge orange">Revisión</span><div class="actions"><button class="btn primary" onclick="resolverPartido('${esc(x._path)}')">Marcar revisado</button></div></div>`),...r.i.map(x=>`<div class="item"><strong>${esc(x.tipo||"Incidente")}</strong><small>${esc(`${x.reportadoPor||""} · ${x.detalle||""}`)}</small><span class="badge orange">Pendiente</span><div class="actions"><button class="btn primary" onclick="resolverInc('${esc(x.id)}')">Resolver</button></div></div>`)];revisiones.innerHTML=rows.length?rows.join(""):vacio("No hay revisiones pendientes.")}function renderDen(){const a=denA();denuncias.innerHTML=a.length?a.map(x=>`<div class="item"><strong>${esc(x.motivo||"Denuncia")}</strong><small>${esc(`${x.reportadoPor||x.usuario||""} · ${x.detalle||x.descripcion||""}`)}</small><span class="badge red">Abierta</span><div class="actions"><button class="btn primary" onclick="cerrarDen('${esc(x.id)}')">Cerrar</button></div></div>`).join(""):vacio("No hay denuncias abiertas.")}
-window.renderProfes=()=>{const q=(document.getElementById("buscar-prof").value||"").toLowerCase().trim(),a=D.users.filter(x=>x.id!==user?.uid).filter(x=>!q||`${nombre(x)} ${x.email||""} ${x.dni||""}`.toLowerCase().includes(q));profesores.innerHTML=a.length?a.map(x=>{const p=x.rolProfesor===true||x.esProfesor===true||x.rol==="Profesor"||x.roles?.profesor===true;return`<div class="item user-row"><div><strong>${esc(nombre(x))}</strong><small>${esc(x.email||"Sin email")}${x.dni?` · DNI ${esc(x.dni)}`:""}</small><span class="badge ${p?"green":""}">${p?"Profesor activo":"Sin rol Profesor"}</span></div><div class="actions">${p?`<button class="btn" onclick="profesor('${esc(x.id)}',false)">Quitar rol</button>`:`<button class="btn primary" onclick="profesor('${esc(x.id)}',true)">Dar rol</button>`}</div></div>`}).join(""):vacio("No se encontraron usuarios.")};function renderSanc(){const a=sancA();sanciones.innerHTML=a.length?a.map(x=>`<div class="item"><strong>${esc(nombre(x.u))}</strong><small>${esc(x.s.motivo||"Sin motivo")}${x.s.hasta?` · hasta ${esc(ftxt(x.s.hasta))}`:""}</small><span class="badge red">Activa</span><div class="actions"><button class="btn" onclick="quitarSanc('${esc(x.u.id)}')">Levantar</button></div></div>`).join(""):vacio("No hay sanciones activas.")}
-function renderSponsors(){document.getElementById("sponsor-preview").innerHTML=D.sponsors.map((x,i)=>`<div class="sponsor-box ${i===2?"center":""}">${x.logoUrl?`<img src="${esc(x.logoUrl)}">`:"<span style='color:#98a2b3;font-size:.58rem'>Vacío</span>"}</div>`).join("");document.getElementById("sponsor-form").innerHTML=D.sponsors.map((x,i)=>`<div class="sponsor-slot"><h4>${i===2?"Patrocinador 3 · Principal":`Patrocinador ${i+1}`}</h4><input id="spn-${i}" class="input" placeholder="Nombre" value="${esc(x.nombre)}"><input id="spl-${i}" class="input" placeholder="URL del logo" value="${esc(x.logoUrl)}"><input id="spu-${i}" class="input" placeholder="Link de destino" value="${esc(x.link)}"></div>`).join("")}
-function buildAct(){const a=[];D.inc.forEach(x=>a.push({t:"Incidente",x:`${x.tipo||""} · ${x.reportadoPor||""}`,f:x.creadoEn||x.fecha}));D.den.forEach(x=>a.push({t:"Denuncia",x:x.motivo||x.detalle||"",f:x.creadoEn||x.fecha}));D.users.forEach(x=>{if(x.profesorAsignadoEn)a.push({t:"Profesor",x:`Rol asignado a ${nombre(x)}`,f:x.profesorAsignadoEn});if(x.profesorQuitadoEn)a.push({t:"Profesor",x:`Rol retirado a ${nombre(x)}`,f:x.profesorQuitadoEn})});D.act=a}const actCard=x=>`<div class="item"><strong>${esc(x.t)}</strong><small>${esc(x.x)}${x.f?` · ${esc(ftxt(x.f))}`:""}</small></div>`;function renderAct(){actividad.innerHTML=D.act.length?D.act.map(actCard).join(""):vacio("Sin actividad registrada.")}
-async function run(fn,ok){try{await fn();toast(ok,"success");await cargarAdmin()}catch(e){toast(e.code==="permission-denied"?"Firestore bloqueó la acción. Revisá las reglas Admin.":(e.message||"No se pudo completar la acción."),"error")}}window.resolverPartido=p=>run(()=>fs.setDoc(fs.doc(db,...String(p).split("/").filter(Boolean)),{pendienteRevision:false,resultadoIncongruente:false,revisionAdmin:true,revisionAdminEn:fs.serverTimestamp()},{merge:true}),"Revisión actualizada.");window.resolverInc=id=>run(()=>fs.setDoc(fs.doc(db,"incidentes",id),{estado:"resuelto",resueltoEn:fs.serverTimestamp()},{merge:true}),"Incidente resuelto.");window.cerrarDen=id=>run(()=>fs.setDoc(fs.doc(db,"denuncias",id),{estado:"cerrada",cerradaEn:fs.serverTimestamp()},{merge:true}),"Denuncia cerrada.");window.profesor=(uid,on)=>run(()=>fs.updateDoc(fs.doc(db,"users",uid),{rolProfesor:on,"roles.profesor":on,solicitudProfesor:false,rolProfesorSolicitado:false,[on?"profesorAsignadoPor":"profesorQuitadoPor"]:user.uid,[on?"profesorAsignadoEn":"profesorQuitadoEn"]:fs.serverTimestamp()}),on?"Rol Profesor asignado.":"Rol Profesor retirado.");window.nuevaSancion=()=>{const k=prompt("UID o email del usuario:");if(!k)return;const u=D.users.find(x=>x.id===k||x.email===k);if(!u)return toast("Usuario no encontrado.","error");const m=prompt("Motivo:");if(!m)return;const dias=Number(prompt("Días (0 = indefinida):","7")||0);run(async()=>{const ref=fs.doc(db,"users",u.id),s=await fs.getDoc(ref),d=s.data()||{},a=Array.isArray(d.sanciones)?[...d.sanciones]:[];a.push({id:`s-${Date.now()}`,tipo:"competitiva",motivo:m,activa:true,desde:new Date().toISOString(),hasta:dias>0?new Date(Date.now()+dias*86400000).toISOString():null,aplicadaPor:user.uid});await fs.updateDoc(ref,{sanciones:a})},"Sanción aplicada.")};window.quitarSanc=uid=>run(()=>fs.updateDoc(fs.doc(db,"users",uid),{sanciones:[]}),"Sanciones retiradas.");window.guardarSponsors=()=>{const a=[0,1,2,3,4].map(i=>({id:`sponsor-${i}`,slot:i,nombre:document.getElementById(`spn-${i}`).value.trim(),logoUrl:document.getElementById(`spl-${i}`).value.trim(),link:document.getElementById(`spu-${i}`).value.trim(),activo:!!document.getElementById(`spl-${i}`).value.trim()}));return run(()=>fs.setDoc(fs.doc(db,"configuracion","inicio"),{patrocinadores:a,actualizadoEn:fs.serverTimestamp(),actualizadoPor:user.uid},{merge:true}),"Patrocinadores guardados.")}
-</script></body></html>
+const VER="10.12.5";
+
+const [appMod,fs,authMod]=await Promise.all([
+  import(`https://www.gstatic.com/firebasejs/${VER}/firebase-app.js`),
+  import(`https://www.gstatic.com/firebasejs/${VER}/firebase-firestore.js`),
+  import(`https://www.gstatic.com/firebasejs/${VER}/firebase-auth.js`)
+]);
+
+const app=appMod.getApps().length?appMod.getApp():appMod.initializeApp(firebaseConfig);
+const db=fs.getFirestore(app);
+const auth=authMod.getAuth(app);
+
+const $=id=>document.getElementById(id);
+
+let currentUser=null;
+let currentProfile=null;
+let loadingAdmin=false;
+let modalResolver=null;
+
+let D={
+  users:[],
+  den:[],
+  inc:[],
+  partidos:[],
+  sponsors:[],
+  act:[]
+};
+
+const labels={
+  resumen:["Resumen","Estado general del Circuito."],
+  revisiones:["Revisiones","Resultados e incidentes pendientes."],
+  denuncias:["Denuncias","Reportes de jugadores."],
+  profesores:["Roles Profesor","Administración de profesores."],
+  sanciones:["Sanciones","Restricciones competitivas."],
+  patrocinadores:["Patrocinadores","Contenido mostrado en Inicio."],
+  actividad:["Actividad","Últimos movimientos relevantes."]
+};
+
+function esc(v){
+  return String(v??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+function nombre(u){
+  return `${u?.nombre||""} ${u?.apellido||""}`.trim()||u?.email||u?.id||"Usuario";
+}
+
+function isAdmin(p){
+  return p?.esAdmin===true||p?.rol==="Admin"||p?.roles?.admin===true;
+}
+
+function vacio(t){
+  return `<div class="empty">${esc(t)}</div>`;
+}
+
+function ftxt(v){
+  try{
+    const d=v?.toDate?v.toDate():new Date(v);
+    return isNaN(d)?"":d.toLocaleString("es-AR",{dateStyle:"short",timeStyle:"short"});
+  }catch{
+    return "";
+  }
+}
+
+function toast(texto,tipo="info",duracion=3400){
+  const wrap=$("toasts");
+  if(!wrap)return;
+  const el=document.createElement("div");
+  el.className=`toast ${tipo}`;
+  el.textContent=texto;
+  wrap.appendChild(el);
+  setTimeout(()=>el.remove(),duracion);
+}
+
+function mensajeFirebase(error,fallback="No se pudo completar la acción."){
+  console.error("[Administración]",error);
+  const code=String(error?.code||"");
+  if(code.includes("permission-denied"))return "Firestore bloqueó esta acción. Revisá los permisos del administrador.";
+  if(code.includes("unavailable"))return "No hay conexión con Firebase. Revisá Internet e intentá nuevamente.";
+  if(code.includes("network-request-failed"))return "No se pudo conectar con Firebase.";
+  if(code.includes("wrong-password")||code.includes("invalid-credential")||code.includes("user-not-found"))return "Email o contraseña incorrectos.";
+  return error?.message||fallback;
+}
+
+function setButtonLoading(btn,loading,texto="Procesando..."){
+  if(!btn)return;
+  if(loading){
+    btn.dataset.originalText=btn.textContent;
+    btn.textContent=texto;
+    btn.disabled=true;
+    btn.classList.add("loading");
+  }else{
+    btn.textContent=btn.dataset.originalText||btn.textContent;
+    btn.disabled=false;
+    btn.classList.remove("loading");
+  }
+}
+
+function setModo(modo){
+  const authScreen=$("auth");
+  const shell=$("shell");
+
+  if(modo==="admin"){
+    document.body.classList.remove("auth-mode");
+    document.body.classList.add("admin-mode");
+    authScreen.hidden=true;
+    shell.hidden=false;
+    window.scrollTo({top:0,left:0,behavior:"instant"});
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+  }else{
+    document.body.classList.add("auth-mode");
+    document.body.classList.remove("admin-mode");
+    shell.hidden=true;
+    authScreen.hidden=false;
+    window.scrollTo({top:0,left:0,behavior:"instant"});
+    document.documentElement.scrollTop=0;
+    document.body.scrollTop=0;
+  }
+}
+
+function authError(texto=""){
+  const el=$("auth-error");
+  if(el)el.textContent=texto;
+}
+
+window.toggleMenu=function(){
+  const sidebar=$("sidebar");
+  const overlay=$("sidebar-overlay");
+  const open=!sidebar.classList.contains("open");
+  sidebar.classList.toggle("open",open);
+  overlay.classList.toggle("visible",open);
+};
+
+window.cerrarMenuMovil=function(){
+  $("sidebar")?.classList.remove("open");
+  $("sidebar-overlay")?.classList.remove("visible");
+};
+
+window.vista=function(v){
+  if(!labels[v])return;
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===`v-${v}`));
+  document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===v));
+  $("title").textContent=labels[v][0];
+  $("subtitle").textContent=labels[v][1];
+  cerrarMenuMovil();
+  window.scrollTo({top:0,left:0,behavior:"instant"});
+};
+
+window.loginAdmin=async function(){
+  const btn=$("login");
+  const email=$("email")?.value.trim()||"";
+  const password=$("password")?.value||"";
+
+  authError("");
+
+  if(!email||!password){
+    authError("Completá email y contraseña.");
+    return;
+  }
+
+  setButtonLoading(btn,true,"Ingresando...");
+  try{
+    await authMod.signInWithEmailAndPassword(auth,email,password);
+  }catch(error){
+    authError(mensajeFirebase(error,"No se pudo iniciar sesión."));
+  }finally{
+    setButtonLoading(btn,false);
+  }
+};
+
+window.logoutAdmin=async function(){
+  const ok=await confirmarAdmin({
+    titulo:"Cerrar sesión",
+    texto:"¿Querés cerrar tu sesión de Administración?",
+    confirmar:"Cerrar sesión",
+    peligro:false
+  });
+  if(!ok)return;
+
+  try{
+    await authMod.signOut(auth);
+    toast("Sesión cerrada.","success");
+  }catch(error){
+    toast(mensajeFirebase(error,"No se pudo cerrar sesión."),"error");
+  }
+};
+
+function abrirModalBase({titulo,texto="",body="",acciones=""}){
+  $("modal-title").textContent=titulo||"";
+  $("modal-text").textContent=texto||"";
+  $("modal-body").innerHTML=body||"";
+  $("modal-actions").innerHTML=acciones||"";
+  $("modal-error").textContent="";
+  $("app-modal").hidden=false;
+  document.body.style.overflow="hidden";
+}
+
+window.cerrarModalAdmin=function(valor=false){
+  $("app-modal").hidden=true;
+  $("modal-body").innerHTML="";
+  $("modal-actions").innerHTML="";
+  $("modal-error").textContent="";
+  document.body.style.overflow=currentUser?"auto":"hidden";
+
+  if(modalResolver){
+    const resolver=modalResolver;
+    modalResolver=null;
+    resolver(valor);
+  }
+};
+
+function confirmarAdmin({titulo,texto,confirmar="Confirmar",peligro=false}){
+  return new Promise(resolve=>{
+    modalResolver=resolve;
+    abrirModalBase({
+      titulo,
+      texto,
+      acciones:`
+        <button class="btn" type="button" onclick="cerrarModalAdmin(false)">Cancelar</button>
+        <button class="btn ${peligro?"":"primary"}" type="button" id="modal-confirm-btn">${esc(confirmar)}</button>
+      `
+    });
+    $("modal-confirm-btn").onclick=()=>cerrarModalAdmin(true);
+  });
+}
+
+function modalSancion(){
+  return new Promise(resolve=>{
+    modalResolver=resolve;
+    abrirModalBase({
+      titulo:"Nueva sanción",
+      texto:"Aplicá una restricción competitiva a un usuario.",
+      body:`
+        <div class="modal-field">
+          <label>Usuario</label>
+          <input id="modal-user-search" class="input" placeholder="Email, DNI o UID">
+        </div>
+        <div class="modal-field">
+          <label>Motivo</label>
+          <input id="modal-sanction-reason" class="input" placeholder="Ej. resultados falsos reiterados">
+        </div>
+        <div class="modal-field">
+          <label>Duración en días</label>
+          <input id="modal-sanction-days" class="input" type="number" min="0" value="7">
+        </div>
+        <p class="modal-help">Usá 0 días para una sanción sin fecha de vencimiento.</p>
+      `,
+      acciones:`
+        <button class="btn" type="button" onclick="cerrarModalAdmin(false)">Cancelar</button>
+        <button class="btn primary" type="button" id="modal-sanction-save">Aplicar sanción</button>
+      `
+    });
+
+    $("modal-sanction-save").onclick=()=>{
+      const key=$("modal-user-search").value.trim();
+      const motivo=$("modal-sanction-reason").value.trim();
+      const dias=Math.max(0,Number($("modal-sanction-days").value||0));
+
+      if(!key||!motivo){
+        $("modal-error").textContent="Completá usuario y motivo.";
+        return;
+      }
+
+      const found=D.users.find(u=>u.id===key||u.email===key||String(u.dni||"")===key);
+      if(!found){
+        $("modal-error").textContent="No se encontró ese usuario.";
+        return;
+      }
+
+      const resolver=modalResolver;
+      modalResolver=null;
+      $("app-modal").hidden=true;
+      document.body.style.overflow="auto";
+      resolver({user:found,motivo,dias});
+    };
+  });
+}
+
+authMod.onAuthStateChanged(auth,async user=>{
+  if(!user){
+    currentUser=null;
+    currentProfile=null;
+    setModo("auth");
+    return;
+  }
+
+  try{
+    const snap=await fs.getDoc(fs.doc(db,"users",user.uid));
+    const profile=snap.exists()?{id:snap.id,...snap.data()}:null;
+
+    if(!isAdmin(profile)){
+      await authMod.signOut(auth);
+      setModo("auth");
+      authError("Esta cuenta no tiene permisos de administrador.");
+      return;
+    }
+
+    currentUser=user;
+    currentProfile=profile;
+    $("admin-name").textContent=nombre(profile);
+    $("admin-email").textContent=user.email||"";
+    setModo("admin");
+    await cargarAdmin(false);
+  }catch(error){
+    console.error(error);
+    setModo("auth");
+    authError(mensajeFirebase(error,"No se pudo validar el administrador."));
+  }
+});
+
+async function col(nombreColeccion){
+  const snap=await fs.getDocs(fs.collection(db,nombreColeccion));
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+async function getPartidos(){
+  try{
+    const snap=await fs.getDocs(fs.collectionGroup(db,"partidos"));
+    return snap.docs.map(d=>({id:d.id,_path:d.ref.path,...d.data()}));
+  }catch(error){
+    console.warn("[Admin] partidos",error);
+    return [];
+  }
+}
+
+async function getSponsors(){
+  try{
+    const snap=await fs.getDoc(fs.doc(db,"configuracion","inicio"));
+    const arr=snap.exists()&&Array.isArray(snap.data().patrocinadores)?snap.data().patrocinadores:[];
+    return [0,1,2,3,4].map(i=>{
+      const x=arr.find(v=>Number(v?.slot)===i)||arr[i]||{};
+      return{
+        slot:i,
+        nombre:x.nombre||"",
+        logoUrl:x.logoUrl||"",
+        link:x.link||"",
+        activo:x.activo!==false&&Boolean(x.logoUrl)
+      };
+    });
+  }catch(error){
+    console.warn("[Admin] sponsors",error);
+    return [0,1,2,3,4].map(i=>({slot:i,nombre:"",logoUrl:"",link:"",activo:false}));
+  }
+}
+
+window.cargarAdmin=async function(mostrarMensaje=true){
+  if(loadingAdmin)return;
+  loadingAdmin=true;
+
+  const refreshBtn=document.querySelector('.top > .btn:last-child');
+  setButtonLoading(refreshBtn,true,"Actualizando...");
+
+  try{
+    const [users,den,inc,parts,sp]=await Promise.all([
+      col("users"),
+      col("denuncias").catch(()=>[]),
+      col("incidentes").catch(()=>[]),
+      getPartidos(),
+      getSponsors()
+    ]);
+
+    D={...D,users,den,inc,partidos:parts,sponsors:sp};
+    buildAct();
+    render();
+
+    if(mostrarMensaje)toast("Datos actualizados.","success");
+  }catch(error){
+    toast(mensajeFirebase(error,"No se pudo cargar Administración."),"error",5000);
+  }finally{
+    loadingAdmin=false;
+    setButtonLoading(refreshBtn,false);
+  }
+};
+
+const rev=()=>({
+  p:D.partidos.filter(x=>x.pendienteRevision===true||x.resultadoIncongruente===true),
+  i:D.inc.filter(x=>String(x.estado||"pendiente")!=="resuelto")
+});
+
+const denA=()=>D.den.filter(x=>!["cerrada","resuelta"].includes(String(x.estado||"").toLowerCase()));
+
+const profA=()=>D.users.filter(x=>
+  x.rolProfesor===true||
+  x.esProfesor===true||
+  x.rol==="Profesor"||
+  x.roles?.profesor===true
+);
+
+const sancA=()=>{
+  const now=Date.now();
+  const result=[];
+  D.users.forEach(u=>{
+    (Array.isArray(u.sanciones)?u.sanciones:[]).forEach(s=>{
+      if(s?.activa!==false&&(!s.hasta||new Date(s.hasta).getTime()>now)){
+        result.push({u,s});
+      }
+    });
+  });
+  return result;
+};
+
+function render(){
+  renderResumen();
+  renderRev();
+  renderDen();
+  renderProfes();
+  renderSanc();
+  renderSponsors();
+  renderAct();
+}
+
+function renderResumen(){
+  const r=rev();
+  const d=denA();
+
+  $("stats").innerHTML=[
+    ["Usuarios",D.users.length],
+    ["Profesores",profA().length],
+    ["Revisiones",r.p.length+r.i.length],
+    ["Denuncias",d.length]
+  ].map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
+
+  const pendientes=[
+    ...r.p.slice(0,3).map(x=>`<div class="item"><strong>Resultado · ${esc(x.club||"Club")}</strong><small>${esc(`${x.fecha||""} ${x.hora||""}`)}</small></div>`),
+    ...r.i.slice(0,3).map(x=>`<div class="item"><strong>Incidente · ${esc(x.tipo||"")}</strong><small>${esc(x.detalle||"")}</small></div>`),
+    ...d.slice(0,2).map(x=>`<div class="item"><strong>Denuncia</strong><small>${esc(x.detalle||x.descripcion||"")}</small></div>`)
+  ];
+
+  $("res-pendientes").innerHTML=pendientes.length?`<div class="list">${pendientes.join("")}</div>`:vacio("No hay acciones pendientes.");
+  $("res-actividad").innerHTML=D.act.length?`<div class="list">${D.act.slice(0,6).map(actCard).join("")}</div>`:vacio("Sin actividad reciente.");
+}
+
+function renderRev(){
+  const r=rev();
+  const rows=[
+    ...r.p.map(x=>`
+      <div class="item">
+        <strong>Resultado incongruente · ${esc(x.club||"Club")}</strong>
+        <small>${esc(`${x.fecha||""} · ${x.hora||""}`)}</small>
+        <span class="badge orange">Revisión</span>
+        <div class="actions">
+          <button class="btn primary" onclick="resolverPartido('${esc(x._path)}')">Marcar revisado</button>
+        </div>
+      </div>`),
+    ...r.i.map(x=>`
+      <div class="item">
+        <strong>${esc(x.tipo||"Incidente")}</strong>
+        <small>${esc(`${x.reportadoPor||""} · ${x.detalle||""}`)}</small>
+        <span class="badge orange">Pendiente</span>
+        <div class="actions">
+          <button class="btn primary" onclick="resolverInc('${esc(x.id)}')">Resolver</button>
+        </div>
+      </div>`)
+  ];
+
+  $("revisiones").innerHTML=rows.length?rows.join(""):vacio("No hay revisiones pendientes.");
+}
+
+function renderDen(){
+  const a=denA();
+  $("denuncias").innerHTML=a.length?a.map(x=>`
+    <div class="item">
+      <strong>${esc(x.motivo||"Denuncia")}</strong>
+      <small>${esc(`${x.reportadoPor||x.usuario||""} · ${x.detalle||x.descripcion||""}`)}</small>
+      <span class="badge red">Abierta</span>
+      <div class="actions">
+        <button class="btn primary" onclick="cerrarDen('${esc(x.id)}')">Cerrar</button>
+      </div>
+    </div>`).join(""):vacio("No hay denuncias abiertas.");
+}
+
+window.renderProfes=function(){
+  const q=($("buscar-prof")?.value||"").toLowerCase().trim();
+
+  const users=D.users
+    .filter(x=>x.id!==currentUser?.uid)
+    .filter(x=>!q||`${nombre(x)} ${x.email||""} ${x.dni||""}`.toLowerCase().includes(q));
+
+  $("profesores").innerHTML=users.length?users.map(x=>{
+    const activo=x.rolProfesor===true||x.esProfesor===true||x.rol==="Profesor"||x.roles?.profesor===true;
+    return `
+      <div class="item user-row">
+        <div>
+          <strong>${esc(nombre(x))}</strong>
+          <small>${esc(x.email||"Sin email")}${x.dni?` · DNI ${esc(x.dni)}`:""}</small>
+          <span class="badge ${activo?"green":""}">${activo?"Profesor activo":"Sin rol Profesor"}</span>
+        </div>
+        <div class="actions">
+          ${activo
+            ?`<button class="btn" onclick="profesor('${esc(x.id)}',false)">Quitar rol</button>`
+            :`<button class="btn primary" onclick="profesor('${esc(x.id)}',true)">Dar rol</button>`
+          }
+        </div>
+      </div>`;
+  }).join(""):vacio("No se encontraron usuarios.");
+};
+
+function renderSanc(){
+  const a=sancA();
+  $("sanciones").innerHTML=a.length?a.map(x=>`
+    <div class="item">
+      <strong>${esc(nombre(x.u))}</strong>
+      <small>${esc(x.s.motivo||"Sin motivo")}${x.s.hasta?` · hasta ${esc(ftxt(x.s.hasta))}`:""}</small>
+      <span class="badge red">Activa</span>
+      <div class="actions">
+        <button class="btn" onclick="quitarSanc('${esc(x.u.id)}')">Levantar</button>
+      </div>
+    </div>`).join(""):vacio("No hay sanciones activas.");
+}
+
+function renderSponsors(){
+  $("sponsor-preview").innerHTML=D.sponsors.map((x,i)=>`
+    <div class="sponsor-box ${i===2?"center":""}">
+      ${x.logoUrl?`<img src="${esc(x.logoUrl)}" alt="${esc(x.nombre||"Patrocinador")}">`:"<span style='color:#98a2b3;font-size:.58rem'>Vacío</span>"}
+    </div>`).join("");
+
+  $("sponsor-form").innerHTML=D.sponsors.map((x,i)=>`
+    <div class="sponsor-slot">
+      <h4>${i===2?"Patrocinador 3 · Principal":`Patrocinador ${i+1}`}</h4>
+      <input id="spn-${i}" class="input" placeholder="Nombre" value="${esc(x.nombre)}">
+      <input id="spl-${i}" class="input" placeholder="URL del logo" value="${esc(x.logoUrl)}">
+      <input id="spu-${i}" class="input" placeholder="Link de destino" value="${esc(x.link)}">
+    </div>`).join("");
+}
+
+function buildAct(){
+  const a=[];
+
+  D.inc.forEach(x=>a.push({
+    t:"Incidente",
+    x:`${x.tipo||""} · ${x.reportadoPor||""}`,
+    f:x.creadoEn||x.fecha
+  }));
+
+  D.den.forEach(x=>a.push({
+    t:"Denuncia",
+    x:x.motivo||x.detalle||"",
+    f:x.creadoEn||x.fecha
+  }));
+
+  D.users.forEach(x=>{
+    if(x.profesorAsignadoEn)a.push({t:"Profesor",x:`Rol asignado a ${nombre(x)}`,f:x.profesorAsignadoEn});
+    if(x.profesorQuitadoEn)a.push({t:"Profesor",x:`Rol retirado a ${nombre(x)}`,f:x.profesorQuitadoEn});
+  });
+
+  D.act=a.sort((a,b)=>{
+    const fa=a.f?.toDate?.()?.getTime?.()||new Date(a.f||0).getTime()||0;
+    const fb=b.f?.toDate?.()?.getTime?.()||new Date(b.f||0).getTime()||0;
+    return fb-fa;
+  });
+}
+
+const actCard=x=>`
+  <div class="item">
+    <strong>${esc(x.t)}</strong>
+    <small>${esc(x.x)}${x.f?` · ${esc(ftxt(x.f))}`:""}</small>
+  </div>`;
+
+function renderAct(){
+  $("actividad").innerHTML=D.act.length?D.act.map(actCard).join(""):vacio("Sin actividad registrada.");
+}
+
+async function runAction(fn,ok,{confirmacion=null,button=null}={}){
+  if(confirmacion){
+    const yes=await confirmarAdmin(confirmacion);
+    if(!yes)return false;
+  }
+
+  setButtonLoading(button,true);
+
+  try{
+    await fn();
+    toast(ok,"success");
+    await cargarAdmin(false);
+    return true;
+  }catch(error){
+    toast(mensajeFirebase(error),"error",5000);
+    return false;
+  }finally{
+    setButtonLoading(button,false);
+  }
+}
+
+window.resolverPartido=async function(path){
+  const ok=await confirmarAdmin({
+    titulo:"Confirmar revisión",
+    texto:"Este partido dejará de figurar como resultado pendiente de revisión.",
+    confirmar:"Marcar revisado"
+  });
+  if(!ok)return;
+
+  await runAction(
+    ()=>fs.setDoc(
+      fs.doc(db,...String(path).split("/").filter(Boolean)),
+      {
+        pendienteRevision:false,
+        resultadoIncongruente:false,
+        revisionAdmin:true,
+        revisionAdminEn:fs.serverTimestamp()
+      },
+      {merge:true}
+    ),
+    "Revisión actualizada."
+  );
+};
+
+window.resolverInc=async function(id){
+  const ok=await confirmarAdmin({
+    titulo:"Resolver incidente",
+    texto:"El incidente quedará marcado como resuelto.",
+    confirmar:"Resolver"
+  });
+  if(!ok)return;
+
+  await runAction(
+    ()=>fs.setDoc(
+      fs.doc(db,"incidentes",id),
+      {estado:"resuelto",resueltoEn:fs.serverTimestamp()},
+      {merge:true}
+    ),
+    "Incidente resuelto."
+  );
+};
+
+window.cerrarDen=async function(id){
+  const ok=await confirmarAdmin({
+    titulo:"Cerrar denuncia",
+    texto:"La denuncia dejará de aparecer como pendiente.",
+    confirmar:"Cerrar denuncia"
+  });
+  if(!ok)return;
+
+  await runAction(
+    ()=>fs.setDoc(
+      fs.doc(db,"denuncias",id),
+      {estado:"cerrada",cerradaEn:fs.serverTimestamp()},
+      {merge:true}
+    ),
+    "Denuncia cerrada."
+  );
+};
+
+window.profesor=async function(uid,on){
+  const target=D.users.find(x=>x.id===uid);
+  if(!target)return toast("No se encontró el usuario.","error");
+
+  const yes=await confirmarAdmin({
+    titulo:on?"Dar rol Profesor":"Quitar rol Profesor",
+    texto:on
+      ?`¿Querés habilitar a ${nombre(target)} como Profesor?`
+      :`¿Querés quitar el rol Profesor a ${nombre(target)}?`,
+    confirmar:on?"Dar rol":"Quitar rol"
+  });
+  if(!yes)return;
+
+  await runAction(
+    ()=>fs.updateDoc(
+      fs.doc(db,"users",uid),
+      {
+        rolProfesor:on,
+        "roles.profesor":on,
+        solicitudProfesor:false,
+        rolProfesorSolicitado:false,
+        [on?"profesorAsignadoPor":"profesorQuitadoPor"]:currentUser.uid,
+        [on?"profesorAsignadoEn":"profesorQuitadoEn"]:fs.serverTimestamp()
+      }
+    ),
+    on?"Rol Profesor asignado.":"Rol Profesor retirado."
+  );
+};
+
+window.nuevaSancion=async function(){
+  const values=await modalSancion();
+  if(!values)return;
+
+  const {user:target,motivo,dias}=values;
+
+  await runAction(async()=>{
+    const ref=fs.doc(db,"users",target.id);
+    const snap=await fs.getDoc(ref);
+    const userData=snap.data()||{};
+    const sanciones=Array.isArray(userData.sanciones)?[...userData.sanciones]:[];
+
+    sanciones.push({
+      id:`s-${Date.now()}`,
+      tipo:"competitiva",
+      motivo,
+      activa:true,
+      desde:new Date().toISOString(),
+      hasta:dias>0?new Date(Date.now()+dias*86400000).toISOString():null,
+      aplicadaPor:currentUser.uid
+    });
+
+    await fs.updateDoc(ref,{sanciones});
+  },"Sanción aplicada.");
+};
+
+window.quitarSanc=async function(uid){
+  const target=D.users.find(x=>x.id===uid);
+
+  const yes=await confirmarAdmin({
+    titulo:"Levantar sanciones",
+    texto:`¿Querés quitar las sanciones activas de ${nombre(target)}?`,
+    confirmar:"Levantar sanciones"
+  });
+  if(!yes)return;
+
+  await runAction(
+    ()=>fs.updateDoc(fs.doc(db,"users",uid),{sanciones:[]}),
+    "Sanciones retiradas."
+  );
+};
+
+window.guardarSponsors=async function(){
+  const arr=[0,1,2,3,4].map(i=>({
+    id:`sponsor-${i}`,
+    slot:i,
+    nombre:$(`spn-${i}`).value.trim(),
+    logoUrl:$(`spl-${i}`).value.trim(),
+    link:$(`spu-${i}`).value.trim(),
+    activo:Boolean($(`spl-${i}`).value.trim())
+  }));
+
+  await runAction(
+    ()=>fs.setDoc(
+      fs.doc(db,"configuracion","inicio"),
+      {
+        patrocinadores:arr,
+        actualizadoEn:fs.serverTimestamp(),
+        actualizadoPor:currentUser.uid
+      },
+      {merge:true}
+    ),
+    "Patrocinadores guardados."
+  );
+};
+
+document.addEventListener("DOMContentLoaded",()=>{
+  setModo("auth");
+
+  $("password")?.addEventListener("keydown",e=>{
+    if(e.key==="Enter")loginAdmin();
+  });
+
+  $("email")?.addEventListener("keydown",e=>{
+    if(e.key==="Enter")$("password")?.focus();
+  });
+
+  $("app-modal")?.addEventListener("click",e=>{
+    if(e.target===$("app-modal"))cerrarModalAdmin(false);
+  });
+
+  document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"&&!$("app-modal").hidden)cerrarModalAdmin(false);
+  });
+});
+</script>
+</body></html>
