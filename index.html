@@ -3217,335 +3217,6 @@ img[data-club-image]{background:#e4e7ec}
 }
 </style>
 
-<style id="admin-exclusivo-css">
-body.modo-admin-exclusivo #vista-inicio,
-body.modo-admin-exclusivo #vista-buscar,
-body.modo-admin-exclusivo #vista-notificaciones,
-body.modo-admin-exclusivo #vista-amigos,
-body.modo-admin-exclusivo #vista-ranking,
-body.modo-admin-exclusivo #vista-partidos,
-body.modo-admin-exclusivo #vista-partido-detalle,
-body.modo-admin-exclusivo #vista-torneos,
-body.modo-admin-exclusivo #vista-academia,
-body.modo-admin-exclusivo #vista-perfil,
-body.modo-admin-exclusivo #vista-menu,
-body.modo-admin-exclusivo #vista-clubes,
-body.modo-admin-exclusivo #mobile-bottom-nav{
-  display:none!important;
-}
-
-body.modo-admin-exclusivo #vista-admin{
-  display:block!important;
-}
-
-body.modo-admin-exclusivo .contenedor-principal{
-  padding-bottom:28px!important;
-  width:min(100%,1100px)!important;
-}
-
-body.modo-admin-exclusivo #vista-admin .btn-volver{
-  display:none!important;
-}
-
-.admin-usuarios-profesor{
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-
-.admin-usuario-profesor{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:12px 13px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:#fff;
-}
-
-.admin-usuario-profesor-info{
-  min-width:0;
-}
-.admin-usuario-profesor-info strong{
-  display:block;
-  font-size:.78rem;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-.admin-usuario-profesor-info small{
-  display:block;
-  margin-top:3px;
-  color:#667085;
-  font-size:.66rem;
-}
-.admin-profesor-estado{
-  display:inline-flex;
-  margin-top:5px;
-  padding:4px 7px;
-  border-radius:999px;
-  font-size:.58rem;
-  font-weight:900;
-}
-.admin-profesor-estado.activo{
-  background:#ecfdf3;
-  color:#067647;
-}
-.admin-profesor-estado.inactivo{
-  background:#f2f4f7;
-  color:#667085;
-}
-.admin-profesor-acciones{
-  display:flex;
-  gap:6px;
-  flex:none;
-}
-.admin-profesor-acciones .btn{
-  width:auto!important;
-  min-height:34px!important;
-  margin:0!important;
-  padding:6px 9px!important;
-  font-size:.64rem!important;
-}
-.admin-profesor-busqueda{
-  margin-bottom:10px;
-}
-@media(max-width:560px){
-  .admin-usuario-profesor{
-    align-items:stretch;
-    flex-direction:column;
-  }
-  .admin-profesor-acciones{
-    width:100%;
-  }
-  .admin-profesor-acciones .btn{
-    flex:1;
-  }
-}
-</style>
-
-
-<style id="admin-redisenado-css">
-body.modo-admin-exclusivo{
-  background:#f7f8fa!important;
-}
-
-body.modo-admin-exclusivo .contenedor-principal{
-  width:min(100%,920px)!important;
-  padding:clamp(14px,3vw,28px)!important;
-  padding-bottom:36px!important;
-}
-
-#vista-admin{
-  max-width:920px;
-  margin:0 auto;
-}
-
-#vista-admin .header-vista{
-  min-height:52px;
-  margin-bottom:12px;
-  padding:0 2px 12px;
-  border-bottom:1px solid #e4e7ec;
-  justify-content:flex-start!important;
-}
-
-#vista-admin .header-vista h3{
-  font-size:clamp(1.15rem,2.5vw,1.45rem)!important;
-  letter-spacing:-.025em;
-}
-
-.admin-toolbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:14px;
-}
-
-.admin-toolbar-copy strong{
-  display:block;
-  color:#101828;
-  font-size:.82rem;
-}
-.admin-toolbar-copy span{
-  display:block;
-  margin-top:2px;
-  color:#667085;
-  font-size:.68rem;
-}
-
-.admin-logout{
-  width:auto!important;
-  min-height:38px!important;
-  margin:0!important;
-  padding:7px 11px!important;
-  border:1px solid #d0d5dd!important;
-  border-radius:10px!important;
-  background:#fff!important;
-  color:#344054!important;
-  font-size:.7rem!important;
-  box-shadow:none!important;
-}
-
-.admin-tabs.admin-tabs-5{
-  display:flex!important;
-  width:100%;
-  gap:4px!important;
-  margin:0 0 16px!important;
-  padding:4px!important;
-  overflow-x:auto;
-  scrollbar-width:none;
-  border:1px solid #e4e7ec!important;
-  border-radius:14px!important;
-  background:#fff!important;
-  box-shadow:0 3px 10px rgba(16,24,40,.025);
-}
-.admin-tabs.admin-tabs-5::-webkit-scrollbar{display:none}
-.admin-tabs.admin-tabs-5 button{
-  flex:1 0 auto;
-  min-width:100px;
-  min-height:40px;
-  padding:8px 10px!important;
-  border-radius:10px!important;
-  color:#667085!important;
-  background:transparent!important;
-  font-size:.7rem!important;
-  font-weight:850!important;
-}
-.admin-tabs.admin-tabs-5 button.activo{
-  background:#101828!important;
-  color:#fff!important;
-  box-shadow:none!important;
-}
-
-.admin-panel .admin-card{
-  margin:0 0 10px!important;
-  padding:15px!important;
-  border:1px solid #e4e7ec!important;
-  border-radius:16px!important;
-  background:#fff!important;
-  box-shadow:0 4px 14px rgba(16,24,40,.035)!important;
-}
-
-.admin-card>strong{
-  display:block;
-  color:#101828;
-  font-size:.88rem!important;
-}
-.admin-card>p{
-  margin:4px 0 12px!important;
-  color:#667085!important;
-  font-size:.72rem!important;
-  line-height:1.45!important;
-}
-
-.admin-profesor-busqueda{
-  margin:0 0 12px!important;
-  min-height:44px!important;
-  border-radius:12px!important;
-}
-
-.admin-usuarios-profesor{
-  gap:8px!important;
-}
-
-.admin-usuario-profesor{
-  padding:11px 12px!important;
-  border:1px solid #eaecf0!important;
-  border-radius:13px!important;
-  background:#fcfcfd!important;
-}
-
-.admin-usuario-profesor-info strong{
-  font-size:.76rem!important;
-}
-.admin-usuario-profesor-info small{
-  color:#667085!important;
-  font-size:.63rem!important;
-}
-.admin-profesor-estado{
-  margin-top:5px!important;
-  padding:4px 7px!important;
-  font-size:.56rem!important;
-}
-
-.admin-profesor-acciones .btn,
-.admin-actions .btn{
-  min-height:36px!important;
-  padding:7px 10px!important;
-  border-radius:9px!important;
-  font-size:.66rem!important;
-  box-shadow:none!important;
-}
-
-.admin-profesor-acciones .btn-primario,
-.admin-actions .btn-primario{
-  background:#101828!important;
-  border-color:#101828!important;
-  color:#fff!important;
-}
-.admin-profesor-acciones .btn-secundario,
-.admin-actions .btn-secundario{
-  background:#fff!important;
-  color:#344054!important;
-  border:1px solid #d0d5dd!important;
-}
-
-.admin-sponsor-form{
-  gap:8px!important;
-}
-.admin-sponsor-slot{
-  padding:11px!important;
-  border:1px solid #eaecf0!important;
-  border-radius:12px!important;
-  background:#fcfcfd!important;
-}
-.admin-sponsor-slot h5{
-  margin:0 0 8px!important;
-  color:#475467;
-  font-size:.68rem!important;
-}
-.admin-sponsor-slot .input-form{
-  min-height:42px!important;
-  margin-bottom:7px!important;
-  border-radius:10px!important;
-}
-
-.admin-save-status{
-  display:none;
-  margin-top:9px;
-  padding:8px 10px;
-  border-radius:9px;
-  font-size:.66rem;
-  font-weight:800;
-}
-.admin-save-status.visible{display:block}
-.admin-save-status.ok{background:#ecfdf3;color:#067647}
-.admin-save-status.error{background:#fef3f2;color:#b42318}
-
-.admin-section-title{
-  margin:0 0 12px;
-  color:#101828;
-  font-size:.82rem;
-}
-
-@media(max-width:600px){
-  body.modo-admin-exclusivo .contenedor-principal{
-    padding:12px!important;
-  }
-  .admin-toolbar{
-    align-items:flex-start;
-  }
-  .admin-toolbar-copy span{
-    max-width:210px;
-  }
-  .admin-tabs.admin-tabs-5 button{
-    min-width:92px;
-  }
-}
-</style>
-
 </head>
 <body>
 
@@ -4160,7 +3831,6 @@ body.modo-admin-exclusivo .contenedor-principal{
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('perfil')">👤 Mi perfil</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="cambiarVistaPrincipal('clubes')">🎾 Nuestros clubes</button>
                 <button id="menu-profesor-btn" class="btn cancha-bg" style="text-align:left;padding:15px;" onclick="accionMenuProfesor()">🧑‍🏫 Profesores · Solicitar rol</button>
-                <button id="menu-admin-btn" class="btn cancha-bg" style="text-align:left;padding:15px;display:none;" onclick="cambiarVistaPrincipal('admin')"><svg class="menu-inline-svg" aria-hidden="true"><use href="#i-shield"></use></svg> Administración</button>
                 <button class="btn cancha-bg" style="text-align: left; padding: 15px;" onclick="window.location.href='mailto:soporte@app.com'">📧 Contáctanos</button>
                 <button id="menu-push-btn" class="btn cancha-bg" style="text-align:left;padding:15px;" onclick="activarNotificacionesPush()"><svg class="menu-inline-svg" aria-hidden="true"><use href="#i-bell"></use></svg> Activar notificaciones</button>
                 <button class="btn btn-alerta" style="text-align: left; padding: 15px;" onclick="abrirModalDenunciar()">⚠️ Denunciar</button>
@@ -4169,34 +3839,7 @@ body.modo-admin-exclusivo .contenedor-principal{
         </div>
 
 
-<div id="vista-admin" class="vista-interna">
-  <div class="header-vista">
-    <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">←</button>
-    <h3 style="margin:0;">Administración</h3><div style="width:30px"></div>
-  </div>
-  <div class="admin-tabs admin-tabs-5">
-    <button class="activo" data-admin-tab="revision" onclick="cambiarAdminPanel('revision')">Revisión</button>
-    <button data-admin-tab="denuncias" onclick="cambiarAdminPanel('denuncias')">Denuncias</button>
-    <button data-admin-tab="profesores" onclick="cambiarAdminPanel('profesores')">Roles</button>
-    <button data-admin-tab="sanciones" onclick="cambiarAdminPanel('sanciones')">Sanciones</button>
-    <button data-admin-tab="patrocinadores" onclick="cambiarAdminPanel('patrocinadores')">Patroc.</button>
-  </div>
-  <div class="admin-toolbar">
-    <div class="admin-toolbar-copy">
-      <strong>Panel de control</strong>
-      <span>Administrá usuarios, revisiones y contenido del circuito.</span>
-    </div>
-    <button class="btn admin-logout" onclick="cerrarSesionUsuario()">Cerrar sesión</button>
-  </div>
-  <section id="admin-panel-revision" class="admin-panel activo"><div id="admin-resultados-revision"></div></section>
-  <section id="admin-panel-denuncias" class="admin-panel"><div id="admin-denuncias"></div></section>
-  <section id="admin-panel-profesores" class="admin-panel"><div id="admin-profesores"></div></section>
-  <section id="admin-panel-sanciones" class="admin-panel"><div id="admin-sanciones"></div></section>
-  <section id="admin-panel-patrocinadores" class="admin-panel"><div id="admin-patrocinadores"></div></section>
-</div>
-
-
-        <div id="vista-clubes" class="vista-interna">
+<div id="vista-clubes" class="vista-interna">
             <div class="header-vista">
                 <button class="btn-volver" onclick="cambiarVistaPrincipal('menu')">⬅</button>
                 <h3 style="margin: 0;">🎾 Nuestros Clubes</h3>
@@ -5473,98 +5116,6 @@ window.CIRCUITO_SINGLE_FILE = true;
             }).join('');
         }
 
-        function renderizarAdminPatrocinadores() {
-            const cont = document.getElementById('admin-patrocinadores');
-            if (!cont) return;
-
-            // Si el usuario está escribiendo en el formulario, no lo destruimos por un
-            // re-render ajeno. Solo se reconstruye si el panel no tiene un formulario.
-            if (cont.querySelector('.admin-sponsor-form') && document.activeElement?.closest('#admin-patrocinadores')) {
-                return;
-            }
-
-            const lista = normalizarPatrocinadores(patrocinadoresData);
-
-            cont.innerHTML = `
-                <div class="admin-card">
-                    <strong>Patrocinadores de Inicio</strong>
-                    <p>Configurá hasta cinco logos. El tercero aparece destacado en el centro.</p>
-                    <div class="admin-sponsor-form">
-                        ${lista.map((item,i)=>`
-                            <div class="admin-sponsor-slot">
-                                <h5>${i===2 ? 'Patrocinador 3 · Principal' : `Patrocinador ${i+1}`}</h5>
-                                <input id="admin-sponsor-nombre-${i}" class="input-form" placeholder="Nombre" value="${escaparHtmlClub(item.nombre || '')}">
-                                <input id="admin-sponsor-logo-${i}" class="input-form" placeholder="URL del logo" value="${escaparHtmlClub(item.logoUrl || '')}">
-                                <input id="admin-sponsor-link-${i}" class="input-form" placeholder="Link de destino" value="${escaparHtmlClub(item.link || '')}">
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div class="admin-actions">
-                        <button class="btn btn-primario" onclick="ejecutarConBoton(this, () => guardarPatrocinadoresAdmin(), 'Guardando...')">Guardar cambios</button>
-                    </div>
-                    <div id="admin-sponsor-status" class="admin-save-status"></div>
-                </div>`;
-        }
-
-        async function guardarPatrocinadoresAdmin() {
-            const status = document.getElementById('admin-sponsor-status');
-
-            try {
-                if (!firebaseAPI || !usuarioActual) throw new Error('Firebase todavía no está listo.');
-
-                // Siempre guardamos los cinco slots, incluso si alguno está vacío.
-                const lista = [0,1,2,3,4].map(i => {
-                    const nombre = document.getElementById(`admin-sponsor-nombre-${i}`)?.value?.trim() || '';
-                    const logoUrl = document.getElementById(`admin-sponsor-logo-${i}`)?.value?.trim() || '';
-                    const link = document.getElementById(`admin-sponsor-link-${i}`)?.value?.trim() || '';
-                    return {
-                        id:`sponsor-${i}`,
-                        slot:i,
-                        nombre,
-                        logoUrl,
-                        link,
-                        activo:Boolean(logoUrl)
-                    };
-                });
-
-                // Actualizamos memoria antes de escribir para que ningún render async
-                // vuelva a mostrar una versión anterior.
-                patrocinadoresData = lista.map(item => ({...item}));
-
-                await firebaseAPI.setDoc(
-                    firebaseAPI.doc(firebaseAPI.db,'configuracion','inicio'),
-                    {
-                        patrocinadores:lista,
-                        actualizadoEn:firebaseAPI.serverTimestamp(),
-                        actualizadoPor:usuarioActual.uid
-                    },
-                    {merge:true}
-                );
-
-                renderizarPatrocinadores();
-
-                if (status) {
-                    status.className='admin-save-status visible ok';
-                    status.textContent='Cambios guardados correctamente.';
-                }
-                mostrarAviso('Patrocinadores guardados.','success');
-            } catch(error) {
-                console.error('[Patrocinadores]',error);
-                const msg=String(error?.code||'').includes('permission-denied')
-                    ? 'Firestore no permite guardar esta configuración. Revisá las reglas del administrador.'
-                    : (error?.message || 'No se pudieron guardar los patrocinadores.');
-
-                if (status) {
-                    status.className='admin-save-status visible error';
-                    status.textContent=msg;
-                }
-                mostrarAviso(msg,'error',5200);
-                throw error;
-            }
-        }
-
-        window.guardarPatrocinadoresAdmin = guardarPatrocinadoresAdmin;
-        window.renderizarAdminPatrocinadores = renderizarAdminPatrocinadores;
 
         function renderizarTodo() {
             renderizarNotificaciones(); renderizarBanner(); renderizarRanking();
@@ -5576,7 +5127,7 @@ window.CIRCUITO_SINGLE_FILE = true;
             actualizarPerfilResumen();
             renderizarHomePrioridad();
             actualizarChipsFiltrosUnirse();
-            if (typeof window.actualizarModoAdminUI === 'function') window.actualizarModoAdminUI();
+            
         }
 
         function escaparAtributoJs(valor) {
@@ -9119,10 +8670,15 @@ window.CIRCUITO_SINGLE_FILE = true;
                         profesor: perfilUsuario.rolProfesor,
                         roles: perfilUsuario.roles
                     });
-                    if (typeof window.actualizarModoAdminUI === 'function') window.actualizarModoAdminUI();
+                    if (perfilUsuario.esAdmin === true || perfilUsuario.roles?.admin === true || perfilUsuario.rol === 'Admin') {
+                        location.replace('./admin.html');
+                        return;
+                    }
+
+                    
                     if (perfilUsuario.esAdmin === true || perfilUsuario.roles?.admin === true || perfilUsuario.rol === 'Admin') {
                         setTimeout(() => {
-                            if (typeof window.cambiarVistaPrincipal === 'function') window.cambiarVistaPrincipal('admin');
+                            if (typeof window.cambiarVistaPrincipal === 'function') location.replace('./admin.html');
                         }, 0);
                     }
                 } else {
@@ -9461,9 +9017,6 @@ window.CIRCUITO_SINGLE_FILE = true;
                         renderizarPatrocinadores();
 
                         // No pisar lo que el administrador está escribiendo.
-                        if (!document.activeElement?.closest('#admin-patrocinadores')) {
-                            renderizarAdminPatrocinadores();
-                        }
                     },
                     (error) => logFirebaseError('lectura de patrocinadores', error, {opcional:true})
                 );
@@ -10632,9 +10185,10 @@ window.CIRCUITO_SINGLE_FILE = true;
 
 
 // ===== feature-ui.js =====
-
 (function(){
-  function svg(name, cls='app-svg'){ return `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`; }
+  function svg(name, cls='app-svg'){
+    return `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+  }
   window.circuitoSvg = svg;
 
   window.usuarioEsAdmin = function(){
@@ -10645,71 +10199,39 @@ window.CIRCUITO_SINGLE_FILE = true;
     );
   };
 
-  window.actualizarModoAdminUI = function(){
-    const esAdmin = usuarioEsAdmin();
-    const admin = document.getElementById('menu-admin-btn');
-    if (admin) admin.style.display = esAdmin ? '' : 'none';
-
-    document.body.classList.toggle('modo-admin-exclusivo', esAdmin);
-
-    if (esAdmin) {
-      document.querySelectorAll('.vista-interna, #vista-inicio').forEach(el => {
-        el.style.display = 'none';
-      });
-      const vistaAdmin = document.getElementById('vista-admin');
-      if (vistaAdmin) vistaAdmin.style.display = 'block';
-
-      if (typeof window.renderizarAdmin === 'function') {
-        setTimeout(() => window.renderizarAdmin(), 0);
-      }
-    }
-  };
-
   window.usuarioTieneSancionCompetitiva = function(){
     const sanciones = Array.isArray(perfilUsuario?.sanciones) ? perfilUsuario.sanciones : [];
     const ahora = Date.now();
-    return sanciones.some(s => s?.activa !== false && (!s.hasta || new Date(s.hasta).getTime() > ahora) &&
+    return sanciones.some(s => s?.activa !== false &&
+      (!s.hasta || new Date(s.hasta).getTime() > ahora) &&
       ['competitiva','suspension','bloqueo'].includes(String(s.tipo||'').toLowerCase()));
+  };
+
+  window.actualizarAccionesContextuales = function(){
+    const sancionado = usuarioTieneSancionCompetitiva();
+    document.querySelectorAll('[data-accion-competitiva]').forEach(el => el.hidden = sancionado);
+  };
+
+  window.redirigirAdministrador = function(){
+    if (!usuarioEsAdmin()) return false;
+    location.replace('./admin.html');
+    return true;
   };
 
   const oldRenderTodo = window.renderizarTodo;
   window.renderizarTodo = function(){
     if (typeof oldRenderTodo === 'function') oldRenderTodo();
-    actualizarModoAdminUI();
+    if (redirigirAdministrador()) return;
     actualizarAccionesContextuales();
-  };
-
-  window.actualizarAccionesContextuales = function(){
-    const sancionado = usuarioTieneSancionCompetitiva();
-    document.querySelectorAll('[data-accion-competitiva]').forEach(el => {
-      el.hidden = sancionado;
-    });
-    if (sancionado) {
-      document.getElementById('home-prioridad')?.insertAdjacentHTML('afterbegin',
-        `<div class="home-prioridad-card"><div><strong>Participación competitiva restringida</strong><span>Revisá tu perfil o contactá a administración.</span></div></div>`);
-    }
   };
 
   const oldCambiar = window.cambiarVistaPrincipal;
   window.cambiarVistaPrincipal = function(vista){
-    if (usuarioEsAdmin()) {
-      if (vista !== 'admin') {
-        vista = 'admin';
-      }
-      oldCambiar('admin');
-      renderizarAdmin();
-      return;
-    }
-
-    if (vista === 'admin') {
-      return mostrarAviso('No tenés permisos de administración.','error');
-    }
-
+    if (redirigirAdministrador()) return;
     oldCambiar(vista);
     if (vista === 'perfil') renderizarPerfilCompetitivoExtra();
   };
 })();
-
 
 // ===== feature-profile.js =====
 
@@ -10871,268 +10393,6 @@ window.CIRCUITO_SINGLE_FILE = true;
       return oldJoin(...args);
     };
   }
-})();
-
-
-// ===== feature-admin.js =====
-
-(function(){
-  let adminData={denuncias:[],incidentes:[],profesores:[],usuarios:[]};
-
-  function mensajeErrorAdmin(error, fallback='No se pudo completar la acción.'){
-    console.error('[Administración]', error);
-    const codigo=String(error?.code||'');
-    if(codigo.includes('permission-denied')){
-      return 'Firestore bloqueó esta acción por permisos. Revisá las reglas de Firestore para el rol administrador.';
-    }
-    if(codigo.includes('unavailable')){
-      return 'No se pudo conectar con Firebase. Revisá tu conexión e intentá nuevamente.';
-    }
-    return error?.message || fallback;
-  }
-
-  async function ejecutarAdminSeguro(accion, mensajeCarga='Procesando...'){
-    try{
-      return await accion();
-    }catch(error){
-      mostrarAviso(mensajeErrorAdmin(error),'error',5200);
-      throw error;
-    }
-  }
-
-  window.cambiarAdminPanel=function(panel){
-    const destino=document.getElementById(`admin-panel-${panel}`);
-    if(!destino)return;
-
-    document.querySelectorAll('#vista-admin .admin-tabs button').forEach(b=>{
-      b.classList.toggle('activo',b.dataset.adminTab===panel);
-    });
-    document.querySelectorAll('#vista-admin .admin-panel').forEach(p=>{
-      p.classList.toggle('activo',p===destino);
-    });
-
-    if(panel==='patrocinadores' && typeof renderizarAdminPatrocinadores==='function'){
-      renderizarAdminPatrocinadores();
-    }
-  };
-
-  async function cargarColeccion(nombre){
-    const api=window.firebaseAPI;
-    if(!api)throw new Error('Firebase todavía no está listo.');
-    try{
-      const snap=await api.getDocs(api.collection(api.db,nombre));
-      return snap.docs.map(d=>({id:d.id,...d.data()}));
-    }catch(e){
-      console.warn(`[Admin] No se pudo leer ${nombre}`,e);
-      // Users is essential for Roles. Other collections can fail without breaking Admin.
-      if(nombre==='users') throw e;
-      return[];
-    }
-  }
-
-  window.renderizarAdmin=async function(){
-    if(!usuarioEsAdmin())return;
-
-    try{
-      [adminData.denuncias,adminData.incidentes,adminData.usuarios] = await Promise.all([
-        cargarColeccion('denuncias'),cargarColeccion('incidentes'),cargarColeccion('users')
-      ]);
-      adminData.profesores=profesoresData||[];
-      renderAdminRevision();
-      renderAdminDenuncias();
-      renderAdminProfesores();
-      renderAdminSanciones();
-      renderizarAdminPatrocinadores();
-    }catch(error){
-      console.error('[Admin render]',error);
-      mostrarAviso(mensajeErrorAdmin(error,'No se pudo cargar Administración.'),'error',5200);
-    }
-  };
-
-  function card(titulo,texto,acciones=''){return `<div class="admin-card"><strong>${escaparHtmlClub(titulo)}</strong><p>${escaparHtmlClub(texto)}</p>${acciones?`<div class="admin-actions">${acciones}</div>`:''}</div>`}
-
-  function renderAdminRevision(){
-    const div=document.getElementById('admin-resultados-revision');if(!div)return;
-    const partidos=partidosData.filter(p=>p.pendienteRevision||p.resultadoIncongruente);
-    const inc=adminData.incidentes.filter(i=>i.estado!=='resuelto');
-    div.innerHTML=[...partidos.map(p=>card(`Resultado · ${p.club}`,`${p.fecha} ${p.hora} · ${p.resultado||'Incongruente'}`,`<button class="btn btn-secundario" onclick="marcarRevisionResuelta('${escaparAtributoJs(p._firestorePath||'')}')">Marcar revisado</button>`)),
-      ...inc.map(i=>card(`Incidente · ${i.tipo}`,`${i.reportadoPor||''} · ${i.detalle||''}`,`<button class="btn btn-secundario" onclick="resolverIncidente('${i.id}')">Resolver</button>`))
-    ].join('')||htmlEstadoVacio('✓','Sin revisiones pendientes','No hay resultados o incidentes pendientes.');
-  }
-
-  function renderAdminDenuncias(){
-    const div=document.getElementById('admin-denuncias');if(!div)return;
-    div.innerHTML=adminData.denuncias.map(d=>card(d.motivo||'Denuncia',`${d.reportadoPor||d.usuario||''} · ${d.detalle||d.descripcion||''}`,`<button class="btn btn-secundario" onclick="resolverDenuncia('${d.id}')">Cerrar</button>`)).join('')||htmlEstadoVacio('✓','Sin denuncias','No hay denuncias abiertas.');
-  }
-
-  function renderAdminProfesores(){
-    const div=document.getElementById('admin-profesores');
-    if(!div)return;
-
-    const usuarios=(adminData.usuarios||[])
-      .filter(u=>u && u.id && u.id !== usuarioActual?.uid)
-      .sort((a,b)=>{
-        const na=`${a.nombre||''} ${a.apellido||''}`.trim().toLowerCase();
-        const nb=`${b.nombre||''} ${b.apellido||''}`.trim().toLowerCase();
-        return na.localeCompare(nb);
-      });
-
-    div.innerHTML=`
-      <div class="admin-card">
-        <strong>Asignar rol Profesor</strong>
-        <p>Buscá un usuario y activá o desactivá su rol Profesor directamente desde Administración.</p>
-        <input id="admin-buscar-profesor-usuario"
-               class="input-form admin-profesor-busqueda"
-               placeholder="Buscar por nombre, email o DNI"
-               oninput="filtrarUsuariosAdminProfesor()">
-        <div id="admin-lista-usuarios-profesor" class="admin-usuarios-profesor"></div>
-      </div>`;
-
-    renderListaUsuariosAdminProfesor(usuarios);
-  }
-
-  window.renderListaUsuariosAdminProfesor=function(lista){
-    const cont=document.getElementById('admin-lista-usuarios-profesor');
-    if(!cont)return;
-
-    const usuarios=Array.isArray(lista)?lista:[];
-    if(!usuarios.length){
-      cont.innerHTML=htmlEstadoVacio('🧑‍🏫','Sin usuarios','No hay usuarios disponibles para mostrar.');
-      return;
-    }
-
-    cont.innerHTML=usuarios.map(u=>{
-      const nombre=`${u.nombre||''} ${u.apellido||''}`.trim() || u.email || u.id;
-      const esProfesor=
-        u.rolProfesor===true ||
-        u.esProfesor===true ||
-        u.rol==='Profesor' ||
-        u.roles?.profesor===true;
-
-      return `
-        <div class="admin-usuario-profesor" data-admin-profesor-search="${escaparHtmlClub(
-          `${nombre} ${u.email||''} ${u.dni||''}`.toLowerCase()
-        )}">
-          <div class="admin-usuario-profesor-info">
-            <strong>${escaparHtmlClub(nombre)}</strong>
-            <small>${escaparHtmlClub(u.email||'Sin email')}${u.dni ? ` · DNI ${escaparHtmlClub(u.dni)}` : ''}</small>
-            <span class="admin-profesor-estado ${esProfesor?'activo':'inactivo'}">
-              ${esProfesor?'Profesor activo':'Sin rol Profesor'}
-            </span>
-          </div>
-          <div class="admin-profesor-acciones">
-            ${esProfesor
-              ? `<button class="btn btn-secundario" onclick="ejecutarConBoton(this, () => quitarRolProfesorAdmin('${escaparAtributoJs(u.id)}'), 'Guardando...')">Quitar rol</button>`
-              : `<button class="btn btn-primario" onclick="ejecutarConBoton(this, () => asignarRolProfesorAdmin('${escaparAtributoJs(u.id)}'), 'Guardando...')">Dar rol</button>`
-            }
-          </div>
-        </div>`;
-    }).join('');
-  };
-
-  window.filtrarUsuariosAdminProfesor=function(){
-    const q=String(document.getElementById('admin-buscar-profesor-usuario')?.value||'').trim().toLowerCase();
-    document.querySelectorAll('#admin-lista-usuarios-profesor .admin-usuario-profesor').forEach(el=>{
-      const texto=String(el.dataset.adminProfesorSearch||'');
-      el.style.display=!q || texto.includes(q) ? '' : 'none';
-    });
-  };
-
-  window.asignarRolProfesorAdmin=async function(uid){
-    if(!usuarioEsAdmin())return mostrarAviso('No tenés permisos de administrador.','error');
-
-    return ejecutarAdminSeguro(async()=>{
-      const api=window.firebaseAPI;
-      if(!api)throw new Error('Firebase todavía no está listo.');
-
-      const ref=api.doc(api.db,'users',String(uid));
-      const snap=await api.getDoc(ref);
-      if(!snap.exists())throw new Error('Usuario no encontrado.');
-
-      await api.updateDoc(ref,{
-        rolProfesor:true,
-        'roles.profesor':true,
-        rolProfesorSolicitado:false,
-        solicitudProfesor:false,
-        profesorAsignadoPor:usuarioActual.uid,
-        profesorAsignadoEn:api.serverTimestamp()
-      });
-
-      const local=adminData.usuarios.find(u=>String(u.id)===String(uid));
-      if(local){
-        local.rolProfesor=true;
-        local.roles={...(local.roles||{}),profesor:true};
-      }
-
-      mostrarAviso('Rol Profesor asignado correctamente.','success');
-      renderAdminProfesores();
-    });
-  };
-
-  window.quitarRolProfesorAdmin=async function(uid){
-    if(!usuarioEsAdmin())return mostrarAviso('No tenés permisos de administrador.','error');
-    if(!confirm('¿Querés quitar el rol Profesor a este usuario?'))return;
-
-    return ejecutarAdminSeguro(async()=>{
-      const api=window.firebaseAPI;
-      if(!api)throw new Error('Firebase todavía no está listo.');
-
-      const ref=api.doc(api.db,'users',String(uid));
-      const snap=await api.getDoc(ref);
-      if(!snap.exists())throw new Error('Usuario no encontrado.');
-
-      await api.updateDoc(ref,{
-        rolProfesor:false,
-        'roles.profesor':false,
-        profesorQuitadoPor:usuarioActual.uid,
-        profesorQuitadoEn:api.serverTimestamp()
-      });
-
-      const local=adminData.usuarios.find(u=>String(u.id)===String(uid));
-      if(local){
-        local.rolProfesor=false;
-        local.roles={...(local.roles||{}),profesor:false};
-      }
-
-      mostrarAviso('Rol Profesor retirado.','success');
-      renderAdminProfesores();
-    });
-  };
-
-  function renderAdminSanciones(){
-    const div=document.getElementById('admin-sanciones');if(!div)return;
-    const sancionados=adminData.usuarios.filter(u=>(u.sanciones||[]).some(s=>s.activa!==false));
-    div.innerHTML=sancionados.map(u=>card(u.nombre||u.email||u.id,'Tiene sanciones activas',`<button class="btn btn-secundario" onclick="quitarSanciones('${u.id}')">Levantar sanciones</button>`)).join('')+
-      `<div class="admin-card"><strong>Aplicar sanción</strong><p>Ingresá el UID desde la consola/listado de usuarios.</p><div class="admin-actions"><button class="btn btn-alerta" onclick="crearSancionPrompt()">Nueva sanción</button></div></div>`;
-  }
-
-  window.marcarRevisionResuelta=async function(path){
-    const api=window.firebaseAPI;if(!path)return;const partes=path.split('/').filter(Boolean);
-    await api.setDoc(api.doc(api.db,...partes),{pendienteRevision:false,revisionAdmin:true,revisionAdminEn:api.serverTimestamp()},{merge:true});mostrarAviso('Revisión actualizada.','success');renderizarAdmin();
-  };
-  window.resolverIncidente=async id=>ejecutarAdminSeguro(async()=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'incidentes',id),{estado:'resuelto',resueltoEn:api.serverTimestamp()},{merge:true});mostrarAviso('Incidente resuelto.','success');renderizarAdmin()});
-  window.resolverDenuncia=async id=>ejecutarAdminSeguro(async()=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'denuncias',id),{estado:'cerrada',cerradaEn:api.serverTimestamp()},{merge:true});mostrarAviso('Denuncia cerrada.','success');renderizarAdmin()});
-  window.aprobarProfesor=async uid=>asignarRolProfesorAdmin(uid);
-  window.rechazarProfesor=async uid=>{
-    const api=window.firebaseAPI;
-    if(!api)return;
-    await api.setDoc(api.doc(api.db,'users',uid),{
-      solicitudProfesor:false,
-      rolProfesorSolicitado:false
-    },{merge:true});
-    mostrarAviso('Solicitud rechazada.','success');
-    await renderizarAdmin();
-  };
-  window.quitarSanciones=async uid=>ejecutarAdminSeguro(async()=>{const api=window.firebaseAPI;await api.setDoc(api.doc(api.db,'users',uid),{sanciones:[]},{merge:true});mostrarAviso('Sanciones retiradas.','success');renderizarAdmin()});
-  window.crearSancionPrompt=async function(){
-    const uid=prompt('UID del usuario');if(!uid)return;const motivo=prompt('Motivo de la sanción');if(!motivo)return;
-    const dias=Number(prompt('Duración en días (0 = indefinida)','7')||0);
-    const api=window.firebaseAPI;const ref=api.doc(api.db,'users',uid);const snap=await api.getDoc(ref);if(!snap.exists())return mostrarAviso('Usuario no encontrado.','error');
-    const data=snap.data()||{}, sanciones=Array.isArray(data.sanciones)?data.sanciones:[];
-    const hasta=dias>0?new Date(Date.now()+dias*86400000).toISOString():null;
-    sanciones.push({id:`s-${Date.now()}`,tipo:'competitiva',motivo,activa:true,desde:new Date().toISOString(),hasta,aplicadaPor:usuarioActual.uid});
-    await api.setDoc(ref,{sanciones},{merge:true});mostrarAviso('Sanción aplicada.','success');renderizarAdmin();
-  };
 })();
 
 
