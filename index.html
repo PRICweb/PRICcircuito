@@ -3288,6 +3288,156 @@ img[data-club-image]{background:#e4e7ec}
 }
 
 </style>
+
+<style id="navegacion-universal-home-css">
+/* Inicio */
+.header-inicio-acciones{
+  width:100%;
+  align-items:center;
+  justify-content:space-between!important;
+  margin-bottom:16px!important;
+}
+.home-hola{
+  min-width:0;
+  margin:0!important;
+  color:var(--text)!important;
+  font-size:clamp(1.22rem,2.4vw,1.55rem)!important;
+  line-height:1.08;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  letter-spacing:-.035em;
+}
+.home-hola #lbl-nombre-usuario{color:var(--text)!important}
+.header-inicio-iconos{
+  display:flex;
+  flex:none;
+  gap:8px;
+}
+
+#banner-proximo-partido{
+  margin-bottom:0!important;
+}
+.home-bloques-separador{
+  margin:18px 0 0;
+  padding-top:18px;
+  border-top:1px solid rgba(228,231,236,.8);
+}
+.home-bloques-separador .padel-visual-strip{
+  margin:0!important;
+  box-shadow:0 10px 28px rgba(16,24,40,.055);
+}
+#actividad-home{
+  margin-top:18px!important;
+  padding-top:2px;
+}
+
+/* Los accesos rápidos dejan de existir; la barra inferior pasa a ser la navegación principal. */
+.accesos-rapidos-grid,
+#vista-inicio > h4:has(+ .accesos-rapidos-grid){
+  display:none!important;
+}
+
+/* Navegación inferior universal */
+.mobile-bottom-nav{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:max(10px, env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+  z-index:1200!important;
+  width:min(calc(100% - 20px),720px)!important;
+  min-height:66px!important;
+  padding:6px!important;
+  border:1px solid rgba(208,213,221,.92)!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.94)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  box-shadow:0 16px 42px rgba(16,24,40,.14)!important;
+}
+.mobile-bottom-nav button{
+  min-height:52px!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:transparent!important;
+  color:#667085!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  padding:5px 4px!important;
+  font-weight:800!important;
+  transition:background .15s ease,color .15s ease,transform .15s ease!important;
+}
+.mobile-bottom-nav button:hover{
+  background:#f9fafb!important;
+}
+.mobile-bottom-nav button:active{
+  transform:scale(.97);
+}
+.mobile-bottom-nav button.activo{
+  color:#101828!important;
+  background:#f2f4f7!important;
+}
+.mobile-bottom-nav .bottom-svg{
+  width:20px!important;
+  height:20px!important;
+}
+.mobile-bottom-nav small{
+  font-size:.61rem!important;
+  line-height:1!important;
+}
+
+/* Deja espacio permanente para la barra en TODAS las plataformas. */
+.contenedor-principal{
+  padding-bottom:105px!important;
+}
+
+@media(min-width:761px){
+  .mobile-bottom-nav{
+    bottom:16px!important;
+    width:min(calc(100% - 40px),680px)!important;
+  }
+  .mobile-bottom-nav button{
+    flex-direction:row!important;
+    gap:7px!important;
+  }
+  .mobile-bottom-nav small{
+    font-size:.72rem!important;
+  }
+  .mobile-bottom-nav .bottom-svg{
+    width:18px!important;
+    height:18px!important;
+  }
+}
+
+@media(max-width:480px){
+  .header-inicio-iconos{gap:6px}
+  .header-inicio-iconos .icon-btn{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+  }
+  .home-hola{
+    max-width:42vw;
+    font-size:1.2rem!important;
+  }
+  .home-bloques-separador{
+    margin-top:14px;
+    padding-top:14px;
+  }
+  .mobile-bottom-nav{
+    width:calc(100% - 14px)!important;
+    bottom:max(7px,env(safe-area-inset-bottom))!important;
+    border-radius:18px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -3376,8 +3526,8 @@ img[data-club-image]{background:#e4e7ec}
         <!-- VISTA INICIO -->
         <div id="vista-inicio">
             <div class="header-acciones header-inicio-acciones">
-                <div class="header-home-spacer" aria-hidden="true"></div>
-                <div style="display: flex; gap: 10px;">
+                <h2 class="home-hola">Hola, <span id="lbl-nombre-usuario"></span></h2>
+                <div class="header-inicio-iconos">
                     <button class="icon-btn" onclick="cambiarVistaPrincipal('amigos')" title="Amigos" aria-label="Amigos">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
@@ -3411,10 +3561,14 @@ img[data-club-image]{background:#e4e7ec}
 
             <section id="home-prioridad" class="home-prioridad" aria-live="polite"></section>
             <div id="banner-proximo-partido" class="carousel-container cancha-bg"></div>
-            <section class="home-saludo-bloque" aria-label="Nombre del usuario">
-                <span class="eyebrow-ui">TU PERFIL</span>
-                <h2 id="lbl-nombre-usuario" class="home-saludo-nombre"></h2>
-            </section>
+
+            <div class="home-bloques-separador"><div class="padel-visual-strip" role="img" aria-label="Ilustración de una cancha de pádel">
+                <div class="padel-visual-copy">
+                    <strong>Jugá. Competí. Mejorá.</strong>
+                    <span>Todo tu circuito en un solo lugar.</span>
+                </div>
+            </div></div>
+
             <section class="actividad-home" id="actividad-home">
               <div class="seccion-mini-head">
                 <div><span class="eyebrow-ui">ACTIVIDAD</span><h3>Lo último</h3></div>
@@ -3422,33 +3576,7 @@ img[data-club-image]{background:#e4e7ec}
               </div>
               <div id="actividad-home-lista"></div>
             </section>
-
-            <div class="padel-visual-strip" role="img" aria-label="Ilustración de una cancha de pádel">
-                <div class="padel-visual-copy">
-                    <strong>Jugá. Competí. Mejorá.</strong>
-                    <span>Todo tu circuito en un solo lugar.</span>
-                </div>
-            </div>
-
-            <h4 style="color: var(--text-muted); margin-bottom: 10px; text-align: center;">Accesos rápidos</h4>
-            
-            <div class="menu-grid accesos-rapidos-grid">
-                <button type="button" class="tarjeta-menu acceso-rapido card-ranking" onclick="cambiarVistaPrincipal('ranking')" aria-label="Ranking" title="Ranking">
-                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-ranking"></use></svg>
-                </button>
-                <button type="button" class="tarjeta-menu acceso-rapido card-partidos" onclick="cambiarVistaPrincipal('partidos')" aria-label="Partidos" title="Partidos">
-                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-match"></use></svg>
-                </button>
-                <button type="button" id="boton-academia-inicio" class="tarjeta-menu acceso-rapido card-academia" onclick="cambiarVistaPrincipal('academia')" aria-label="Academia" title="Academia">
-                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-academy"></use></svg>
-                    <span id="texto-boton-academia" class="acceso-rapido-texto-visualmente-oculto">Academia</span>
-                </button>
-                <button type="button" class="tarjeta-menu acceso-rapido card-torneos" onclick="cambiarVistaPrincipal('torneos')" aria-label="Torneos" title="Torneos">
-                    <svg class="acceso-rapido-svg" aria-hidden="true"><use href="#i-trophy"></use></svg>
-                </button>
-            </div>
-
-            <section id="home-patrocinadores" class="home-patrocinadores" hidden>
+<section id="home-patrocinadores" class="home-patrocinadores" hidden>
                 <div class="seccion-mini-head home-patrocinadores-head">
                     <div><span class="eyebrow-ui">PATROCINADORES</span><h3>Nos acompañan</h3></div>
                 </div>
