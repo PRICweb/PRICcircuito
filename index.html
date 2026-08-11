@@ -3217,6 +3217,66 @@ img[data-club-image]{background:#e4e7ec}
 }
 </style>
 
+
+<style id="patrocinadores-planos-css">
+.home-patrocinadores-grid{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  align-items:center!important;
+  gap:12px!important;
+}
+.patrocinador-card,
+.patrocinador-card.patrocinador-lado,
+.patrocinador-card.patrocinador-medio,
+.patrocinador-card.patrocinador-centro{
+  height:62px!important;
+  min-height:62px!important;
+  padding:4px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.patrocinador-card img,
+.patrocinador-card.patrocinador-lado img,
+.patrocinador-card.patrocinador-medio img,
+.patrocinador-card.patrocinador-centro img{
+  width:100%!important;
+  height:46px!important;
+  max-width:100%!important;
+  max-height:46px!important;
+  object-fit:contain!important;
+}
+.patrocinador-card.is-clickable:hover{
+  transform:translateY(-2px)!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  opacity:.86;
+}
+@media(max-width:600px){
+  .home-patrocinadores-grid{gap:7px!important}
+  .patrocinador-card,
+  .patrocinador-card.patrocinador-lado,
+  .patrocinador-card.patrocinador-medio,
+  .patrocinador-card.patrocinador-centro{
+    height:52px!important;
+    min-height:52px!important;
+    padding:2px!important;
+  }
+  .patrocinador-card img,
+  .patrocinador-card.patrocinador-lado img,
+  .patrocinador-card.patrocinador-medio img,
+  .patrocinador-card.patrocinador-centro img{
+    height:38px!important;
+    max-height:38px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -4088,7 +4148,7 @@ window.CIRCUITO_SINGLE_FILE = true;
 // ===== app.js =====
 
         // --- ESTADO GLOBAL ---
-        let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "", rolProfesor: false, esAdmin: false, rol: "", roles: {} };
+        let perfilUsuario = { nombre: "", apellido: "", edad: "", genero: "Masculino", telefono: "", dni: "", preferencia: "Drive", foto: "", rolProfesor: false, esAdmin: false, rol: "", plataforma: "", roles: {} };
         let usuarioActual = null;
         const getNombreCompleto = () => `${perfilUsuario.nombre} ${perfilUsuario.apellido}`.trim();
         const getNombreCorto = () => String(perfilUsuario.nombre || getNombreCompleto() || 'Jugador').trim().split(/\s+/)[0] || 'Jugador';
@@ -4670,7 +4730,6 @@ window.CIRCUITO_SINGLE_FILE = true;
         }
 
         function actualizarNavegacionInferior(vista) {
-            if (typeof window.usuarioEsAdmin === 'function' && window.usuarioEsAdmin()) return;
             document.querySelectorAll('#mobile-bottom-nav button').forEach(btn => {
                 btn.classList.toggle('activo', btn.dataset.vista === vista);
             });
@@ -8573,16 +8632,56 @@ window.CIRCUITO_SINGLE_FILE = true;
                             usuarioActual = null;
                             detenerEscuchasFirebase();
                             mostrarPantallaAuth();
+
+                            const mensajePendiente = sessionStorage.getItem('circuito-auth-mensaje');
+                            if (mensajePendiente) {
+                                sessionStorage.removeItem('circuito-auth-mensaje');
+                                setAuthMensaje(mensajePendiente);
+                            }
                             return;
                         }
 
+                        // Durante la validación no mostramos ni login ni aplicación,
+                        // evitando flashes y rebotes visuales.
+                        ocultarPantallasDuranteValidacion();
                         usuarioActual = user;
-                        await cargarOCrearPerfilUsuario(user);
-                        mostrarAppAutenticada();
-                        iniciarEscuchasFirebase();
-                    iniciarControlAutomaticoPartidosCompetitivos();
-                        renderizarTodo();
-                        window.actualizarHorariosDisponibles();
+
+                        try {
+                            const plataforma = await cargarOCrearPerfilUsuario(user);
+
+                            if (plataforma !== 'circuito') {
+                                const mensaje = mensajePlataformaIncorrecta(plataforma);
+
+                                usuarioActual = null;
+                                detenerEscuchasFirebase();
+
+                                // Guardamos el mensaje para mostrarlo después del cambio
+                                // de estado de autenticación generado por signOut().
+                                sessionStorage.setItem('circuito-auth-mensaje', mensaje);
+                                await firebaseAPI.signOut(firebaseAPI.auth);
+                                return;
+                            }
+
+                            mostrarAppAutenticada();
+                            iniciarEscuchasFirebase();
+                            iniciarControlAutomaticoPartidosCompetitivos();
+                            renderizarTodo();
+                            window.actualizarHorariosDisponibles();
+                            window.scrollTo(0, 0);
+                        } catch(error) {
+                            console.error('Error validando acceso al Circuito:', error);
+                            detenerEscuchasFirebase();
+
+                            // No cerramos una sesión válida por un fallo temporal de Firestore.
+                            // El usuario puede reintentar sin tener que autenticarse otra vez.
+                            usuarioActual = user;
+                            mostrarPantallaAuth();
+                            setAuthMensaje(
+                                error?.code === 'permission-denied'
+                                    ? 'No se pudo leer tu perfil. Revisá los permisos de Firestore.'
+                                    : 'No se pudo cargar tu perfil. Revisá la conexión e intentá nuevamente.'
+                            );
+                        }
                     });
                 } catch(error) {
                     logFirebaseError("inicialización", error);
@@ -8603,14 +8702,27 @@ window.CIRCUITO_SINGLE_FILE = true;
                 erroresFirebaseMostrados.clear();
             }
 
+            function ocultarPantallasDuranteValidacion() {
+                const auth = document.getElementById("pantalla-auth");
+                const app = document.getElementById("app-shell");
+                if (auth) auth.style.display = "none";
+                if (app) app.style.display = "none";
+            }
+
             function mostrarPantallaAuth() {
-                document.getElementById("pantalla-auth").style.display = "block";
-                document.getElementById("app-shell").style.display = "none";
+                const auth = document.getElementById("pantalla-auth");
+                const app = document.getElementById("app-shell");
+                if (auth) auth.style.display = "block";
+                if (app) app.style.display = "none";
+                window.scrollTo(0, 0);
             }
 
             function mostrarAppAutenticada() {
-                document.getElementById("pantalla-auth").style.display = "none";
-                document.getElementById("app-shell").style.display = "block";
+                const auth = document.getElementById("pantalla-auth");
+                const app = document.getElementById("app-shell");
+                if (auth) auth.style.display = "none";
+                if (app) app.style.display = "block";
+                window.scrollTo(0, 0);
             }
 
             function setAuthMensaje(texto, tipo = "error") {
@@ -8644,12 +8756,47 @@ window.CIRCUITO_SINGLE_FILE = true;
                 return error?.message || "Ocurrió un error de autenticación.";
             }
 
+
+            function normalizarPlataforma(valor) {
+                const p = String(valor || '').trim().toLowerCase();
+                if (['circuito','jugador','player'].includes(p)) return 'circuito';
+                if (['club','turnero'].includes(p)) return 'club';
+                if (['admin','administrador','administracion'].includes(p)) return 'admin';
+                return '';
+            }
+
+
+            async function determinarPlataformaCuenta(user, dataUsuario = null) {
+                const data = dataUsuario && typeof dataUsuario === 'object' ? dataUsuario : {};
+
+                // La exclusividad de plataforma se aplica únicamente cuando el campo
+                // está definido de forma explícita. Esto evita bloquear cuentas
+                // históricas que ya existían antes de introducir "plataforma".
+                const explicita = normalizarPlataforma(data.plataforma || data.platform);
+                if (explicita) return explicita;
+
+                // Cuenta histórica sin plataforma: conserva acceso al Circuito.
+                return 'circuito';
+            }
+
+            function mensajePlataformaIncorrecta(plataforma) {
+                if (plataforma === 'club') {
+                    return 'Esta cuenta pertenece al panel del club y no puede ingresar al Circuito.';
+                }
+                if (plataforma === 'admin') {
+                    return 'Esta cuenta pertenece a Administración y no puede ingresar al Circuito.';
+                }
+                return 'Esta cuenta no tiene acceso al Circuito.';
+            }
+
             async function cargarOCrearPerfilUsuario(user) {
                 const ref = firebaseAPI.doc(firebaseAPI.db, "users", user.uid);
                 const snap = await firebaseAPI.getDoc(ref);
 
                 if (snap.exists()) {
-                    const data = snap.data();
+                    const data = snap.data() || {};
+                    const plataforma = await determinarPlataformaCuenta(user, data);
+
                     perfilUsuario = {
                         nombre: data.nombre || "Jugador",
                         apellido: data.apellido || "",
@@ -8662,26 +8809,23 @@ window.CIRCUITO_SINGLE_FILE = true;
                         rolProfesor: data.rolProfesor === true || data.esProfesor === true || data.rol === "Profesor" || data.roles?.profesor === true,
                         esAdmin: data.esAdmin === true || data.rol === "Admin" || data.roles?.admin === true,
                         rol: data.rol || "",
+                        plataforma,
                         roles: data.roles && typeof data.roles === "object" ? data.roles : {}
                     };
-                    console.info('[Circuito] roles cargados', {
-                        uid: user.uid,
-                        admin: perfilUsuario.esAdmin,
-                        profesor: perfilUsuario.rolProfesor,
-                        roles: perfilUsuario.roles
-                    });
-                    if (perfilUsuario.esAdmin === true || perfilUsuario.roles?.admin === true || perfilUsuario.rol === 'Admin') {
-                        location.replace('./admin.html');
-                        return;
-                    }
 
-                    
-                    if (perfilUsuario.esAdmin === true || perfilUsuario.roles?.admin === true || perfilUsuario.rol === 'Admin') {
-                        setTimeout(() => {
-                            if (typeof window.cambiarVistaPrincipal === 'function') location.replace('./admin.html');
-                        }, 0);
+                    console.info('[Circuito] acceso cargado', {
+                        uid: user.uid,
+                        plataforma,
+                        profesor: perfilUsuario.rolProfesor
+                    });
+
+                    if (plataforma !== 'circuito') {
+                        return plataforma;
                     }
                 } else {
+                    // Si el usuario autenticado todavía no tiene documento en /users,
+                    // se crea como cuenta de Circuito. Las cuentas de otras plataformas
+                    // deben tener "plataforma" explícita en su documento de usuario.
                     perfilUsuario = {
                         nombre: user.email?.split("@")[0] || "Jugador",
                         apellido: "",
@@ -8694,8 +8838,10 @@ window.CIRCUITO_SINGLE_FILE = true;
                         rolProfesor: false,
                         esAdmin: false,
                         rol: "",
+                        plataforma: "circuito",
                         roles: {}
                     };
+
                     await firebaseAPI.setDoc(ref, {
                         uid: user.uid,
                         email: user.email || "",
@@ -8705,7 +8851,11 @@ window.CIRCUITO_SINGLE_FILE = true;
                     }, { merge: true });
                 }
 
-                if (typeof cargarDatosPerfilEnFormulario === "function") cargarDatosPerfilEnFormulario();
+                if (typeof cargarDatosPerfilEnFormulario === "function") {
+                    cargarDatosPerfilEnFormulario();
+                }
+
+                return 'circuito';
             }
 
             window.alternarAuthModo = function(modo) {
@@ -8743,15 +8893,30 @@ window.CIRCUITO_SINGLE_FILE = true;
 
             window.loginUsuario = async function() {
                 if (!firebaseAPI) return setAuthMensaje("Firebase todavía no terminó de inicializar.");
+
                 const email = document.getElementById("auth-email").value.trim();
                 const password = document.getElementById("auth-password").value;
+                const boton = document.querySelector('#pantalla-auth button[onclick="loginUsuario()"]');
+
                 if (!email || !password) return setAuthMensaje("Completá email y contraseña.");
+                if (boton?.disabled) return;
 
                 try {
+                    if (boton) {
+                        boton.disabled = true;
+                        boton.dataset.textoOriginal = boton.innerText;
+                        boton.innerText = "Ingresando...";
+                    }
+
                     setAuthMensaje("");
                     await firebaseAPI.signInWithEmailAndPassword(firebaseAPI.auth, email, password);
                 } catch(error) {
                     setAuthMensaje(traducirAuthError(error));
+                } finally {
+                    if (boton) {
+                        boton.disabled = false;
+                        boton.innerText = boton.dataset.textoOriginal || "Ingresar";
+                    }
                 }
             };
 
@@ -8776,7 +8941,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                     const cred = await firebaseAPI.createUserWithEmailAndPassword(firebaseAPI.auth, email, password);
                     await firebaseAPI.updateProfile(cred.user, { displayName: `${nombre} ${apellido}`.trim() });
 
-                    perfilUsuario = { nombre, apellido, edad: "", genero, telefono, dni, preferencia, foto: "" };
+                    perfilUsuario = { nombre, apellido, edad: "", genero, telefono, dni, preferencia, foto: "", rolProfesor: false, esAdmin: false, rol: "", plataforma: "circuito", roles: {} };
 
                     await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", cred.user.uid), {
                         uid: cred.user.uid,
@@ -8796,8 +8961,22 @@ window.CIRCUITO_SINGLE_FILE = true;
 
             window.cerrarSesionUsuario = async function() {
                 if (!firebaseAPI) return;
-                clearInterval(controlPartidosInterval);
-                await firebaseAPI.signOut(firebaseAPI.auth);
+
+                if (controlPartidosInterval) {
+                    clearInterval(controlPartidosInterval);
+                    controlPartidosInterval = null;
+                }
+
+                detenerEscuchasFirebase();
+
+                try {
+                    await firebaseAPI.signOut(firebaseAPI.auth);
+                } catch(error) {
+                    console.error('No se pudo cerrar sesión:', error);
+                    setAuthMensaje('No se pudo cerrar sesión. Intentá nuevamente.');
+                    return;
+                }
+
                 cambiarVistaPrincipal("inicio");
             };
 
@@ -10212,22 +10391,14 @@ window.CIRCUITO_SINGLE_FILE = true;
     document.querySelectorAll('[data-accion-competitiva]').forEach(el => el.hidden = sancionado);
   };
 
-  window.redirigirAdministrador = function(){
-    if (!usuarioEsAdmin()) return false;
-    location.replace('./admin.html');
-    return true;
-  };
-
   const oldRenderTodo = window.renderizarTodo;
   window.renderizarTodo = function(){
     if (typeof oldRenderTodo === 'function') oldRenderTodo();
-    if (redirigirAdministrador()) return;
     actualizarAccionesContextuales();
   };
 
   const oldCambiar = window.cambiarVistaPrincipal;
   window.cambiarVistaPrincipal = function(vista){
-    if (redirigirAdministrador()) return;
     oldCambiar(vista);
     if (vista === 'perfil') renderizarPerfilCompetitivoExtra();
   };
