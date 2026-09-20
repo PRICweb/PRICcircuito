@@ -152,6 +152,7 @@ body.admin-mode{
 }
 </style>
 
+<script src="./public-data-client.js"></script>
 </head>
 <body>
 <section id="auth" class="auth"><div class="auth-card"><h1>Administración PRIC</h1><p>Acceso exclusivo para cuentas con rol administrador.</p><div class="field"><label>Email</label><input id="email" class="input" type="email"></div><div class="field"><label>Contraseña</label><input id="password" class="input" type="password"></div><button id="login" class="btn primary" style="width:100%" onclick="loginAdmin()">Ingresar</button><div id="auth-error" class="auth-error"></div></div></section>
@@ -169,7 +170,7 @@ body.admin-mode{
 <section id="v-resumen" class="view active"><div id="stats" class="stats"></div><div class="grid2"><div class="card"><h3>Pendientes</h3><div id="res-pendientes"></div></div><div class="card"><h3>Actividad reciente</h3><div id="res-actividad"></div></div></div></section>
 <section id="v-revisiones" class="view"><div class="view-head"><h2>Revisiones</h2><p>Resultados incongruentes, WO, abandonos y cancelaciones.</p></div><div id="revisiones" class="list"></div></section>
 <section id="v-denuncias" class="view"><div class="view-head"><h2>Denuncias</h2><p>Reportes enviados por jugadores.</p></div><div id="denuncias" class="list"></div></section>
-<section id="v-profesores" class="view"><div class="view-head"><h2>Roles Profesor</h2><p>Asigná o quitá el rol directamente.</p></div><input id="buscar-prof" class="input search" placeholder="Buscar por nombre, email o DNI" oninput="renderProfes()"><div id="profesores" class="list"></div></section>
+<section id="v-profesores" class="view"><div class="view-head"><h2>Roles Profesor</h2><p>Asigná o quitá el rol directamente.</p></div><input id="buscar-prof" class="input search" placeholder="Buscar por nombre o UID" oninput="renderProfes()"><div id="profesores" class="list"></div></section>
 <section id="v-sanciones" class="view"><div class="view-head"><h2>Sanciones</h2><p>Restricciones competitivas activas.</p></div><button class="btn primary" style="margin-bottom:10px" onclick="nuevaSancion()">Nueva sanción</button><div id="sanciones" class="list"></div></section>
 <section id="v-patrocinadores" class="view"><div class="view-head"><h2>Patrocinadores</h2><p>Configuración de los cinco logos de Inicio.</p></div><div id="sponsor-preview" class="sponsor-preview"></div><div class="card"><div id="sponsor-form"></div><div style="display:flex;justify-content:flex-end;margin-top:9px"><button class="btn primary" onclick="guardarSponsors()">Guardar cambios</button></div></div></section>
 <section id="v-actividad" class="view"><div class="view-head"><h2>Actividad</h2><p>Últimos movimientos administrativos.</p></div><div id="actividad" class="list"></div></section>
@@ -210,6 +211,7 @@ const [appMod,fs,authMod]=await Promise.all([
 ]);
 
 const app=appMod.getApps().length?appMod.getApp():appMod.initializeApp(firebaseConfig);
+await window.PRICPublic.init(app,VER);
 const db=fs.getFirestore(app);
 const auth=authMod.getAuth(app);
 
@@ -226,7 +228,8 @@ let D={
   inc:[],
   partidos:[],
   sponsors:[],
-  act:[]
+  act:[],
+  roles:{}
 };
 
 const labels={
@@ -246,7 +249,7 @@ function esc(v){
 }
 
 function nombre(u){
-  return `${u?.nombre||""} ${u?.apellido||""}`.trim()||u?.email||u?.id||"Usuario";
+  return `${u?.nombre||""} ${u?.apellido||""}`.trim()||u?.id||"Usuario";
 }
 
 function isAdmin(p){
@@ -438,7 +441,7 @@ function modalSancion(){
       body:`
         <div class="modal-field">
           <label>Usuario</label>
-          <input id="modal-user-search" class="input" placeholder="Email, DNI o UID">
+          <input id="modal-user-search" class="input" placeholder="Nombre o UID">
         </div>
         <div class="modal-field">
           <label>Motivo</label>
@@ -466,7 +469,8 @@ function modalSancion(){
         return;
       }
 
-      const found=D.users.find(u=>u.id===key||u.email===key||String(u.dni||"")===key);
+      const keyNorm=key.toLowerCase();
+      const found=D.users.find(u=>u.id===key||nombre(u).toLowerCase().includes(keyNorm));
       if(!found){
         $("modal-error").textContent="No se encontró ese usuario.";
         return;
@@ -493,7 +497,8 @@ authMod.onAuthStateChanged(auth,async user=>{
     const snap=await fs.getDoc(fs.doc(db,"users",user.uid));
     const profile=snap.exists()?{id:snap.id,...snap.data()}:null;
 
-    if(!isAdmin(profile)){
+    const protectedRole=await fs.getDoc(fs.doc(db,'accessRoles',user.uid));
+    if(!protectedRole.exists()||protectedRole.data().circuitAdmin!==true){
       await authMod.signOut(auth);
       setModo("auth");
       authError("Esta cuenta no tiene permisos de administrador.");
@@ -556,15 +561,17 @@ window.cargarAdmin=async function(mostrarMensaje=true){
   setButtonLoading(refreshBtn,true,"Actualizando...");
 
   try{
-    const [users,den,inc,parts,sp]=await Promise.all([
+    const [users,roles,den,inc,parts,sp]=await Promise.all([
       col("users"),
+      col("accessRoles").catch(()=>[]),
       col("denuncias").catch(()=>[]),
       col("incidentes").catch(()=>[]),
       getPartidos(),
       getSponsors()
     ]);
-
-    D={...D,users,den,inc,partidos:parts,sponsors:sp};
+    const rolesMap=Object.fromEntries(roles.map(r=>[String(r.id),r]));
+    const usersSeguros=users.map(u=>({...u,_access:rolesMap[String(u.id)]||{}}));
+    D={...D,users:usersSeguros,roles:rolesMap,den,inc,partidos:parts,sponsors:sp};
     buildAct();
     render();
 
@@ -584,18 +591,13 @@ const rev=()=>({
 
 const denA=()=>D.den.filter(x=>!["cerrada","resuelta"].includes(String(x.estado||"").toLowerCase()));
 
-const profA=()=>D.users.filter(x=>
-  x.rolProfesor===true||
-  x.esProfesor===true||
-  x.rol==="Profesor"||
-  x.roles?.profesor===true
-);
+const profA=()=>D.users.filter(x=>x._access?.professor===true||x.rolProfesor===true||x.esProfesor===true||x.rol==='Profesor'||x.roles?.profesor===true);
 
 const sancA=()=>{
   const now=Date.now();
   const result=[];
   D.users.forEach(u=>{
-    (Array.isArray(u.sanciones)?u.sanciones:[]).forEach(s=>{
+    (Array.isArray(u._access?.sanctions)?u._access.sanctions:(Array.isArray(u.sanciones)?u.sanciones:[])).forEach(s=>{
       if(s?.activa!==false&&(!s.hasta||new Date(s.hasta).getTime()>now)){
         result.push({u,s});
       }
@@ -679,15 +681,15 @@ window.renderProfes=function(){
 
   const users=D.users
     .filter(x=>x.id!==currentUser?.uid)
-    .filter(x=>!q||`${nombre(x)} ${x.email||""} ${x.dni||""}`.toLowerCase().includes(q));
+    .filter(x=>!q||`${nombre(x)} ${x.id}`.toLowerCase().includes(q));
 
   $("profesores").innerHTML=users.length?users.map(x=>{
-    const activo=x.rolProfesor===true||x.esProfesor===true||x.rol==="Profesor"||x.roles?.profesor===true;
+    const activo=x._access?.professor===true||x.rolProfesor===true||x.esProfesor===true||x.rol==='Profesor'||x.roles?.profesor===true;
     return `
       <div class="item user-row">
         <div>
           <strong>${esc(nombre(x))}</strong>
-          <small>${esc(x.email||"Sin email")}${x.dni?` · DNI ${esc(x.dni)}`:""}</small>
+          <small>UID ${esc(x.id)}</small>
           <span class="badge ${activo?"green":""}">${activo?"Profesor activo":"Sin rol Profesor"}</span>
         </div>
         <div class="actions">
@@ -859,16 +861,14 @@ window.profesor=async function(uid,on){
   if(!yes)return;
 
   await runAction(
-    ()=>fs.updateDoc(
-      fs.doc(db,"users",uid),
+    ()=>fs.setDoc(
+      fs.doc(db,"accessRoles",uid),
       {
-        rolProfesor:on,
-        "roles.profesor":on,
-        solicitudProfesor:false,
-        rolProfesorSolicitado:false,
-        [on?"profesorAsignadoPor":"profesorQuitadoPor"]:currentUser.uid,
-        [on?"profesorAsignadoEn":"profesorQuitadoEn"]:fs.serverTimestamp()
-      }
+        professor:on,
+        actualizadoPor:currentUser.uid,
+        actualizadoEn:fs.serverTimestamp()
+      },
+      {merge:true}
     ),
     on?"Rol Profesor asignado.":"Rol Profesor retirado."
   );
@@ -881,10 +881,10 @@ window.nuevaSancion=async function(){
   const {user:target,motivo,dias}=values;
 
   await runAction(async()=>{
-    const ref=fs.doc(db,"users",target.id);
+    const ref=fs.doc(db,"accessRoles",target.id);
     const snap=await fs.getDoc(ref);
-    const userData=snap.data()||{};
-    const sanciones=Array.isArray(userData.sanciones)?[...userData.sanciones]:[];
+    const roleData=snap.exists()?(snap.data()||{}):{};
+    const sanciones=Array.isArray(roleData.sanctions)?[...roleData.sanctions]:[];
 
     sanciones.push({
       id:`s-${Date.now()}`,
@@ -896,7 +896,7 @@ window.nuevaSancion=async function(){
       aplicadaPor:currentUser.uid
     });
 
-    await fs.updateDoc(ref,{sanciones});
+    await fs.setDoc(ref,{sanctions:sanciones,actualizadoPor:currentUser.uid,actualizadoEn:fs.serverTimestamp()},{merge:true});
   },"Sanción aplicada.");
 };
 
@@ -911,7 +911,7 @@ window.quitarSanc=async function(uid){
   if(!yes)return;
 
   await runAction(
-    ()=>fs.updateDoc(fs.doc(db,"users",uid),{sanciones:[]}),
+    ()=>fs.setDoc(fs.doc(db,"accessRoles",uid),{sanctions:[],actualizadoPor:currentUser.uid,actualizadoEn:fs.serverTimestamp()},{merge:true}),
     "Sanciones retiradas."
   );
 };

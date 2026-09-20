@@ -3277,6 +3277,8 @@ img[data-club-image]{background:#e4e7ec}
 }
 </style>
 
+<script src="./privacy.js"></script>
+<script src="./public-data-client.js"></script>
 </head>
 <body>
 
@@ -3454,7 +3456,7 @@ img[data-club-image]{background:#e4e7ec}
             </div>
 
             <div style="background: var(--bg-light); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light); margin-bottom: 15px;">
-                <input type="text" id="input-buscar-ranking" class="input-form" placeholder="🔍 Buscar por nombre o DNI..." style="margin: 0;" oninput="renderizarRanking()">
+                <input type="text" id="input-buscar-ranking" class="input-form" placeholder="🔍 Buscar por nombre o apellido..." style="margin: 0;" oninput="renderizarRanking()">
             </div>
 
             <div class="toggle-container" style="background-color: var(--bg-base);">
@@ -3785,7 +3787,7 @@ img[data-club-image]{background:#e4e7ec}
                     type="text"
                     id="input-buscar-amigo"
                     class="input-form"
-                    placeholder="DNI o nombre"
+                    placeholder="nombre o apellido"
                     autocomplete="off"
                     oninput="renderizarResultadosBusquedaAmigos()">
                 <div id="resultados-busqueda-amigos" class="resultados-busqueda-amigos"></div>
@@ -4161,6 +4163,8 @@ window.CIRCUITO_SINGLE_FILE = true;
         let solicitudesAmistadData = [];
         let solicitudesAmistadEnviadasData = [];
         let clubesData = [];
+        let disponibilidadPublicaLista=false;
+        let disponibilidadPublicaDesde='',disponibilidadPublicaHasta='';
         let rankingData = [];
         let partidosData = [];
         let torneosData = [];
@@ -4801,7 +4805,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 return;
             }
 
-            const jugadores = rankingData.filter(j => normalizarTextoBusqueda(j.nombre).includes(q) || normalizarTextoBusqueda(j.dni).includes(q)).slice(0,5);
+            const jugadores = rankingData.filter(j => normalizarTextoBusqueda(j.nombre).includes(q)).slice(0,5);
             const clubes = clubesData.filter(c => normalizarTextoBusqueda(c.nombre).includes(q)).slice(0,5);
             const profes = profesoresData.filter(p => normalizarTextoBusqueda(p.nombre).includes(q)).slice(0,5);
 
@@ -4816,7 +4820,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                     <div><strong>${escaparHtmlClub(i.titulo)}</strong><small>${escaparHtmlClub(i.sub || '')}</small></div>
                     <span class="busqueda-tipo">${i.tipo}</span>
                 </div>`).join('') :
-                htmlEstadoVacio('⌕','Sin resultados','Probá con otro nombre, DNI o club.');
+                htmlEstadoVacio('⌕','Sin resultados','Probá con otro nombre o club.');
         }
 
         function renderizarRankingMovil(jugadores) {
@@ -5836,7 +5840,7 @@ window.CIRCUITO_SINGLE_FILE = true;
             }
 
             const locales = rankingData.filter(u =>
-                `${u.nombre || ''} ${u.email || ''} ${u.dni || ''}`
+                `${u.nombre || ''} ${u.apellido || ''}`
                     .toLowerCase()
                     .includes(termino.toLowerCase())
             );
@@ -5862,8 +5866,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 const tienePartidosJugados = stats.pj > 0;
                 const coincideModalidad = r.modalidad === catRankingActual;
                 const coincideBusqueda = !busqueda ||
-                    String(r.nombre || '').toLowerCase().includes(busqueda) ||
-                    (r.dni && String(r.dni).includes(busqueda));
+                    String(r.nombre || '').toLowerCase().includes(busqueda);
                 return tienePartidosJugados && coincideModalidad && coincideBusqueda;
             }).sort(compararJugadoresRanking);
 
@@ -6544,7 +6547,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                         <img src="${obtenerAvatarUrl(nombre)}" class="avatar-circulo" alt="">
                         <div class="amigo-invitar-info">
                             <strong>${escaparHtmlClub(nombre)}</strong>
-                            <small>${amigo.dni ? `DNI ${escaparHtmlClub(amigo.dni)}` : 'Amigo agregado'}</small>
+                            <small>Amigo agregado</small>
                         </div>
                         <button class="amigo-invitar-btn" onclick="ejecutarConBoton(this, () => confirmarInvitacionAmigoPartido('${amigoId}'), 'Invitando...')">Invitar</button>
                     </div>`;
@@ -7463,8 +7466,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 .filter(j => String(j.uid || j.id) !== String(usuarioActual?.uid))
                 .filter(j => {
                     const nombre = normalizarTextoBusqueda(j.nombre);
-                    const dni = normalizarTextoBusqueda(j.dni);
-                    return nombre.includes(consulta) || dni.includes(consulta);
+                    return nombre.includes(consulta);
                 })
                 .slice(0, 8);
 
@@ -7483,7 +7485,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                                 <img src="${obtenerAvatarUrl(j.nombre)}" alt="">
                                 <div class="amigo-persona-texto">
                                     <strong>${escaparHtmlClub(j.nombre)}</strong>
-                                    <small>DNI: ${escaparHtmlClub(j.dni || 'Sin DNI')}</small>
+                                    <small>Jugador del circuito</small>
                                 </div>
                             </div>
                             <div class="amigo-persona-acciones">${accion}</div>
@@ -7544,7 +7546,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                             <img src="${obtenerAvatarUrl(a.nombre || 'Jugador')}" alt="">
                             <div class="amigo-persona-texto">
                                 <strong>${escaparHtmlClub(a.nombre || 'Jugador')}</strong>
-                                <small>DNI: ${escaparHtmlClub(a.dni || 'Sin DNI')}</small>
+                                <small>${a.telefono ? escaparHtmlClub(a.telefono) : 'Contacto no disponible'}</small>
                             </div>
                         </div>
                         <div class="amigo-persona-acciones">
@@ -8838,6 +8840,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                     ]);
 
                     const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
+                    await window.PRICPublic.init(app,FIREBASE_VERSION);
                     const db = firestoreMod.getFirestore(app);
                     const auth = authMod.getAuth(app);
 
@@ -8847,7 +8850,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                         console.warn("Analytics no disponible en este entorno:", e);
                     }
 
-                    firebaseAPI = { app, db, auth, ...firestoreMod, ...authMod };
+                    firebaseAPI = { app, db, auth, ...firestoreMod, ...authMod, ...window.PRICPrivacy.wrap(firestoreMod, auth, db) };
                     window.firebaseAPI = firebaseAPI;
 
                     firebaseAPI.onAuthStateChanged(auth, async (user) => {
@@ -9024,6 +9027,13 @@ window.CIRCUITO_SINGLE_FILE = true;
                 if (snap.exists()) {
                     const data = snap.data() || {};
                     const plataforma = await determinarPlataformaCuenta(user, data);
+                    let access = {};
+                    try {
+                        const accessSnap = await firebaseAPI.getDoc(firebaseAPI.doc(firebaseAPI.db, 'accessRoles', user.uid));
+                        access = accessSnap.exists() ? (accessSnap.data() || {}) : {};
+                    } catch(error) {
+                        console.warn('[Circuito] no se pudieron leer permisos protegidos:', error);
+                    }
 
                     perfilUsuario = {
                         nombre: data.nombre || "Jugador",
@@ -9034,11 +9044,12 @@ window.CIRCUITO_SINGLE_FILE = true;
                         dni: data.dni || "",
                         preferencia: data.preferencia || "Drive",
                         foto: data.foto || "",
-                        rolProfesor: data.rolProfesor === true || data.esProfesor === true || data.rol === "Profesor" || data.roles?.profesor === true,
-                        esAdmin: data.esAdmin === true || data.rol === "Admin" || data.roles?.admin === true,
-                        rol: data.rol || "",
+                        rolProfesor: access.professor === true || data.rolProfesor === true || data.esProfesor === true || data.rol === 'Profesor' || data.roles?.profesor === true,
+                        esAdmin: access.circuitAdmin === true,
+                        rol: access.circuitAdmin === true ? "Admin" : (access.professor === true ? "Profesor" : ""),
                         plataforma,
-                        roles: data.roles && typeof data.roles === "object" ? data.roles : {}
+                        roles: {admin:access.circuitAdmin === true, profesor:access.professor === true},
+                        sanciones: Array.isArray(access.sanctions) ? access.sanctions : (Array.isArray(data.sanciones) ? data.sanciones : [])
                     };
 
                     console.info('[Circuito] acceso cargado', {
@@ -9073,7 +9084,17 @@ window.CIRCUITO_SINGLE_FILE = true;
                     await firebaseAPI.setDoc(ref, {
                         uid: user.uid,
                         email: user.email || "",
-                        ...perfilUsuario,
+                        nombre:perfilUsuario.nombre,
+                        apellido:perfilUsuario.apellido,
+                        edad:perfilUsuario.edad,
+                        genero:perfilUsuario.genero,
+                        telefono:perfilUsuario.telefono,
+                        dni:perfilUsuario.dni,
+                        preferencia:perfilUsuario.preferencia,
+                        foto:perfilUsuario.foto,
+                        plataforma:perfilUsuario.plataforma,
+                        puntos:0,
+                        pj:0,
                         creadoEn: firebaseAPI.serverTimestamp(),
                         actualizadoEn: firebaseAPI.serverTimestamp()
                     }, { merge: true });
@@ -9174,7 +9195,15 @@ window.CIRCUITO_SINGLE_FILE = true;
                     await firebaseAPI.setDoc(firebaseAPI.doc(firebaseAPI.db, "users", cred.user.uid), {
                         uid: cred.user.uid,
                         email,
-                        ...perfilUsuario,
+                        nombre,
+                        apellido,
+                        edad:"",
+                        genero,
+                        telefono,
+                        dni,
+                        preferencia,
+                        foto:"",
+                        plataforma:"circuito",
                         puntos: 0,
                         pj: 0,
                         creadoEn: firebaseAPI.serverTimestamp(),
@@ -9312,9 +9341,12 @@ window.CIRCUITO_SINGLE_FILE = true;
                 if (!force && cacheFirebaseVigente('clubes') && clubesData.length) return;
 
                 return ejecutarCargaFirebaseUnica('clubes', async () => {
-                    const snapshot = await firebaseAPI.getDocs(
-                        firebaseAPI.collection(firebaseAPI.db, 'clubs')
-                    );
+                    const response=await window.PRICPublic.read('clubes');
+                    const snapshot={docs:response.clubs.map(c=>({id:c.id,ref:{path:'clubs/'+c.id},data:()=>c}))};
+                    clubesData=response.clubs.map(c=>({...c,...c.datosClub,apertura:c.datosClub.primerTurno||'08:00',cierre:c.datosClub.ultimoTurno||'21:30'}));
+                    for(const club of clubesData){const config={...club,clubId:club.id};configsClubesCache[club.id]=config;configsClubesCache[club.nombre]=config;configsClubesCache[normalizarIdFirestore(club.nombre)]=config;}
+                    actualizarSelectorClubes();renderizarClubes();
+                    sincronizarEscuchasTorneosPorClub(snapshot);
                     if (typeof procesarSnapshotClubes === 'function') {
                         procesarSnapshotClubes(snapshot);
                     }
@@ -9382,13 +9414,12 @@ window.CIRCUITO_SINGLE_FILE = true;
                     const nuevos = snapshot.docs.map(docSnap => {
                         const data = docSnap.data() || {};
                         const nombre = `${data.nombre || ''} ${data.apellido || ''}`.trim()
-                            || data.displayName || data.email || 'Jugador';
+                            || data.displayName || 'Jugador';
                         return {
                             id:docSnap.id,
                             uid:docSnap.id,
                             ...data,
                             nombre,
-                            dni:data.dni || '',
                             modalidad:data.modalidad || data.genero || 'Masculino',
                             puntos:Number(data.puntos) || 0,
                             pj:Number(data.pj) || Number(data.partidosJugados) || 0
@@ -9440,7 +9471,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 }
 
                 const local = rankingData.filter(u => {
-                    const texto = `${u.nombre || ''} ${u.email || ''} ${u.dni || ''}`.toLowerCase();
+                    const texto = `${u.nombre || ''} ${u.apellido || ''}`.toLowerCase();
                     return texto.includes(q.toLowerCase());
                 });
                 if (local.length) {
@@ -9448,36 +9479,18 @@ window.CIRCUITO_SINGLE_FILE = true;
                     return rankingBusquedaResultados;
                 }
 
-                // Búsqueda puntual: primero DNI exacto (1 lectura aprox. si existe).
                 const resultados = [];
-                try {
-                    const porDni = await firebaseAPI.getDocs(
-                        firebaseAPI.query(
-                            firebaseAPI.collection(firebaseAPI.db, 'users'),
-                            firebaseAPI.where('dni', '==', q),
-                            firebaseAPI.limit(5)
-                        )
-                    );
-                    porDni.docs.forEach(docSnap => resultados.push({id:docSnap.id,uid:docSnap.id,...docSnap.data()}));
-                } catch(e) {}
-
-                // Si parece email, búsqueda exacta por email.
-                if (!resultados.length && q.includes('@')) {
-                    try {
-                        const porEmail = await firebaseAPI.getDocs(
-                            firebaseAPI.query(
-                                firebaseAPI.collection(firebaseAPI.db, 'users'),
-                                firebaseAPI.where('email', '==', q),
-                                firebaseAPI.limit(5)
-                            )
-                        );
-                        porEmail.docs.forEach(docSnap => resultados.push({id:docSnap.id,uid:docSnap.id,...docSnap.data()}));
-                    } catch(e) {}
+                for (const campo of ['nombre','apellido']) {
+                  try {
+                    const snapshot=await firebaseAPI.getDocs(firebaseAPI.query(
+                      firebaseAPI.collection(firebaseAPI.db,'users'),firebaseAPI.where(campo,'==',q),firebaseAPI.limit(10)));
+                    snapshot.docs.forEach(d=>{if(!resultados.some(r=>r.id===d.id))resultados.push({id:d.id,uid:d.id,...d.data()});});
+                  } catch(e) {logFirebaseError('búsqueda pública de jugadores',e,{opcional:true});}
                 }
 
                 rankingBusquedaResultados = resultados.map(u => ({
                     ...u,
-                    nombre:`${u.nombre || ''} ${u.apellido || ''}`.trim() || u.displayName || u.email || 'Jugador',
+                    nombre:`${u.nombre || ''} ${u.apellido || ''}`.trim() || u.displayName || 'Jugador',
                     puntos:Number(u.puntos) || 0,
                     pj:Number(u.pj) || Number(u.partidosJugados) || 0
                 }));
@@ -9668,23 +9681,22 @@ window.CIRCUITO_SINGLE_FILE = true;
                         );
                         const hoy = new Date();
                         const desde = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-                        const reservasQ = firebaseAPI.query(
-                            firebaseAPI.collectionGroup(firebaseAPI.db, 'reservas'),
-                            firebaseAPI.where('fecha', '>=', desde),
-                            firebaseAPI.orderBy('fecha', 'asc'),
-                            firebaseAPI.limit(40)
-                        );
-                        const unsubReservas = firebaseAPI.onSnapshot(
-                            reservasQ,
-                            snapshot => {
-                                reservasCompartidasCache = docsToArray(snapshot);
-                                window.actualizarHorariosDisponibles();
-                            },
-                            error => {
-                                console.warn('reservas crear partido', error);
-                                reservasCompartidasCache = [];
-                            }
-                        );
+                        disponibilidadPublicaLista=false;let activo=true,cargando=false;
+                        const actualizarDisponibilidad=async()=>{
+                          if(cargando||!activo)return;cargando=true;
+                          try {
+                            await cargarClubesBajoDemanda();
+                            const fin=new Date();fin.setDate(fin.getDate()+30);
+                            const hasta=fin.getFullYear()+'-'+String(fin.getMonth()+1).padStart(2,'0')+'-'+String(fin.getDate()).padStart(2,'0');
+                            const respuestas=await Promise.all(clubesData.map(club=>window.PRICPublic.read('disponibilidad',{clubId:club.id,desde,hasta})));
+                            if(!activo)return;
+                            reservasCompartidasCache=respuestas.flatMap(r=>r.reservas);disponibilidadPublicaDesde=desde;disponibilidadPublicaHasta=hasta;disponibilidadPublicaLista=true;window.actualizarHorariosDisponibles();
+                          }catch(error){if(activo){disponibilidadPublicaLista=false;window.actualizarHorariosDisponibles();logFirebaseError('disponibilidad pública',error);}}
+                          finally{cargando=false;}
+                        };
+                        actualizarDisponibilidad();
+                        const timer=setInterval(actualizarDisponibilidad,30000);
+                        const unsubReservas=()=>{activo=false;disponibilidadPublicaLista=false;clearInterval(timer);};
                         registrarListenerVista(vista, unsubReservas);
                     }
                     return;
@@ -9698,7 +9710,16 @@ window.CIRCUITO_SINGLE_FILE = true;
                 if (vista === 'amigos') {
                     // Solo subcolecciones personales en tiempo real.
                     const specs = [
-                        ['amigos',50,snapshot => { amigosData=docsToArray(snapshot); renderizarAmigos(); }],
+                        ['amigos',50,async snapshot => {
+ const uidActual=usuarioActual?.uid;
+ const contactos=await Promise.all(docsToArray(snapshot).map(async amigo=>{
+  const seguro={id:amigo.id,uid:amigo.uid,nombre:amigo.nombre,agregadoEn:amigo.agregadoEn};
+  try {const contacto=await firebaseAPI.getDoc(firebaseAPI.doc(firebaseAPI.db,'friendContacts',String(amigo.uid||amigo.id)));return {...seguro,telefono:contacto.exists()?contacto.data().telefono:''};}
+  catch {return seguro;}
+ }));
+ if(usuarioActual?.uid!==uidActual)return;
+ amigosData=contactos;renderizarAmigos();
+ }],
                         ['solicitudesAmistad',15,snapshot => {
                             solicitudesAmistadData=docsToArray(snapshot).filter(s => (s.estado||'pendiente')==='pendiente');
                             renderizarSolicitudesAmistad(); actualizarResumenAmigos();
@@ -10112,7 +10133,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 return window.obtenerCanchasDisponibles(datos).length > 0;
             };
 
-            window.crearReserva = function(datos = {}) {
+            window.crearReserva = async function(datos = {}) {
                 const clubId = datos.clubId || datos.club || document.getElementById("input-club-crear")?.value || clubesData[0]?.nombre || "Club Central";
                 const fecha = datos.fecha || window.formatearAFechaString(fechaSeleccionadaCrear);
                 const hora = datos.hora || horaSeleccionadaCrear;
@@ -10156,10 +10177,10 @@ window.CIRCUITO_SINGLE_FILE = true;
                     origen: datos.origen || "circuito",
                     partidoId: datos.partidoId || null
                 };
+                try { await guardarReservaEnFirebase(nueva); }
+                catch(error) { logFirebaseError('creación de reserva',error); throw new Error('No pudimos confirmar el turno. Usá la página de reservas del club antes de organizar el partido.'); }
                 reservasCompartidasCache.push(nueva);
-                guardarReservaEnFirebase(nueva)
-                    .then(() => crearNotificacionReserva(nueva))
-                    .catch(error => logFirebaseError("creación de reserva y notificación", error));
+                crearNotificacionReserva(nueva).catch(error => logFirebaseError('notificación de reserva',error));
                 return { ok:true, reserva:nueva };
             };
 
@@ -10200,6 +10221,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 const clubId = document.getElementById("input-club-crear")?.value;
                 if (!grid || !msgVacio || !clubId) return;
 
+                if(!disponibilidadPublicaLista||window.formatearAFechaString(fechaSeleccionadaCrear)<disponibilidadPublicaDesde||window.formatearAFechaString(fechaSeleccionadaCrear)>disponibilidadPublicaHasta){grid.innerHTML='';horaSeleccionadaCrear='';grid.style.display='none';msgVacio.style.display='block';msgVacio.innerText='No se pudo verificar la disponibilidad. Intentá nuevamente.';return;}
                 const config = window.obtenerConfiguracionClub(clubId);
                 const fechaISO = window.formatearAFechaString(fechaSeleccionadaCrear);
                 const dow = window.getDayOfWeekFromDate(fechaISO);
@@ -10264,6 +10286,7 @@ window.CIRCUITO_SINGLE_FILE = true;
             };
 
             window.crearPartido = async function() {
+                if(!disponibilidadPublicaLista||window.formatearAFechaString(fechaSeleccionadaCrear)<disponibilidadPublicaDesde||window.formatearAFechaString(fechaSeleccionadaCrear)>disponibilidadPublicaHasta)return mostrarAviso('No se pudo verificar la disponibilidad. Intentá nuevamente.','error');
                 const claveOperacion = `crear-${usuarioActual?.uid || ''}`;
                 return ejecutarOperacionPartido(claveOperacion, async () => {
                     const fecha = window.formatearAFechaString(fechaSeleccionadaCrear);
@@ -10281,7 +10304,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                     const config = window.obtenerConfiguracionClub(club);
                     const duracion = window.obtenerDuracionModalidadClub(config, modalidad);
                     const partidoId = crypto?.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
-                    const reserva = window.crearReserva({
+                    const reserva = await window.crearReserva({
                         id:`partido-${partidoId}`,
                         clubId:club, fecha, hora, duracion, modalidad,
                         jugador:getNombreCompleto(),
@@ -10576,7 +10599,6 @@ window.CIRCUITO_SINGLE_FILE = true;
                         id:solicitudId,
                         deUid:usuarioActual.uid,
                         deNombre:getNombreCompleto(),
-                        deDni:perfilUsuario.dni || '',
                         paraUid:uidDestino,
                         paraNombre:jugador.nombre || '',
                         estado:'pendiente',
@@ -10589,7 +10611,6 @@ window.CIRCUITO_SINGLE_FILE = true;
                         deNombre:getNombreCompleto(),
                         paraUid:uidDestino,
                         paraNombre:jugador.nombre || '',
-                        paraDni:jugador.dni || '',
                         estado:'pendiente',
                         creadoEn:api.serverTimestamp()
                     }, {merge:true});
@@ -10616,9 +10637,8 @@ window.CIRCUITO_SINGLE_FILE = true;
             window.agregarAmigo = async function() {
                 const input = document.getElementById("input-buscar-amigo");
                 const q = normalizarTextoBusqueda(input?.value);
-                if (!q) return alert("Escribí un DNI o nombre.");
+                if (!q) return alert("Escribí un nombre o apellido.");
                 const jugador = rankingData.find(j =>
-                    normalizarTextoBusqueda(j.dni) === q ||
                     normalizarTextoBusqueda(j.nombre).includes(q)
                 );
                 if (!jugador) return alert("No se encontró ese jugador.");
@@ -10641,14 +10661,12 @@ window.CIRCUITO_SINGLE_FILE = true;
                     batch.set(api.doc(api.db,'users',miUid,'amigos',otroUid), {
                         id:otroUid, uid:otroUid,
                         nombre:solicitud.deNombre || 'Jugador',
-                        dni:solicitud.deDni || '',
                         agregadoEn:api.serverTimestamp()
                     }, {merge:true});
 
                     batch.set(api.doc(api.db,'users',otroUid,'amigos',miUid), {
                         id:miUid, uid:miUid,
                         nombre:getNombreCompleto(),
-                        dni:perfilUsuario.dni || '',
                         agregadoEn:api.serverTimestamp()
                     }, {merge:true});
 
