@@ -5269,7 +5269,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                 ['Amigos', () => renderizarAmigos()],
                 ['Clubes', () => renderizarClubes()],
                 ['Patrocinadores', () => renderizarPatrocinadores()],
-                ['Rol Academia', () => actualizarBotonAcademiaSegunRol()],
+                ['Rol Academia', () => actualizarModoProfesorUI()],
                 ['Filtros Partidos', () => actualizarChipsFiltrosUnirse()]
             ];
 
@@ -8927,10 +8927,11 @@ window.CIRCUITO_SINGLE_FILE = true;
                 Array.from(listenersPorVista.keys()).forEach(cerrarListenersVista);
                 vistaFirebaseActiva = null;
 
-                escuchasTorneosPorClub.forEach(unsub => {
+                unsubscribeTorneosPorClub.forEach(unsub => {
                     try { if (typeof unsub === 'function') unsub(); } catch(e) {}
                 });
-                escuchasTorneosPorClub.clear();
+                unsubscribeTorneosPorClub.clear();
+                torneosPorClubCache.clear();
             }
 
             function ocultarPantallasDuranteValidacion() {
@@ -9044,7 +9045,7 @@ window.CIRCUITO_SINGLE_FILE = true;
                         dni: data.dni || "",
                         preferencia: data.preferencia || "Drive",
                         foto: data.foto || "",
-                        rolProfesor: access.professor === true || data.rolProfesor === true || data.esProfesor === true || data.rol === 'Profesor' || data.roles?.profesor === true,
+                        rolProfesor: access.professor === true,
                         esAdmin: access.circuitAdmin === true,
                         rol: access.circuitAdmin === true ? "Admin" : (access.professor === true ? "Profesor" : ""),
                         plataforma,
