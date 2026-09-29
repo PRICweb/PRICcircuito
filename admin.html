@@ -228,7 +228,8 @@ const [appMod,fs,authMod]=await Promise.all([
   import(`https://www.gstatic.com/firebasejs/${VER}/firebase-auth.js`)
 ]);
 
-const app=appMod.getApps().length?appMod.getApp():appMod.initializeApp(firebaseConfig);
+// Cada portal conserva su propia sesión aunque comparta el dominio de GitHub Pages.
+const app = appMod.getApps().find(a => a.name === 'pric-superadmin') || appMod.initializeApp(firebaseConfig, 'pric-superadmin');
 await window.PRICPublic.init(app,VER);
 const db=fs.getFirestore(app);
 const auth=authMod.getAuth(app);

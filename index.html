@@ -8839,7 +8839,8 @@ window.CIRCUITO_SINGLE_FILE = true;
                         import(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-analytics.js`).catch(() => null)
                     ]);
 
-                    const app = appMod.getApps().length ? appMod.getApp() : appMod.initializeApp(firebaseConfig);
+                    // Cada portal conserva su propia sesión aunque comparta el dominio de GitHub Pages.
+const app = appMod.getApps().find(a => a.name === 'pric-jugadores') || appMod.initializeApp(firebaseConfig, 'pric-jugadores');
                     await window.PRICPublic.init(app,FIREBASE_VERSION);
                     const db = firestoreMod.getFirestore(app);
                     const auth = authMod.getAuth(app);
