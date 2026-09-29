@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#f7f8fa;--surface:#fff;--text:#101828;--muted:#667085;--line:#e4e7ec;--nav:#101828;--danger:#b42318;--success:#067647;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}button,input{font:inherit}[hidden]{display:none!important}
-.btn{min-height:39px;padding:7px 11px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;color:#344054;font-size:.7rem;font-weight:800;cursor:pointer}.btn.primary{background:var(--nav);border-color:var(--nav);color:#fff}.btn:disabled{opacity:.55}
+.btn{min-height:39px;padding:7px 11px;border:1px solid #d0d5dd;border-radius:10px;background:#fff;color:#344054;font-size:.7rem;font-weight:800;cursor:pointer}.btn.primary{background:var(--nav);border-color:var(--nav);color:#fff}.btn.danger{background:#b42318;border-color:#b42318;color:#fff}.btn:disabled{opacity:.55}
 .input{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d0d5dd;border-radius:11px;background:#fff;outline:none}.input:focus{border-color:#98a2b3;box-shadow:0 0 0 3px rgba(16,24,40,.05)}
 .auth{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#f9fafb,#eef2f6)}.auth-card{width:min(100%,390px);padding:24px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 60px rgba(16,24,40,.1)}.auth-card h1{margin:0 0 4px;font-size:1.3rem}.auth-card p{margin:0 0 18px;color:var(--muted);font-size:.76rem}.field{margin-bottom:10px}.field label{display:block;margin-bottom:5px;color:#475467;font-size:.66rem;font-weight:800}.auth-error{margin-top:9px;color:var(--danger);font-size:.68rem;font-weight:750}
 .shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:18px 11px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column}.brand{padding:0 8px 17px;border-bottom:1px solid var(--line);margin-bottom:12px}.brand strong{display:block;font-size:1.2rem;line-height:1.04;letter-spacing:-.03em}.brand span{display:block;margin-top:5px;color:var(--muted);font-size:.62rem}
@@ -153,12 +153,29 @@ body.admin-mode{
 </style>
 
 <script src="./public-data-client.js"></script>
+
+<style id="superadmin-subscriptions-css">
+.super-only[hidden]{display:none!important}.service-grid{display:grid;grid-template-columns:repeat(3,minmax(140px,1fr));gap:10px;margin-bottom:14px}.service-chip{padding:12px;border:1px solid var(--line);border-radius:13px;background:#fff}.service-chip span{display:block;color:var(--muted);font-size:.58rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}.service-chip strong{display:block;margin-top:5px;font-size:.82rem}.club-sub-list{display:flex;flex-direction:column;gap:9px}.club-sub-row{padding:13px;border:1px solid #eaecf0;border-radius:14px;background:#fff}.club-sub-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.club-sub-head h3{margin:0;font-size:.78rem}.club-sub-head small{display:block;margin-top:3px;color:var(--muted);font-size:.61rem}.club-sub-meta{display:grid;grid-template-columns:repeat(4,minmax(100px,1fr));gap:8px;margin-top:10px}.club-sub-meta div{padding:8px 9px;border-radius:10px;background:#f8fafc}.club-sub-meta span{display:block;color:var(--muted);font-size:.54rem;font-weight:800}.club-sub-meta strong{display:block;margin-top:3px;font-size:.68rem}.club-sub-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.badge.blue{background:#eff8ff;color:#175cd3}.badge.gray{background:#f2f4f7;color:#475467}.badge.yellow{background:#fffaeb;color:#b54708}.badge.black{background:#101828;color:#fff}.integration-line{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.super-note{margin:0 0 12px;padding:10px 12px;border:1px solid #eaecf0;border-radius:12px;background:#fcfcfd;color:#667085;font-size:.65rem;line-height:1.45}@media(max-width:800px){.service-grid{grid-template-columns:1fr}.club-sub-meta{grid-template-columns:1fr 1fr}}@media(max-width:480px){.club-sub-meta{grid-template-columns:1fr}.club-sub-head{flex-direction:column}}
+
+<style id="etapa5-monitor-css">
+.monitor-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.monitor-alerts{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.monitor-alert{border:1px solid #eaecf0;border-left:4px solid #d92d20;border-radius:12px;padding:10px 12px;background:#fff}
+.monitor-alert[data-int="mercadoPago"]{border-left-color:#175cd3}
+.monitor-alert-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.monitor-alert strong{font-size:.72rem;color:#101828}
+.monitor-alert small{display:block;color:#667085;font-size:.61rem;margin-top:4px;line-height:1.35}
+.monitor-tech{margin-top:7px;padding:8px;border-radius:8px;background:#f8fafc;color:#475467;font:600 .58rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;word-break:break-word}
+.monitor-alert-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+</style>
+</style>
 </head>
 <body>
 <section id="auth" class="auth"><div class="auth-card"><h1>Administración PRIC</h1><p>Acceso exclusivo para cuentas con rol administrador.</p><div class="field"><label>Email</label><input id="email" class="input" type="email"></div><div class="field"><label>Contraseña</label><input id="password" class="input" type="password"></div><button id="login" class="btn primary" style="width:100%" onclick="loginAdmin()">Ingresar</button><div id="auth-error" class="auth-error"></div></div></section>
 <div id="shell" class="shell" hidden>
 <aside id="sidebar" class="sidebar"><div class="brand"><strong>Panel<br>Administración</strong><span>Circuito Competitivo</span></div><nav class="nav">
 <button class="active" data-view="resumen" onclick="vista('resumen')">⌂ &nbsp; Resumen</button>
+<button id="nav-suscripciones" class="super-only" hidden data-view="suscripciones" onclick="vista('suscripciones')">▣ &nbsp; Clubes y suscripciones</button>
 <button data-view="revisiones" onclick="vista('revisiones')">✓ &nbsp; Revisiones</button>
 <button data-view="denuncias" onclick="vista('denuncias')">! &nbsp; Denuncias</button>
 <button data-view="profesores" onclick="vista('profesores')">＋ &nbsp; Roles Profesor</button>
@@ -168,6 +185,7 @@ body.admin-mode{
 </nav><div class="side-bottom"><div class="side-user"><strong id="admin-name">Administrador</strong><span id="admin-email"></span></div><button class="btn" style="width:100%" onclick="logoutAdmin()">Cerrar sesión</button></div></aside>
 <main class="main"><header class="top"><div style="display:flex;align-items:center;gap:9px"><button class="btn mobile-menu" onclick="toggleMenu()">☰</button><div><h1 id="title">Resumen</h1><p id="subtitle">Estado general del Circuito.</p></div></div><button class="btn" onclick="cargarAdmin()">↻ Actualizar</button></header>
 <section id="v-resumen" class="view active"><div id="stats" class="stats"></div><div class="grid2"><div class="card"><h3>Pendientes</h3><div id="res-pendientes"></div></div><div class="card"><h3>Actividad reciente</h3><div id="res-actividad"></div></div></div></section>
+<section id="v-suscripciones" class="view super-only" hidden><div class="view-head"><h2>Clubes y suscripciones</h2><p>Control comercial del servicio. No permite editar reservas, pagos, inventario ni operaciones privadas de los clubes.</p></div><p class="super-note">Las suscripciones se habilitan manualmente y siempre requieren fecha de vencimiento. Una suscripción vencida genera alerta y, después de tres días, queda pendiente de suspensión; el bloqueo solo ocurre por suspensión manual o porque nunca fue habilitada.</p><div class="monitor-toolbar"><button class="btn" onclick="verificarPlantillasTwilio()">Verificar plantillas Twilio</button></div><div id="service-status" class="service-grid"></div><h3 style="margin:4px 0 9px">Alertas de integraciones</h3><div id="service-alerts" class="monitor-alerts"></div><div id="club-subscriptions" class="club-sub-list"></div></section>
 <section id="v-revisiones" class="view"><div class="view-head"><h2>Revisiones</h2><p>Resultados incongruentes, WO, abandonos y cancelaciones.</p></div><div id="revisiones" class="list"></div></section>
 <section id="v-denuncias" class="view"><div class="view-head"><h2>Denuncias</h2><p>Reportes enviados por jugadores.</p></div><div id="denuncias" class="list"></div></section>
 <section id="v-profesores" class="view"><div class="view-head"><h2>Roles Profesor</h2><p>Asigná o quitá el rol directamente.</p></div><input id="buscar-prof" class="input search" placeholder="Buscar por nombre o UID" oninput="renderProfes()"><div id="profesores" class="list"></div></section>
@@ -219,6 +237,7 @@ const $=id=>document.getElementById(id);
 
 let currentUser=null;
 let currentProfile=null;
+let currentAccessRole=null;
 let loadingAdmin=false;
 let modalResolver=null;
 
@@ -229,11 +248,15 @@ let D={
   partidos:[],
   sponsors:[],
   act:[],
-  roles:{}
+  roles:{},
+  clubs:[],
+  service:null,
+  alerts:[]
 };
 
 const labels={
   resumen:["Resumen","Estado general del Circuito."],
+  suscripciones:["Clubes y suscripciones","Estado comercial y del servicio."],
   revisiones:["Revisiones","Resultados e incidentes pendientes."],
   denuncias:["Denuncias","Reportes de jugadores."],
   profesores:["Roles Profesor","Administración de profesores."],
@@ -247,6 +270,8 @@ function esc(v){
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   }[c]));
 }
+
+function jsArg(v){ return esc(JSON.stringify(String(v ?? ""))); }
 
 function nombre(u){
   return `${u?.nombre||""} ${u?.apellido||""}`.trim()||u?.id||"Usuario";
@@ -345,6 +370,7 @@ window.cerrarMenuMovil=function(){
 };
 
 window.vista=function(v){
+  if(v==='suscripciones'&&!esSuperadminActual())v='resumen';
   if(!labels[v])return;
   document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===`v-${v}`));
   document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===v));
@@ -485,10 +511,281 @@ function modalSancion(){
   });
 }
 
+
+const SUPERADMIN_EMAIL="prato.salvador@gmail.com";
+const API_BASE="https://us-central1-pric-60f50.cloudfunctions.net/api";
+
+function esSuperadminActual(){
+  return String(currentUser?.email||"").trim().toLowerCase()===SUPERADMIN_EMAIL
+    && currentAccessRole?.superadmin===true
+    && currentAccessRole?.circuitAdmin===true;
+}
+
+async function superadminApi(path,options={}){
+  if(!currentUser)throw Error("No hay sesión activa.");
+  const token=await authMod.getIdToken(currentUser);
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),18000);
+  try{
+    const response=await fetch(API_BASE+path,{
+      method:options.method||"GET",
+      headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer "+token},
+      body:options.body?JSON.stringify(options.body):undefined,
+      signal:controller.signal
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||data.ok!==true)throw Error(data.error||"No se pudo completar la operación.");
+    return data;
+  }finally{clearTimeout(timer);}
+}
+
+function fechaArgentinaHoy(){
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Argentina/Cordoba',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const get=t=>parts.find(p=>p.type===t)?.value||'';
+  return get('year')+'-'+get('month')+'-'+get('day');
+}
+
+function textoEstadoSuscripcion(s){
+  const map={activa:'Activa',sin_suscripcion:'Sin suscripción',suspendida:'Suspendida',baja:'Dado de baja',vencida:'Vencida',pendiente_suspension:'Pendiente de suspensión',configuracion_invalida:'Revisar configuración'};
+  return map[s?.estado]||'Sin información';
+}
+function claseEstadoSuscripcion(s){
+  if(s?.estado==='activa')return 'green';
+  if(s?.estado==='suspendida'||s?.estado==='baja'||s?.estado==='configuracion_invalida')return 'red';
+  if(s?.estado==='vencida'||s?.estado==='pendiente_suspension')return 'orange';
+  return 'gray';
+}
+function diasSuscripcion(s){
+  if(!s)return '—';
+  if(s.estado==='activa')return Number(s.diasRestantes||0)===0?'Vence hoy':String(s.diasRestantes)+' días';
+  if(s.estado==='vencida'||s.estado==='pendiente_suspension')return String(s.diasVencida||0)+' días vencida';
+  return '—';
+}
+
+function modalFechaSuscripcion(club,accion){
+  return new Promise(resolve=>{
+    modalResolver=resolve;
+    const actual=club?.suscripcion?.fechaVencimiento||'';
+    abrirModalBase({
+      titulo:accion==='enable'?'Habilitar suscripción':'Cambiar vencimiento',
+      texto:`Club: ${club?.nombre||club?.id||''}`,
+      body:`<div class="modal-field"><label>Fecha de vencimiento</label><input id="modal-sub-expiry" class="input" type="date" min="${fechaArgentinaHoy()}" value="${esc(actual)}"></div><p class="modal-help">La vigencia termina a las 23:59:59 del día indicado, horario de Argentina.</p>`,
+      acciones:`<button class="btn" type="button" onclick="cerrarModalAdmin(false)">Cancelar</button><button class="btn primary" type="button" id="modal-sub-save">Guardar</button>`
+    });
+    $('modal-sub-save').onclick=()=>{
+      const fecha=$('modal-sub-expiry').value;
+      if(!fecha){$('modal-error').textContent='La fecha de vencimiento es obligatoria.';return;}
+      const resolver=modalResolver;modalResolver=null;$('app-modal').hidden=true;document.body.style.overflow='auto';resolver(fecha);
+    };
+  });
+}
+
+
+function modalMotivoServicio(club,accion){
+  return new Promise(resolve=>{
+    modalResolver=resolve;
+    const esBaja=accion==='deactivate';
+    abrirModalBase({
+      titulo:esBaja?'Dar de baja el club':'Suspender servicio',
+      texto:`Club: ${club?.nombre||club?.id||''}`,
+      body:`<div class="modal-field"><label>Motivo que verá el administrador</label><textarea id="modal-service-reason" class="input" rows="4" maxlength="240" placeholder="${esBaja?'Ej: Baja solicitada por el club.':'Ej: Suspensión administrativa temporal.'}"></textarea></div><p class="modal-help">Los datos se conservan. El club podrá seguir accediendo únicamente a soporte, exportaciones y cierre de sesión.</p>`,
+      acciones:`<button class="btn" type="button" onclick="cerrarModalAdmin(false)">Cancelar</button><button class="btn ${esBaja?'danger':'primary'}" type="button" id="modal-service-save">${esBaja?'Dar de baja':'Suspender'}</button>`
+    });
+    $('modal-service-save').onclick=()=>{
+      const motivo=$('modal-service-reason').value.trim();
+      if(motivo.length<4){$('modal-error').textContent='Indicá un motivo breve.';return;}
+      const resolver=modalResolver;modalResolver=null;$('app-modal').hidden=true;document.body.style.overflow='auto';resolver(motivo);
+    };
+  });
+}
+
+async function cargarEstadoSuperadmin(){
+  if(!esSuperadminActual())return null;
+  return superadminApi('/superadmin/clubs');
+}
+
+window.gestionarSuscripcion=async function(clubId,accion){
+  if(!esSuperadminActual())return toast('Acción reservada al Superadmin.','error');
+  const club=(D.clubs||[]).find(c=>String(c.id)===String(clubId));
+  if(!club)return toast('Club no encontrado.','error');
+
+  let fecha='';
+  let motivo='';
+
+  if(accion==='enable'||accion==='renew'){
+    fecha=await modalFechaSuscripcion(club,accion);
+    if(!fecha)return;
+  }else if(accion==='suspend'||accion==='deactivate'){
+    motivo=await modalMotivoServicio(club,accion);
+    if(!motivo)return;
+  }else{
+    const esReactivacion=accion==='reactivate';
+    const yes=await confirmarAdmin({
+      titulo:esReactivacion?'Reactivar club':'Levantar suspensión',
+      texto:esReactivacion
+        ?'El club recuperará su visibilidad en el Circuito y el acceso operativo. Si la fecha de suscripción ya venció conservará el estado comercial correspondiente.'
+        :'El club recuperará el acceso operativo. Si la fecha ya venció seguirá figurando como vencida o pendiente de suspensión.',
+      confirmar:'Reactivar'
+    });
+    if(!yes)return;
+  }
+
+  const mensajes={
+    suspend:'Club suspendido.',
+    resume:'Suspensión levantada.',
+    deactivate:'Club dado de baja sin eliminar sus datos.',
+    reactivate:'Club reactivado.',
+    enable:'Suscripción habilitada.',
+    renew:'Suscripción actualizada.'
+  };
+
+  await runAction(
+    ()=>superadminApi('/superadmin/subscription',{
+      method:'POST',
+      body:{clubId,action:accion,fechaVencimiento:fecha||undefined,motivo:motivo||undefined}
+    }),
+    mensajes[accion]||'Suscripción actualizada.'
+  );
+};
+
+window.autorizarEliminacionDefinitiva=async function(clubId){
+  if(!esSuperadminActual())return toast('Acción reservada al Superadmin.','error');
+  const club=(D.clubs||[]).find(c=>String(c.id)===String(clubId));
+  if(!club)return toast('Club no encontrado.','error');
+
+  const ok=await confirmarAdmin({
+    titulo:'Autorizar eliminación definitiva',
+    texto:'Esta acción NO elimina el club. Solo crea una autorización protegida por 24 horas para una eliminación definitiva posterior. Los datos seguirán intactos hasta que exista un procedimiento explícito de eliminación.',
+    confirmar:'Autorizar',
+    peligro:true
+  });
+  if(!ok)return;
+
+  await runAction(
+    ()=>superadminApi('/superadmin/club-deletion-authorization',{
+      method:'POST',
+      body:{clubId,confirmacion:'AUTORIZAR ELIMINACION DEFINITIVA'}
+    }),
+    'Eliminación definitiva autorizada por 24 horas. No se borró ningún dato.'
+  );
+};
+
+
+function estadoMonitorTexto(info){
+  const estado=String(info?.estado||'sin_verificar');
+  if(estado==='operativo')return ['Operativo','green'];
+  if(estado==='error')return ['Error','red'];
+  return ['Sin verificar','gray'];
+}
+
+window.verificarPlantillasTwilio=async function(){
+  if(!esSuperadminActual())return toast('Acción reservada al Superadmin.','error');
+  await runAction(
+    ()=>superadminApi('/superadmin/twilio/verify-templates',{method:'POST',body:{}}),
+    'Verificación de plantillas Twilio completada.'
+  );
+};
+
+window.reintentarWhatsappSuperadmin=async function(clubId,reservaId){
+  if(!esSuperadminActual())return toast('Acción reservada al Superadmin.','error');
+  const ok=await confirmarAdmin({
+    titulo:'Reintentar WhatsApp',
+    texto:'Se reintentará únicamente el aviso que siga pendiente. Los avisos ya enviados no se duplicarán.',
+    confirmar:'Reintentar'
+  });
+  if(!ok)return;
+  await runAction(
+    ()=>superadminApi('/superadmin/whatsapp/retry',{
+      method:'POST',
+      body:{clubId,reservaId}
+    }),
+    'Reintento manual procesado.'
+  );
+};
+
+function renderAlertasIntegraciones(){
+  const wrap=$('service-alerts');
+  if(!wrap)return;
+  const alerts=(Array.isArray(D.alerts)?D.alerts:[])
+    .filter(a=>a&&a.estado!=='cerrada')
+    .sort((a,b)=>{
+      const prioridad=x=>x?.integracion==='mercadoPago'||x?.integracion==='twilio'?0:1;
+      return prioridad(a)-prioridad(b)||String(b.creadoEn||'').localeCompare(String(a.creadoEn||''));
+    });
+
+  wrap.innerHTML=alerts.length?alerts.slice(0,30).map(a=>{
+    const retry=a.integracion==='twilio'&&a.clubId&&a.reservaId
+      ?`<button class="btn" onclick="reintentarWhatsappSuperadmin(${jsArg(a.clubId)},${jsArg(a.reservaId)})">Reintentar WhatsApp</button>`:'';
+    return `<div class="monitor-alert" data-int="${esc(a.integracion||'sistema')}"><div class="monitor-alert-head"><div><strong>${esc((a.integracion||'sistema').toUpperCase())} · ${esc(a.mensaje||'Incidencia')}</strong><small>${esc(a.creadoEn||'')} ${a.clubId?`· Club ${esc(a.clubId)}`:''} ${a.reservaId?`· Reserva ${esc(a.reservaId)}`:''}</small></div><span class="badge red">${esc(a.prioridad||'alta')}</span></div>${a.detalleTecnico?`<div class="monitor-tech">${esc(JSON.stringify(a.detalleTecnico,null,2))}</div>`:''}${retry?`<div class="monitor-alert-actions">${retry}</div>`:''}</div>`;
+  }).join(''):vacio('Sin alertas recientes de Mercado Pago o Twilio.');
+}
+
+
+window.verAuditoriaClubSuperadmin=async function(clubId){
+  if(!esSuperadminActual())return toast('Acción reservada al Superadmin.','error');
+  const club=(D.clubs||[]).find(c=>String(c.id)===String(clubId));
+  if(!club)return toast('Club no encontrado.','error');
+  try{
+    const data=await superadminApi('/superadmin/audit?clubId='+encodeURIComponent(clubId)+'&limit=100');
+    const items=Array.isArray(data?.items)?data.items:[];
+    const body=items.length
+      ?`<div style="display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow:auto">${items.map(a=>{
+          const fecha=a.fechaMs?new Date(Number(a.fechaMs)).toLocaleString('es-AR'):(a.creadoEn||'');
+          const detalle=[String(a.categoria||'').replace(/_/g,' '),a.actorEmail||a.actorTipo||'',a.dispositivo||'',a.detalle||''].filter(Boolean).join(' · ');
+          return `<div style="padding:10px 11px;border:1px solid #e4e7ec;border-radius:10px;background:#fff"><strong style="display:block;font-size:.72rem">${esc(a.descripcion||'Cambio auditado')}</strong><small style="display:block;margin-top:4px;color:#667085">${esc(fecha)}${detalle?' · '+esc(detalle):''}</small></div>`;
+        }).join('')}</div>`
+      :`<div class="empty">No hay registros de auditoría disponibles en los últimos 14 días.</div>`;
+    abrirModalBase({
+      titulo:'Auditoría · '+(club.nombre||club.id),
+      texto:'Historial protegido de los últimos 14 días.',
+      body,
+      acciones:'<button class="btn primary" type="button" onclick="cerrarModalAdmin()">Cerrar</button>'
+    });
+  }catch(error){
+    toast(mensajeFirebase(error,'No se pudo cargar la auditoría del club.'),'error',5000);
+  }
+};
+
+function renderSuscripciones(){
+  const nav=$('nav-suscripciones'),view=$('v-suscripciones');
+  const enabled=esSuperadminActual();
+  if(nav)nav.hidden=!enabled;if(view)view.hidden=!enabled;
+  if(!enabled)return;
+  const svc=D.service||{};
+  const mon=svc.monitoreo||{};
+  const mpEstado=estadoMonitorTexto(mon.mercadoPago);
+  const twEstado=estadoMonitorTexto(mon.twilio);
+  $('service-status').innerHTML=[
+    ['Backend',svc.backend?'Operativo':'Sin respuesta',svc.backend?'green':'red'],
+    ['Mercado Pago',mpEstado[0],mpEstado[1]],
+    ['Twilio / WhatsApp',twEstado[0],twEstado[1]],
+    ['App Check',svc.appCheckEnforced?'Exigido':'Sin enforcement',svc.appCheckEnforced?'green':'orange']
+  ].map(x=>`<div class="service-chip"><span>${esc(x[0])}</span><strong><span class="badge ${x[2]}">${esc(x[1])}</span></strong></div>`).join('');
+
+  renderAlertasIntegraciones();
+
+  const clubs=Array.isArray(D.clubs)?D.clubs:[];
+  $('club-subscriptions').innerHTML=clubs.length?clubs.map(c=>{
+    const s=c.suscripcion||{};
+    const enabledSub=s.habilitada===true;
+    const suspended=s.suspendida===true;
+    const baja=s.baja===true||s.estado==='baja';
+    const auditButton=`<button class="btn" onclick="verAuditoriaClubSuperadmin(${jsArg(c.id)})">Ver auditoría</button>`;
+    const actions=(!enabledSub
+      ?`<button class="btn primary" onclick="gestionarSuscripcion(${jsArg(c.id)},'enable')">Habilitar suscripción</button>`
+      :baja
+        ?`<button class="btn primary" onclick="gestionarSuscripcion(${jsArg(c.id)},'reactivate')">Reactivar club</button><button class="btn danger" onclick="autorizarEliminacionDefinitiva(${jsArg(c.id)})">Autorizar eliminación definitiva</button>`
+        :`<button class="btn" onclick="gestionarSuscripcion(${jsArg(c.id)},'renew')">Cambiar vencimiento</button>${suspended?`<button class="btn primary" onclick="gestionarSuscripcion(${jsArg(c.id)},'resume')">Levantar suspensión</button>`:`<button class="btn" onclick="gestionarSuscripcion(${jsArg(c.id)},'suspend')">Suspender ahora</button>`}<button class="btn danger" onclick="gestionarSuscripcion(${jsArg(c.id)},'deactivate')">Dar de baja</button>`)
+      +auditButton;
+    return `<div class="club-sub-row"><div class="club-sub-head"><div><h3>${esc(c.nombre||c.id)}</h3><small>${esc(c.emailAdmin||'Sin email')} · ${esc(c.id)}</small></div><span class="badge ${claseEstadoSuscripcion(s)}">${esc(textoEstadoSuscripcion(s))}</span></div><div class="club-sub-meta"><div><span>Inicio</span><strong>${esc(s.fechaInicio||'—')}</strong></div><div><span>Vencimiento</span><strong>${esc(s.fechaVencimiento||'—')}</strong></div><div><span>Estado de tiempo</span><strong>${esc(diasSuscripcion(s))}</strong></div><div><span>Actividad</span><strong>${c.actividad?.ultimos30Dias?'Últimos 30 días':'Sin actividad 30d'}</strong></div></div><div class="integration-line"><span class="badge ${c.integraciones?.mercadoPago?'green':'gray'}">Mercado Pago ${c.integraciones?.mercadoPago?'conectado':'no conectado'}</span><span class="badge ${c.integraciones?.whatsappTelefono?'green':'gray'}">WhatsApp ${c.integraciones?.whatsappTelefono?'configurado':'sin teléfono'}</span><span class="badge ${c.integraciones?.twilioConfigurado?'green':'gray'}">Twilio ${c.integraciones?.twilioConfigurado?'configurado':'sin configurar'}</span></div>${s.motivo?`<small style="display:block;margin-top:8px;color:#b42318;font-weight:750">Motivo: ${esc(s.motivo)}</small>`:''}${s.alerta&&!s.motivo?`<small style="display:block;margin-top:8px;color:#b54708;font-weight:750">${esc(s.alerta)}</small>`:''}<div class="club-sub-actions">${actions}</div></div>`;
+  }).join(''):vacio('No hay clubes registrados.');
+}
+
 authMod.onAuthStateChanged(auth,async user=>{
   if(!user){
     currentUser=null;
     currentProfile=null;
+    currentAccessRole=null;
     setModo("auth");
     return;
   }
@@ -505,6 +802,7 @@ authMod.onAuthStateChanged(auth,async user=>{
       return;
     }
 
+    currentAccessRole=protectedRole.data()||{};
     currentUser=user;
     currentProfile=profile;
     $("admin-name").textContent=nombre(profile);
@@ -572,6 +870,17 @@ window.cargarAdmin=async function(mostrarMensaje=true){
     const rolesMap=Object.fromEntries(roles.map(r=>[String(r.id),r]));
     const usersSeguros=users.map(u=>({...u,_access:rolesMap[String(u.id)]||{}}));
     D={...D,users:usersSeguros,roles:rolesMap,den,inc,partidos:parts,sponsors:sp};
+    if(esSuperadminActual()){
+      try{
+        const superData=await cargarEstadoSuperadmin();
+        D.clubs=Array.isArray(superData?.clubs)?superData.clubs:[];
+        D.service=superData?.servicio||null;
+        D.alerts=Array.isArray(superData?.alerts)?superData.alerts:[];
+      }catch(error){
+        D.clubs=[];D.service=null;
+        toast(mensajeFirebase(error,"No se pudo cargar el estado de clubes y suscripciones."),"error",5000);
+      }
+    }else{D.clubs=[];D.service=null;D.alerts=[];}
     buildAct();
     render();
 
@@ -614,6 +923,7 @@ function render(){
   renderSanc();
   renderSponsors();
   renderAct();
+  renderSuscripciones();
 }
 
 function renderResumen(){
@@ -646,7 +956,7 @@ function renderRev(){
         <small>${esc(`${x.fecha||""} · ${x.hora||""}`)}</small>
         <span class="badge orange">Revisión</span>
         <div class="actions">
-          <button class="btn primary" onclick="resolverPartido('${esc(x._path)}')">Marcar revisado</button>
+          <button class="btn primary" onclick="resolverPartido(${jsArg(x._path)})">Marcar revisado</button>
         </div>
       </div>`),
     ...r.i.map(x=>`
@@ -655,7 +965,7 @@ function renderRev(){
         <small>${esc(`${x.reportadoPor||""} · ${x.detalle||""}`)}</small>
         <span class="badge orange">Pendiente</span>
         <div class="actions">
-          <button class="btn primary" onclick="resolverInc('${esc(x.id)}')">Resolver</button>
+          <button class="btn primary" onclick="resolverInc(${jsArg(x.id)})">Resolver</button>
         </div>
       </div>`)
   ];
@@ -671,7 +981,7 @@ function renderDen(){
       <small>${esc(`${x.reportadoPor||x.usuario||""} · ${x.detalle||x.descripcion||""}`)}</small>
       <span class="badge red">Abierta</span>
       <div class="actions">
-        <button class="btn primary" onclick="cerrarDen('${esc(x.id)}')">Cerrar</button>
+        <button class="btn primary" onclick="cerrarDen(${jsArg(x.id)})">Cerrar</button>
       </div>
     </div>`).join(""):vacio("No hay denuncias abiertas.");
 }
@@ -694,8 +1004,8 @@ window.renderProfes=function(){
         </div>
         <div class="actions">
           ${activo
-            ?`<button class="btn" onclick="profesor('${esc(x.id)}',false)">Quitar rol</button>`
-            :`<button class="btn primary" onclick="profesor('${esc(x.id)}',true)">Dar rol</button>`
+            ?`<button class="btn" onclick="profesor(${jsArg(x.id)},false)">Quitar rol</button>`
+            :`<button class="btn primary" onclick="profesor(${jsArg(x.id)},true)">Dar rol</button>`
           }
         </div>
       </div>`;
@@ -710,7 +1020,7 @@ function renderSanc(){
       <small>${esc(x.s.motivo||"Sin motivo")}${x.s.hasta?` · hasta ${esc(ftxt(x.s.hasta))}`:""}</small>
       <span class="badge red">Activa</span>
       <div class="actions">
-        <button class="btn" onclick="quitarSanc('${esc(x.u.id)}')">Levantar</button>
+        <button class="btn" onclick="quitarSanc(${jsArg(x.u.id)})">Levantar</button>
       </div>
     </div>`).join(""):vacio("No hay sanciones activas.");
 }

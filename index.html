@@ -8726,10 +8726,10 @@ window.CIRCUITO_SINGLE_FILE = true;
             // Optimización Firestore: los datos amplios dejan de mantenerse todos
             // en tiempo real. Se cargan bajo demanda y se reutilizan durante la sesión.
             const cacheFirebaseTTL = {
-                clubes: 15 * 60 * 1000,
+                clubes: 60 * 1000,
                 ranking: 5 * 60 * 1000,
                 profesores: 10 * 60 * 1000,
-                torneos: 5 * 60 * 1000,
+                torneos: 60 * 1000,
                 patrocinadores: 30 * 60 * 1000
             };
             const cacheFirebaseTiempo = {
@@ -9347,7 +9347,6 @@ window.CIRCUITO_SINGLE_FILE = true;
                     clubesData=response.clubs.map(c=>({...c,...c.datosClub,apertura:c.datosClub.primerTurno||'08:00',cierre:c.datosClub.ultimoTurno||'21:30'}));
                     for(const club of clubesData){const config={...club,clubId:club.id};configsClubesCache[club.id]=config;configsClubesCache[club.nombre]=config;configsClubesCache[normalizarIdFirestore(club.nombre)]=config;}
                     actualizarSelectorClubes();renderizarClubes();
-                    sincronizarEscuchasTorneosPorClub(snapshot);
                     if (typeof procesarSnapshotClubes === 'function') {
                         procesarSnapshotClubes(snapshot);
                     }
@@ -9553,34 +9552,30 @@ window.CIRCUITO_SINGLE_FILE = true;
                 if (!force && cacheFirebaseVigente('torneos') && torneosData.length) return;
 
                 return ejecutarCargaFirebaseUnica('torneos', async () => {
-                    let snapshot;
                     try {
-                        snapshot = await firebaseAPI.getDocs(
-                            firebaseAPI.query(
-                                firebaseAPI.collectionGroup(firebaseAPI.db, 'torneos'),
-                                firebaseAPI.limit(40)
-                            )
-                        );
+                        // La visibilidad comercial se resuelve en backend:
+                        // un club bloqueado/baja no entrega sus torneos al Circuito.
+                        await cargarClubesBajoDemanda(force);
+                        const respuesta = await window.PRICPublic.read('torneos');
+                        const lista = Array.isArray(respuesta?.torneos) ? respuesta.torneos : [];
+
+                        torneosData = lista.map(data => {
+                            const clubId = String(data.clubId || '');
+                            const club = clubesData.find(c => String(c.id) === clubId);
+                            return normalizarTorneoPublico(
+                                {...data},
+                                clubId,
+                                club?.nombre || data.club || clubId
+                            );
+                        }).filter(Boolean);
+
+                        cacheFirebaseTiempo.torneos = Date.now();
+                        renderizarTorneos();
                     } catch(error) {
                         console.warn('No se pudieron cargar los torneos:', error);
                         torneosData = [];
                         renderizarTorneos();
-                        return;
                     }
-
-                    torneosData = snapshot.docs.map(docSnap => {
-                        const data = docSnap.data() || {};
-                        const partes = String(docSnap.ref.path || '').split('/').filter(Boolean);
-                        const clubId = partes[0] === 'clubs' ? partes[1] : '';
-                        const club = clubesData.find(c => String(c.id) === String(clubId));
-                        return normalizarTorneoPublico(
-                            {id:docSnap.id,_firestorePath:docSnap.ref.path,...data},
-                            clubId,
-                            club?.nombre || data.club || clubId
-                        );
-                    });
-                    cacheFirebaseTiempo.torneos = Date.now();
-                    renderizarTorneos();
                 });
             }
 
