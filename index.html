@@ -3279,7 +3279,7 @@ img[data-club-image]{background:#e4e7ec}
 
 <script src="./privacy.js"></script>
 <script src="./public-data-client.js"></script>
-</head>
+<link rel="stylesheet" href="pric-design.css?v=20261006-publicacion"><script src="media-client.js"></script><script src="password-toggle.js" defer></script></head>
 <body>
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -3851,7 +3851,7 @@ img[data-club-image]{background:#e4e7ec}
 </section>
 <div style="background: var(--bg-light); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light);">
                 <div style="margin-bottom: 15px;">
-                    <label>Foto de Perfil (URL de la imagen):</label>
+                    <label>Foto de perfil:</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
                         <img id="preview-foto-perfil" src="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
                         <input type="url" id="perfil-foto" class="input-form" placeholder="https://link.com/foto.jpg" style="margin: 0;" oninput="actualizarPreviewFoto()">
@@ -7631,6 +7631,7 @@ window.CIRCUITO_SINGLE_FILE = true;
 
                             <div class="club-circuito-modalidades">
                                 ${obtenerResumenCanchasClub(club)}
+                                <div class="pric-club-gallery">${Object.entries(club.fotoModalidades||{}).filter(([slot,url])=>["padel_indoor","padel_outdoor","tenis_indoor","tenis_outdoor"].includes(slot)&&String(url).startsWith("https://firebasestorage.googleapis.com/")).map(([slot,url])=>`<figure><img loading="lazy" src="${escaparHtmlClub(url)}" alt="${escaparHtmlClub(slot.replaceAll("_"," "))}"><figcaption>${({padel_indoor:"Pádel indoor",padel_outdoor:"Pádel outdoor",tenis_indoor:"Tenis indoor",tenis_outdoor:"Tenis outdoor"})[slot]}</figcaption></figure>`).join("")}</div>
                             </div>
                         </div>
 
@@ -8853,6 +8854,8 @@ const app = appMod.getApps().find(a => a.name === 'pric-jugadores') || appMod.in
 
                     firebaseAPI = { app, db, auth, ...firestoreMod, ...authMod, ...window.PRICPrivacy.wrap(firestoreMod, auth, db) };
                     window.firebaseAPI = firebaseAPI;
+window.PricMedia.configure({user:()=>firebaseAPI.auth.currentUser,appCheck:()=>window.PRICPublic.token(),onUploaded:async(t,r)=>{perfilUsuario.foto=r.url;document.getElementById('perfil-foto').value=r.url;actualizarPreviewFoto();if(typeof renderizarPerfilResumen==='function')renderizarPerfilResumen();}});
+window.PricMedia.attach(document.getElementById('perfil-foto'),{kind:'profile'});
 
                     firebaseAPI.onAuthStateChanged(auth, async (user) => {
                         if (!user) {

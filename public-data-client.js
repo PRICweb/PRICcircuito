@@ -10,5 +10,5 @@
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
   try{const response=await fetch(`https://us-central1-pric-60f50.cloudfunctions.net/api/public/${path}?${new URLSearchParams(params)}`,{headers,signal:controller.signal});const data=await response.json();if(!response.ok||!data.ok)throw Error('No se pudo consultar la información pública.');return data;}finally{clearTimeout(timer);}
  }
- root.PRICPublic={init,read};
+ root.PRICPublic={init,read,token:()=>token()};
 })(window);

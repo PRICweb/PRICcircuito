@@ -169,7 +169,7 @@ body.admin-mode{
 .monitor-alert-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 </style>
 </style>
-</head>
+<link rel="stylesheet" href="pric-design.css?v=20261006-publicacion"><script src="media-client.js"></script><script src="password-toggle.js" defer></script></head>
 <body>
 <section id="auth" class="auth"><div class="auth-card"><h1>Administración PRIC</h1><p>Acceso exclusivo para cuentas con rol administrador.</p><div class="field"><label>Email</label><input id="email" class="input" type="email"></div><div class="field"><label>Contraseña</label><input id="password" class="input" type="password"></div><button id="login" class="btn primary" style="width:100%" onclick="loginAdmin()">Ingresar</button><div id="auth-error" class="auth-error"></div></div></section>
 <div id="shell" class="shell" hidden>
@@ -180,7 +180,7 @@ body.admin-mode{
 <button data-view="denuncias" onclick="vista('denuncias')">! &nbsp; Denuncias</button>
 <button data-view="profesores" onclick="vista('profesores')">＋ &nbsp; Roles Profesor</button>
 <button data-view="sanciones" onclick="vista('sanciones')">⊘ &nbsp; Sanciones</button>
-<button data-view="patrocinadores" onclick="vista('patrocinadores')">◇ &nbsp; Patrocinadores</button>
+<button id="nav-imagenes" class="super-only" hidden data-view="imagenes" onclick="vista('imagenes');cargarContenidoImagenes()">▧ &nbsp; Imágenes</button><button data-view="patrocinadores" onclick="vista('patrocinadores')">◇ &nbsp; Patrocinadores</button>
 <button data-view="actividad" onclick="vista('actividad')">◷ &nbsp; Actividad</button>
 </nav><div class="side-bottom"><div class="side-user"><strong id="admin-name">Administrador</strong><span id="admin-email"></span></div><button class="btn" style="width:100%" onclick="logoutAdmin()">Cerrar sesión</button></div></aside>
 <main class="main"><header class="top"><div style="display:flex;align-items:center;gap:9px"><button class="btn mobile-menu" onclick="toggleMenu()">☰</button><div><h1 id="title">Resumen</h1><p id="subtitle">Estado general del Circuito.</p></div></div><button class="btn" onclick="cargarAdmin()">↻ Actualizar</button></header>
@@ -190,7 +190,7 @@ body.admin-mode{
 <section id="v-denuncias" class="view"><div class="view-head"><h2>Denuncias</h2><p>Reportes enviados por jugadores.</p></div><div id="denuncias" class="list"></div></section>
 <section id="v-profesores" class="view"><div class="view-head"><h2>Roles Profesor</h2><p>Asigná o quitá el rol directamente.</p></div><input id="buscar-prof" class="input search" placeholder="Buscar por nombre o UID" oninput="renderProfes()"><div id="profesores" class="list"></div></section>
 <section id="v-sanciones" class="view"><div class="view-head"><h2>Sanciones</h2><p>Restricciones competitivas activas.</p></div><button class="btn primary" style="margin-bottom:10px" onclick="nuevaSancion()">Nueva sanción</button><div id="sanciones" class="list"></div></section>
-<section id="v-patrocinadores" class="view"><div class="view-head"><h2>Patrocinadores</h2><p>Configuración de los cinco logos de Inicio.</p></div><div id="sponsor-preview" class="sponsor-preview"></div><div class="card"><div id="sponsor-form"></div><div style="display:flex;justify-content:flex-end;margin-top:9px"><button class="btn primary" onclick="guardarSponsors()">Guardar cambios</button></div></div></section>
+<section id="v-imagenes" class="view super-only" hidden><div class="view-head"><h2>Imágenes y consumo</h2><p>Contenido institucional y torneos. Los clubes administran sus propias fotos.</p></div><div id="media-status" class="card">Sin verificar</div><div id="institutional-editor"></div><div id="tournament-editor"></div></section><section id="v-patrocinadores" class="view"><div class="view-head"><h2>Patrocinadores</h2><p>Configuración de los cinco logos de Inicio.</p></div><div id="sponsor-preview" class="sponsor-preview"></div><div class="card"><div id="sponsor-form"></div><div style="display:flex;justify-content:flex-end;margin-top:9px"><button class="btn primary" onclick="guardarSponsors()">Guardar cambios</button></div></div></section>
 <section id="v-actividad" class="view"><div class="view-head"><h2>Actividad</h2><p>Últimos movimientos administrativos.</p></div><div id="actividad" class="list"></div></section>
 </main></div><div id="toasts" class="toasts"></div>
 
@@ -231,6 +231,7 @@ const [appMod,fs,authMod]=await Promise.all([
 // Cada portal conserva su propia sesión aunque comparta el dominio de GitHub Pages.
 const app = appMod.getApps().find(a => a.name === 'pric-superadmin') || appMod.initializeApp(firebaseConfig, 'pric-superadmin');
 await window.PRICPublic.init(app,VER);
+window.PricMedia.configure({user:()=>auth.currentUser,appCheck:()=>window.PRICPublic.token()});
 const db=fs.getFirestore(app);
 const auth=authMod.getAuth(app);
 
@@ -262,6 +263,7 @@ const labels={
   denuncias:["Denuncias","Reportes de jugadores."],
   profesores:["Roles Profesor","Administración de profesores."],
   sanciones:["Sanciones","Restricciones competitivas."],
+  imagenes:["Imágenes","Contenido institucional, torneos y almacenamiento."],
   patrocinadores:["Patrocinadores","Contenido mostrado en Inicio."],
   actividad:["Actividad","Últimos movimientos relevantes."]
 };
@@ -371,7 +373,7 @@ window.cerrarMenuMovil=function(){
 };
 
 window.vista=function(v){
-  if(v==='suscripciones'&&!esSuperadminActual())v='resumen';
+  if(['suscripciones','imagenes'].includes(v)&&!esSuperadminActual())v='resumen';
   if(!labels[v])return;
   document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active",x.id===`v-${v}`));
   document.querySelectorAll(".nav button[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===v));
@@ -530,7 +532,7 @@ async function superadminApi(path,options={}){
   try{
     const response=await fetch(API_BASE+path,{
       method:options.method||"GET",
-      headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer "+token},
+      headers:{"Accept":"application/json","Content-Type":"application/json","Authorization":"Bearer "+token,"X-Firebase-AppCheck":await window.PRICPublic.token()},
       body:options.body?JSON.stringify(options.body):undefined,
       signal:controller.signal
     });
@@ -750,7 +752,7 @@ window.verAuditoriaClubSuperadmin=async function(clubId){
 function renderSuscripciones(){
   const nav=$('nav-suscripciones'),view=$('v-suscripciones');
   const enabled=esSuperadminActual();
-  if(nav)nav.hidden=!enabled;if(view)view.hidden=!enabled;
+  if(nav)nav.hidden=!enabled;if(view)view.hidden=!enabled;$('nav-imagenes').hidden=!enabled;$('v-imagenes').hidden=!enabled;
   if(!enabled)return;
   const svc=D.service||{};
   const mon=svc.monitoreo||{};
@@ -1237,20 +1239,21 @@ window.guardarSponsors=async function(){
     activo:Boolean($(`spl-${i}`).value.trim())
   }));
 
-  await runAction(
-    ()=>fs.setDoc(
-      fs.doc(db,"configuracion","inicio"),
-      {
-        patrocinadores:arr,
-        actualizadoEn:fs.serverTimestamp(),
-        actualizadoPor:currentUser.uid
-      },
-      {merge:true}
-    ),
-    "Patrocinadores guardados."
-  );
+  await runAction(()=>superadminApi('/media/sponsors',{method:'POST',body:{patrocinadores:arr}}),"Patrocinadores guardados.");
 };
 
+window.cargarContenidoImagenes=async function(){if(!esSuperadminActual())return;try{
+ const [config,stats,tournaments]=await Promise.all([fs.getDoc(fs.doc(db,'configuracion','institucional')),superadminApi('/media/status'),superadminApi('/media/tournaments').then(r=>({docs:r.items.map(t=>({id:t.id,ref:{path:t.path},data:()=>t}))}))]);
+ $('media-status').textContent=stats.assets+' imágenes · '+(stats.bytes/1000000).toFixed(2)+' MB guardados · Descargas: '+stats.downloadStatus+' · Medido: '+new Date(stats.measuredAt).toLocaleString('es-AR')+(stats.budget?' · Presupuesto: '+stats.budget.costAmount+' / '+stats.budget.budgetAmount+' '+stats.budget.currencyCode+' ('+stats.budget.percent+'%)'+(stats.budget.alert?' · AVISO '+(stats.budget.thresholdPercent||50)+'%':'')+' · '+stats.budget.scope:' · Presupuesto: Sin verificar');
+ const images=config.data()?.imagenes||{};
+ $('institutional-editor').innerHTML='<h3>Web institucional</h3>'+Array.from({length:6},(_,i)=>'<div class="card"><label>'+(['Portada','Qué es PRIC','Soluciones','Integraciones','Clubes','Contacto'][i]||'Contenido '+(i+1))+'<input type="hidden" id="inst-image-'+i+'" value="'+esc(images[i]||'')+'"></label></div>').join('');
+ for(let i=0;i<6;i++)window.PricMedia.attach($('inst-image-'+i),{kind:'institutional',slot:String(i)});
+ const current=tournaments.docs.filter(d=>!d.data().finalizado&&!d.data().terminado&&d.data().estado!=='finalizado');
+ $('tournament-editor').innerHTML='<h3>Imágenes de torneos</h3>'+current.map((d,i)=>'<div class="card"><label>'+esc(d.data().nombre||d.data().titulo||'Torneo')+'<input type="hidden" id="t-image-'+i+'" value="'+esc(d.data().imagen||'')+'"></label></div>').join('');
+ current.forEach((d,i)=>window.PricMedia.attach($('t-image-'+i),{kind:'tournament',id:d.id,clubId:d.ref.path.startsWith('clubs/')?d.ref.path.split('/')[1]:''}));
+ }catch(e){$('media-status').textContent=e.message;}};
+window.PricSponsorUploads=function(){for(let i=0;i<5;i++)window.PricMedia.attach(document.getElementById('spl-'+i),{kind:'sponsor',slot:String(i)});};
+new MutationObserver(()=>window.PricSponsorUploads()).observe(document.getElementById('v-patrocinadores'),{childList:true,subtree:true});
 document.addEventListener("DOMContentLoaded",()=>{
   setModo("auth");
 
